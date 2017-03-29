@@ -1,0 +1,136 @@
+
+
+ADHOC.USER.SALOMON.JOBS	-	KS86861.USER.SALOMON.JOBS
+
+
+ADHOC.USER.PROD.FIX.JOBS
+
+ADHOC.USER.TEST.JOBS
+
+SELECT * FROM DB2PRD03.NLCDB2P.POSITION 
+WHERE POSITION_PARTITION = 1 AND PROCESS_DT = '2013-01-03'; 
+
+ADHOC.USER.PROD.FIX.JOBS
+
+adhoc.USER.SALOMON.JOBS
+
+ADHOC.USER.TEST.J
+
+
+1/18/2014
+ Microsoft Lync Users: Please note that messages are subject to Monitoring and Compliance review. Inappropriate communications may be filtered and not delivered.
+Somarouthu, Kameswararao [CCC-OT_IT NE] 2:44 PM
+Hi
+Do u support Salomon mainframe?
+D'Mello, Elfrida [ICG-IT NE] 2:45 PM
+hi
+yes
+Somarouthu, Kameswararao [CCC-OT_IT NE] 2:45 PM
+There are some NDM jobs which are in error queue
+D'Mello, Elfrida [ICG-IT NE] 2:46 PM
+Can you please tell me which jobs
+Somarouthu, Kameswararao [CCC-OT_IT NE] 2:46 PM
+01.01 OSUP ZNDDIRUP IS LATE @ 0100  3 ZNDDIRUP
+
+01.01 OSUP ZNDDIRUQ IS LATE @ 0100  3 ZNDDIRUQ
+
+01.01 OSUP ZNDDISA8 IS LATE @ 0100  3 ZNDDISA8
+
+01.01 OSUP ZNDDISBX IS LATE @ 0100  3 ZNDDISBX
+
+01.01 OSUP                                       3 ZNDDIST2
+
+D'Mello, Elfrida [ICG-IT NE] 2:48 PM
+checking
+Somarouthu, Kameswararao [CCC-OT_IT NE] 2:48 PM
+These are SALOMON NDM TRANSMISSION
+
+Thank you
+Suyambulingam, Shenika [ICG-IT NE] 2:50 PM
+hi
+Somarouthu, Kameswararao [CCC-OT_IT NE] 2:51 PM
+Pls tell me
+D'Mello, Elfrida [ICG-IT NE] 2:51 PM
+Hi shenika
+please find the chat
+Somarouthu, Kameswararao [CCC-OT_IT NE] 1:44 AM
+Hi
+Do u support Salomon mainframe?
+D'Mello, Elfrida [ICG-IT NE] 1:45 AM
+hi
+yes
+Somarouthu, Kameswararao [CCC-OT_IT NE] 1:45 AM
+There are some NDM jobs which are in error queue
+D'Mello, Elfrida [ICG-IT NE] 1:46 AM
+Can you please tell me which jobs
+Somarouthu, Kameswararao [CCC-OT_IT NE] 1:46 AM
+01.01 OSUP ZNDDIRUP IS LATE @ 0100  3 ZNDDIRUP
+
+01.01 OSUP ZNDDIRUQ IS LATE @ 0100  3 ZNDDIRUQ
+
+01.01 OSUP ZNDDISA8 IS LATE @ 0100  3 ZNDDISA8
+
+01.01 OSUP ZNDDISBX IS LATE @ 0100  3 ZNDDISBX
+
+01.01 OSUP                                       3 ZNDDIST2
+
+Somarouthu, Kameswararao [CCC-OT_IT NE] 2:52 PM
+I am also from HCL, was workingin Vertex :)
+Somarouthu, Kameswararao [CCC-OT_IT NE] 2:56 PM
+Are u checking Shenika?
+D'Mello, Elfrida [ICG-IT NE] 3:02 PM
+shenika, the above jobs are waiting for the file from saloman jobs CODQ180D & COT0180D
+
+these jobs belong to capital marketing system
+Somarouthu, Kameswararao [CCC-OT_IT NE] 3:04 PM
+Pls let me know the ETA if any delay
+D'Mello, Elfrida [ICG-IT NE] 3:13 PM
+shenika please find the details of the jobs
+ZNDDIRUQ - waiting for the file from CODQ181D & COT0181D jobs which belongs to Capital marketing system
+
+ZNDDISA8 - waitng for file from THT0060D belongs to BROKER DEALER SYSTEMS
+
+ZNDDISBX - waiting for the file from JOB CODQ184D which belongs to Capital marketing system
+
+ZNDDIST2 - completed
+
+Somarouthu, Kameswararao [CCC-OT_IT NE] 3:19 PM
+What abt  
+ZNDDIRUP
+
+?
+Suyambulingam, Shenika [ICG-IT NE] 3:20 PM
+check the contact of pred job
+ | CORE SYSTEM CORE SYSTEM 1 | 
+ | | 
+ | BATCH-JOB ZNDDIRUP KEY = ZND1 UPDATED ON 09/04/22 AT 15:15 BY P302 | 
+ +-----+----------------------------------+--------------------+--------------+ 
+ | SEL | SUPPORT PERSONNEL | RESPONSIBILITY | WORK NUMBER | 
+ +-----+----------------------------------+--------------------+--------------+ 
+ | | STOMBERG SHEREE | MANAGING DIRECTOR | 212-559-1283 | 
+ | | XXX XXX | FAKE ID SETUP! | | 
+ | | BORDMAN TONY | AREA MANAGER | 212-723-3196 | 
+ | | XXXXXX XXXXXXX | | | 
+ +-----+-------------------------------------------------------+--------------+ 
+                                                                                
+
+D'Mello, Elfrida [ICG-IT NE] 3:20 PM
+ZNDDIRUP - waiting for file from CODQ180D & COT0180D belongs to capital marketing system
+Somarouthu, Kameswararao [CCC-OT_IT NE] 3:21 PM
+Are u not supporting these jobs?
+Venkataramaiah, Muralidhara [ICG-IT NE] 3:21 PM
+hi KmeswaraRao. Please give us a few minutes. We will get back to you. 
+Somarouthu, Kameswararao [CCC-OT_IT NE] 3:22 PM
+Sure ..Thank u
+Venkataramaiah, Muralidhara [ICG-IT NE] 3:33 PM
+hi KameswarRao - would you mind sending a request to our batch support DL please ? 
+By chatting here, we may lose track some information 
+*GT NAM CMB OPS OPERATE BATCH SUPPORT
+the dependencies doesn't seem to be straight forward in this case.. 
+Somarouthu, Kameswararao [CCC-OT_IT NE] 3:36 PM
+will do. Thank you
+Venkataramaiah, Muralidhara [ICG-IT NE] 3:36 PM
+so a mail would be prudent. 
+Thanks. 
+
+
