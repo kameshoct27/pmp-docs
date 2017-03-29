@@ -1,0 +1,1262 @@
+//* DEALLOC AND ALLOC THE CICS DATASET WHEN CONTENTION OCCURS           00000100
+//*DEALLOC EXEC PRODBIF,ID='REGION',OPTION='D FOR DEALLOC,              00000200
+//* A FOR ALLOC',TYPE=F,NAME=DDNAME                                     00000300
+//*                                                                     00000400
+//DEALLC01 EXEC PRODBIF,ID=SP,OPTION=D,TYPE=F,NAME=SSNXPR               00000500
+//*                                                                     00000600
+//* NAME IS CICSPRDV.PCADE65N.PERSH.SSN                                 00000700
+//* SSNXPR IS THE SHORTNAM WHICH CAN BE FOUND IN JCLLOG                 00000800
+//STEP001 EXEC PCADE65N                                                 00000900
+//*                                                                     00001000
+//ALLOC1 EXEC PRODBIF,ID=SP,OPTION=A,TYPE=F,NAME=SSNXPR                 00001100
+//*                                                                     00001200
+//************************REST TAPE**************************           00001300
+//ZCCR001N JOB (TEST),'CATLG PBTAPES',CLASS=C,MSGCLASS=A,               00001400
+//   NOTIFY=X115                                                        00001500
+//*                                                                     00001600
+//STEP01  EXEC PGM=IEFBR14                                              00001700
+//DD001   DD DSN=SHS.NCA.CMW00.PCAD689N.ACTIVT.G0348V00,                00001800
+//    DISP=(OLD,CATLG),DCB=(LRECL=670,RECFM=FB),UNIT=(SILO,,DEFER),     00001900
+//    VOLUME=SER=K33988                                                 00002000
+//STEP02  EXEC PGM=IEFBR14                                              00002100
+//DD001   DD DSN=SHS.NCA.CMW00.PCAD689N.TOPACT.G0346V00,                00002200
+//    DISP=(OLD,CATLG),DCB=(LRECL=1494,RECFM=FB),UNIT=(SILO,,DEFER),    00002300
+//    VOLUME=SER=L61323                                                 00002400
+//STEP03  EXEC PGM=IEFBR14                                              00002500
+//DD001   DD DSN=SHS.NCA.CMW00.PCAD689N.TOPGRP.G0348V00,                00002600
+//    DISP=(OLD,CATLG),DCB=(LRECL=224,RECFM=FB),UNIT=(SILO,,DEFER),     00002700
+//    VOLUME=SER=L63985                                                 00002800
+//STEP04  EXEC PGM=IEFBR14                                              00002900
+//DD001   DD DSN=SHS.NCA.CMW00.PCAD689N.CPIACT.G0348V00,                00003000
+//    DISP=(OLD,CATLG),DCB=(LRECL=346,RECFM=FB),UNIT=(SILO,,DEFER),     00003100
+//    VOLUME=SER=L64597                                                 00003200
+//STEP14  EXEC PGM=IEFBR14                                              00003300
+//DD001   DD DSN=SHS.NCA.CMW00.PCAD689N.ACCRUA.ASOF.G2396V00,           00003400
+//    DISP=(OLD,CATLG),DCB=(LRECL=244,RECFM=FB),UNIT=(SILO,,DEFER),     00003500
+//    VOLUME=SER=K10592                                                 00003600
+//STEP15  EXEC PGM=IEFBR14                                              00003700
+//DD001   DD DSN=SHS.NCA.CMW00.PCAD689N.POSITN.ASOF.G2390V00,           00003800
+//    DISP=(OLD,CATLG),DCB=(LRECL=371,RECFM=FB),UNIT=(SILO,,DEFER),     00003900
+//    VOLUME=SER=K20130                                                 00004000
+//STEP16  EXEC PGM=IEFBR14                                              00004100
+//DD001   DD DSN=SHS.NCA.CMW00.PCAD689N.OPNFLS.ASOF.G2395V00,           00004200
+//    DISP=(OLD,CATLG),DCB=(LRECL=551,RECFM=FB),UNIT=(SILO,,DEFER),     00004300
+//    VOLUME=SER=K21054                                                 00004400
+//STEP17  EXEC PGM=IEFBR14                                              00004500
+//DD001   DD DSN=SHS.NCA.CMW00.PCAD689N.SPREAD.ASOF.G2395V00,           00004600
+//    DISP=(OLD,CATLG),DCB=(LRECL=323,RECFM=FB),UNIT=(SILO,,DEFER),     00004700
+//    VOLUME=SER=O02999                                                 00004800
+//***************SAR COPY************************************           00004900
+//X115SARJ  JOB (X115),'JOB SAR RPT',CLASS=H,MSGCLASS=X,                00005000
+//           MSGLEVEL=(1,1),NOTIFY=X115                                 00005100
+//**==============================================================**    00005200
+//*       TEST JOB WHICH SAR OUTPUT                                     00005300
+//**==============================================================**    00005400
+//PRINT    PROC                                                         00005500
+//PSY0010  EXEC PGM=SARBCH,REGION=2M                                    00005600
+//SYSPRINT DD SYSOUT=*                                                  00005700
+//SYSIN    DD DDNAME=SYSIN                                              00005800
+//        PEND                                                          00005900
+//**********************                                                00006000
+//JSY0010 EXEC PRINT                                                    00006100
+//PSY0010.SARLOAD DD DSN=WRKT.SAR.ZCCD495N,DISP=(,CATLG),               00006200
+//      LRECL=133,RECFM=FBA,UNIT=(SYSDA,59),SPACE=(TRK,(100,60),RLSE)   00006300
+//PSY0010.SYSIN DD *                                                    00006400
+/DBASE NAME=ITSX00P.PB.VIEWA                                            00006500
+/LOAD ID=ZCAD495N                                                       00006600
+//*                                                                     00006700
+//***************UNLOAD DB2**********************************           00006800
+//SSY122Z  JOB (SSY161),'UNLOAD',CLASS=H,MSGCLASS=X,                    00006900
+//     MSGLEVEL=(1,1),                                                  00007000
+//     SCHENV=DB2PRD99,                                                 00007100
+//    NOTIFY=SSY122                                                     00007200
+//**********************************************************************00007300
+//* THIS JOB UNLOAD REQUESTED ACCOUNTS INTO FLAT FILE                   00007400
+//**********************************************************************00007500
+//STEP01  EXEC PGM=IKJEFT01,DYNAMNBR=20                                 00007600
+//STEPLIB  DD  DSN=DB2PRD99.SUBSYS.LOADLIB,DISP=SHR                     00007700
+//SYSPRINT DD  SYSOUT=*                                                 00007800
+//SYSUDUMP DD  SYSOUT=*                                                 00007900
+//SYSREC00 DD  DSN=ECNS.TESTVWD.DATA,                                   00008000
+//             UNIT=(SYSDA,59),                                         00008100
+//             SPACE=(CYL,(70,200),RLSE),                               00008200
+//             DISP=(,CATLG,DELETE)                                     00008300
+//SYSTSIN  DD  *                                                        00008400
+    DSN SYSTEM(ZP99)                                                    00008500
+    RUN PROGRAM(DSNTIAUL) PLAN(DSNTIB71) PARM('SQL') -                  00008600
+        LIB('IRDBTST.DSN710.RUNLIB.LOAD')                               00008700
+//SYSTSPRT DD SYSOUT=*                                                  00008800
+//SYSPUNCH DD DSN=SSY122.USER.CAES(UNLD1P),DISP=SHR                     00008900
+//SYSIN DD *                                                            00009000
+   SELECT * FROM DB2PRD99.VWDDB2P.ACCT_INFO_DAILY                       00009100
+   WHERE ACCT_NBR IN (                                                  00009200
+   '52868217',                                                          00009300
+    52880463'                                                           00009400
+   )                                                                    00009500
+   ;                                                                    00009600
+//***************SORT JOIN**********************************            00009700
+//X115JOIN JOB (SRTJOIN),'KAMESH',CLASS=H,MSGCLASS=X,MSGLEVEL=(1,1),    00009800
+//        NOTIFY=X115                                                   00009900
+//STEP01 EXEC PGM=SORT                                                  00010000
+//SORTJNF1 DD DISP=SHR,DSN=WRKT.NCA.CMW01.PCAM490N.NAMEADDR.MT201403    00010100
+//SORTJNF2 DD DISP=SHR,DSN=WRKT.USER.MSSBACCT                           00010200
+//OUTFIL1  DD DSN=WRKT.USER.MATCH,                                      00010300
+//            DISP=(NEW,CATLG,DELETE),                                  00010400
+//            DCB=(RECFM=FB,LRECL=700)                                  00010500
+//SYSOUT DD SYSOUT=*                                                    00010600
+//SYSIN DD *                                                            00010700
+   OPTION COPY                                                          00010800
+   JOINKEYS FILES=F1,FIELDS=(314,9,A)                                   00010900
+   JOINKEYS FILES=F2,FIELDS=(1,9,A)                                     00011000
+   REFORMAT FIELDS=(F1:1,700)                                           00011100
+   OUTFIL FNAMES=OUTFIL1,BUILD=(1,700)                                  00011200
+//***************SORT JOIN2*********************************            00011300
+//X115JOIN JOB (TEST),'KAMES',CLASS=H,MSGCLASS=X,MSGLEVEL=(1,1),        00011400
+//      NOTIFY=X115                                                     00011500
+//JOBLIB   DD DISP=SHR,DSN=SYS3.MVSV5.RUNTIME   INSERTED FOR LE RUNTIME 00011600
+//STEP1 EXEC PGM=SORT                                                   00011700
+//SORTLIB DD DISP=SHR,DSN=SYS1.SORTLIB                                  00011800
+//SORTJNF1 DD DISP=SHR,DSN=WRKT.USER.ACCTNUM                            00011900
+//SORTJNF2 DD DISP=SHR,DSN=WRKT.NCA.CMW01.PCAM490N.NAMEADDR.MT201403    00012000
+//SORTOUT DD DSN=WRKT.USER.ACCTCHCK,DISP=(NEW,CATLG),                   00012100
+//           DCB=(RECFM=FB,LRECL=710)                                   00012200
+//SYSOUT DD SYSOUT=*                                                    00012300
+//SYSIN DD *                                                            00012400
+  OPTION COPY                                                           00012500
+  JOINKEYS FILES=F1,FIELDS=(1,9,A)                                      00012600
+  JOINKEYS FILES=F2,FIELDS=(314,9,A)                                    00012700
+  JOIN UNPAIRED,F1                                                      00012800
+  REFORMAT FIELDS=(F1:1,9,F2:1,700)                                     00012900
+  OUTREC FIELDS=(1,9,C'º',10,700)                                       00013000
+//*                                                                     00013100
+//STEP2 EXEC PGM=SORT,COND=(0,NE)                                       00013200
+//SORTLIB DD DISP=SHR,DSN=SYS1.SORTLIB                                  00013300
+//SORTIN DD DISP=SHR,DSN=WRKT.USER.ACCTCHCK                             00013400
+//SORTOUT DD DSN=WRKT.USER.ACTNODUP,                                    00013500
+//        DISP=(NEW,CATLG),DCB=(RECFM=FB,LRECL=710)                     00013600
+//SYSOUT DD SYSOUT=*                                                    00013700
+//SYSIN DD *                                                            00013800
+  SORT FIELDS=(1,9,CH,A)                                                00013900
+  SUM FIELDS=NONE                                                       00014000
+//***************OVERLAY********************************                00014100
+//X115OLAY JOB (COPY),'FAST COPY',CLASS=H,MSGCLASS=X,NOTIFY=X115        00014200
+//*                                                                     00014300
+//*-------------------------------------------------------------------- 00014400
+//JOBLIB   DD DISP=SHR,DSN=SYS3.MVSV5.RUNTIME   INSERTED FOR LE RUNTIME 00014500
+//          DD DISP=SHR,DSN=SYS3.MVSV5.RUNTIME    INSERTED BY JES2EXT54 00014600
+//STEP001  EXEC PGM=SORT                                                00014700
+//SORTLIB DD DISP=SHR,DSN=SYS1.SORTLIB                                  00014800
+//SORTIN   DD DISP=SHR,DSN=SHS.NCC.WRM.ZCCD941N.SAL.LOPRDATA.DT150511   00014900
+//SORTOUT DD DSN=WRKT.ZCCD941N.SAL.LOPRDATA.DT150511,                   00015000
+//            DISP=(,CATLG,DELETE),                                     00015100
+//            DCB=*.SORTIN                                              00015200
+//SYSOUT  DD  SYSOUT=*                                                  00015300
+//SYSIN DD *                                                            00015400
+  INREC IFTHEN=(WHEN=(160,10,CH,NE,C' '),OVERLAY=(160:10C'X'))          00015500
+  SORT FIELDS=COPY                                                      00015600
+//*                                                                     00015700
+//***************COPYLAY********************************                00015800
+//ZCCR004N JOB (PROD),'COPY',CLASS=C,MSGCLASS=A,NOTIFY=X115             00015900
+//*------------------------------------------------------------------   00016000
+//*    COPY JOB FOR - INC0002600484                                     00016100
+//*------------------------------------------------------------------   00016200
+//STEP01   EXEC PGM=IEBCOPY                                             00016300
+//SYSPRINT DD   SYSOUT=*                                                00016400
+//DDIN     DD   DSN=PROD.FTP.CARDLIB,DISP=SHR                           00016500
+//DDOUT    DD   DSN=WRKT.USER.FTP.CARD,SPACE=(TRK,(1,1,1),RLSE),        00016600
+//   DISP=(NEW,CATLG,DELETE),UNIT=SYSDA,                                00016700
+//   DCB=(RECFM=FB,DSORG=PO)                                            00016800
+//SYSIN DD   *                                                          00016900
+     COPY OUTDD=DDOUT,INDD=DDIN                                         00017000
+     SELECT MEMBER=(NWS474C1)                                           00017100
+/*                                                                      00017200
+//***************DATEOVERRIDE***************************                00017300
+//ZCCR251N JOB (PROD),'ASSET MNG PERS TRDS',CLASS=C,MSGCLASS=A,PRTY=10, 00017400
+//             SCHENV=DB2PRD99                                          00017500
+//*                                                                     00017600
+//JC1 JCLLIB ORDER=SHS.PROCLIB                                          00017700
+//TEMP2000  EXEC TEMP2000                                               00017800
+//BCT56.SYSIN DD *     (MMDDYY)                                         00017900
+BCT56REQ=070214                                                         00018000
+//****************************************************************      00018100
+//STEP01  EXEC PCCD251N,SLR1='&&DATELIB'                                00018200
+//*                                                                     00018300
+//*                                                                     00018400
+//***************CPI TEST    ***************************                00018500
+//ZCPITST JOB (DEV),'TEST RPT',CLASS=C,MSGCLASS=A,                      00018600
+//         NOTIFY=X115                                                  00018700
+//*---------------------------------------------------------------------00018800
+//STEP10   EXEC PGM=SORT,REGION=4096K                                   00018900
+//SORTIN   DD DISP=SHR,DSN=PROD$IAM.CPI.CPIMAST                         00019000
+//SORTOF1  DD DSN=ECNS.NCC.TYPE1.DATA,                                  00019100
+//            DISP=(,CATLG,DELETE),SPACE=(CYL,(500,500),RLSE),          00019200
+//            DCB=(LRECL=49,RECFM=FB)                                   00019300
+//SORTOF2  DD DSN=ECNS.NCC.TYPE4.DATA,                                  00019400
+//            DISP=(,CATLG,DELETE),SPACE=(CYL,(500,300),RLSE),          00019500
+//            DCB=(LRECL=13,RECFM=FB)                                   00019600
+//SYSOUT   DD SYSOUT=*                                                  00019700
+//SYSPRINT DD SYSOUT=*                                                  00019800
+//SYSIN    DD *                                                         00019900
+  SORT  FIELDS=COPY                                                     00020000
+  INCLUDE COND=(21,2,CH,EQ,C'01',OR,21,2,CH,EQ,C'04')                   00020100
+  INREC IFTHEN=(WHEN=(21,2,CH,EQ,C'01'),                                00020200
+    BUILD=(9,8,311,4,424,5,PD,TO=ZD,LENGTH=8,                           00020300
+      26,1,424,5,PD,TO=ZD,LENGTH=8,1,20)),                              00020400
+   IFTHEN=(WHEN=NONE,                                                   00020500
+    BUILD=(9,8,98,5,C'$$7$',32X))                                       00020600
+  OUTFIL FILES=1,INCLUDE=(14,4,CH,NE,C'$$7$'),OUTREC=(1,49)             00020700
+  OUTFIL FILES=2,INCLUDE=(14,4,CH,EQ,C'$$7$'),OUTREC=(1,13)             00020800
+//*---------------------------------------------------------------------00020900
+//STEP030  EXEC PGM=SORT,REGION=0K,COND=(0,LT)                          00021000
+//SORTLIB  DD DSN=SYS1.SORTLIB,DISP=SHR                                 00021100
+//SORTJNF1 DD DISP=SHR,DSN=ECNS.NCC.TYPE1.DATA                          00021200
+//SORTJNF2 DD DISP=SHR,DSN=ECNS.NCC.TYPE4.DATA                          00021300
+//JNF1CNTL DD *                                                         00021400
+  INREC IFTHEN=(WHEN=INIT,BUILD=(1,49)),                                00021500
+    IFTHEN=(WHEN=(13,4,CH,LT,C'1850',OR,13,4,CH,GT,C'2100',OR,          00021600
+     17,2,CH,LT,C'01',OR,17,2,CH,GT,C'12',OR,                           00021700
+     19,2,CH,LT,C'01',OR,19,2,CH,GT,C'31',OR,                           00021800
+     17,2,CH,EQ,C'02',AND,19,2,CH,GT,C'29',OR,                          00021900
+     18,1,SS,EQ,C'469',AND,19,2,CH,GT,C'30',OR,                         00022000
+     17,3,CH,EQ,C'11',AND,19,2,CH,GT,C'30'),                            00022100
+    OVERLAY=(13:C'19000101'),HIT=NEXT),                                 00022200
+    IFTHEN=(WHEN=(22,4,CH,LT,C'1850',OR,22,4,CH,GT,C'2100',OR,          00022300
+     26,2,CH,LT,C'01',OR,26,2,CH,GT,C'12',OR,                           00022400
+     28,2,CH,LT,C'01',OR,28,2,CH,GT,C'31',OR,                           00022500
+     26,2,CH,EQ,C'02',AND,28,2,CH,GT,C'29',OR,                          00022600
+     27,1,SS,EQ,C'469',AND,28,2,CH,GT,C'30',OR,                         00022700
+     26,2,CH,EQ,C'11',AND,28,2,CH,GT,C'30'),                            00022800
+    OVERLAY=(22:C'19000101'),HIT=NEXT)                                  00022900
+//*                                                                     00023000
+//OUTFILE1 DD DSN=ECNS.NCC.TYPEALL.DATA,                                00023100
+//            DISP=(,CATLG,DELETE),SPACE=(CYL,(500,300),RLSE),          00023200
+//            DCB=(LRECL=74,RECFM=FB)                                   00023300
+//*                                                                     00023400
+//OUTFILE2 DD DSN=ECNS.NCC.TYPE4.ERROR,                                 00023500
+//            DISP=(,CATLG,DELETE),                                     00023600
+//            DCB=(LRECL=13,RECFM=FB)                                   00023700
+//SYSIN    DD *                                                         00023800
+  OPTION COPY                                                           00023900
+  JOINKEYS FILES=F1,FIELDS=(1,8,A),SORTED                               00024000
+  JOINKEYS FILES=F2,FIELDS=(1,8,A),SORTED                               00024100
+  REFORMAT FIELDS=(F1:1,49,F2:1,13,?)                                   00024200
+  JOIN UNPAIRED,F1,F2                                                   00024300
+  OUTFIL FNAMES=OUTFILE1,OMIT=(63,1,CH,EQ,C'2'),                        00024400
+   OUTREC=(1,8,C'|',                   *                                00024500
+       C'20150624|',                   *                                00024600
+        9,4,C'|',                      *                                00024700
+       13,8,C'|',                      *                                00024800
+       21,1,C'|',                      *                                00024900
+       22,8,C'|',                      *                                00025000
+       30,20,C'USD01',C'|',            *                                00025100
+       50,5)                           *                                00025200
+  OUTFIL FNAMES=OUTFILE2,INCLUDE=(63,1,CH,EQ,C'2'),OUTREC=(50,13)       00025300
+//SYSOUT   DD SYSOUT=*                                                  00025400
+//SYSPRINT DD SYSOUT=*                                                  00025500
+//*-------------------------------------------------------------------- 00025600
+//***************DB2 INSERT*****************************                00025700
+//ZRGRSBS$ JOB (PROD),'NRG',CLASS=C,NOTIFY=X115,                        00025800
+//             PRTY=10,MSGCLASS=A,SCHENV=DB2PRD03                       00025900
+//********************************************************************* 00026000
+//S01      EXEC PGM=IKJEFT01                                            00026100
+//STEPLIB  DD   DSN=DB2PRD03.SUBSYS.LOADLIB,DISP=SHR                    00026200
+//SYSPRINT DD   SYSOUT=*                                                00026300
+//SYSOUT   DD   SYSOUT=*                                                00026400
+//SYSTERM  DD   SYSOUT=*                                                00026500
+//SYSUDUMP DD   SYSOUT=*                                                00026600
+//SYSTSPRT DD   SYSOUT=*                                                00026700
+//SYSTSIN  DD *                                                         00026800
+  DSN SYSTEM(ZP03)                                                      00026900
+  RUN PROGRAM(DSNTEP2) PLAN(DSNTEP71)     -                             00027000
+      LIBRARY('IRDBTST.DSN710.RUNLIB.LOAD')                             00027100
+/*                                                                      00027200
+//SYSIN    DD  *                                                        00027300
+   INSERT INTO NRGDB2P.REGPORTAL_APPL_USR VALUES ('0004795386',         00027400
+   'FICOS','15AU',DATE('01/01/0001'),DATE('01/01/0001'),                00027500
+   CURRENT TIMESTAMP,'MANUAL','M','A', ' ');                            00027600
+   COMMIT;                                                              00027700
+                                                                        00027800
+   INSERT INTO NRGDB2P.REGPORTAL_APPL_USR VALUES ('1000510619',         00027900
+   'FICOS','15AU',DATE('01/01/0001'),DATE('01/01/0001'),                00028000
+   CURRENT TIMESTAMP,'MANUAL','M','A', ' ');                            00028100
+   COMMIT;                                                              00028200
+                                                                        00028300
+                                                                        00028400
+   INSERT INTO NRGDB2P.REGPORTAL_APPL_USR VALUES ('0001325016',         00028500
+   'FICOS','15AU',DATE('01/01/0001'),DATE('01/01/0001'),                00028600
+   CURRENT TIMESTAMP,'MANUAL','M','A', ' ');                            00028700
+   COMMIT;                                                              00028800
+                                                                        00028900
+//****************DD NAME OVERRIDE************************************* 00029000
+//ZRGY029N JOB (PROD),'MFEE YRLY ARCHV',CLASS=C,MSGCLASS=A,             00029100
+//             RESTART=STEP04.STEP010                                   00029200
+//JC1 JCLLIB ORDER=SHS.PROCLIB                                          00029300
+//*                                                                     00029400
+//****************************************************************      00029500
+//STEP01 EXEC PRGY029N                                                  00029600
+//STEP04 EXEC PRGY029N,SUBSID='ATDFS'                                   00029700
+//STEP999.ORG012A DD DSN=WORK.NRG.PRGD029N.CRNTYR,                      00029800
+//        DISP=(MOD,DELETE,DELETE)                                      00029900
+//STEP05 EXEC PRGY029N,SUBSID='LAVA'                                    00030000
+//STEP999.ORG012A DD DSN=WORK.NRG.PRGD029N.CRNTYR,                      00030100
+//        DISP=(MOD,DELETE,DELETE)                                      00030200
+//STEP06 EXEC PRGY029N,SUBSID='CSSI'                                    00030300
+//STEP999.ORG012A DD DSN=WORK.NRG.PRGD029N.CRNTYR,                      00030400
+//        DISP=(MOD,DELETE,DELETE)                                      00030500
+//*                                                                     00030600
+//*****************INREC PARSING**********************************      00030700
+//SSY122F JOB (TEST),'KAMESH',CLASS=H,MSGCLASS=X,MSGLEVEL=(1,1),        00030800
+//             NOTIFY=X115    ESTART=STEP065                            00030900
+//*-------------------------------------------------------------------* 00031000
+//* SPLIT THE FILE INTO SB/SAL ACCTS BY CPI & IMS NUMBER              * 00031100
+//*-------------------------------------------------------------------* 00031200
+//JOBLIB   DD DISP=SHR,DSN=SYS3.MVSV5.RUNTIME   INSERTED FOR LE RUNTIME 00031300
+//STEP050  EXEC PGM=SORT,REGION=4096K,COND=(0,LT)                       00031400
+//*ORTIN   DD DISP=SHR,DSN=ECNS.T3.PCCD291N.ESALCUST.FMT                00031500
+//SORTIN   DD DISP=SHR,DSN=PROD.NCC.PCCD291N.ESALCUST.MSTR(0)           00031600
+//OUTFIL1  DD DSN=ECNS.NC4.PCCD291N.ESALCUST.SBACCT,                    00031700
+//* X115.USER.PCCD291N.ESALCUST.SBACCT                                  00031800
+//         DISP=(,CATLG,DELETE),DCB=(RECFM=FB,LRECL=250)                00031900
+//SYSIN    DD *  P=SHR,DSN=&BPS(NCC291S4)                               00032000
+    SORT FIELDS=COPY                                                    00032100
+    INREC PARSE=(%01=(ABSPOS=01,FIXLEN=57),     *KEY FIELDS             00032200
+          %02=(FIXLEN=08,ENDBEFR=C'|'),         *ACCOUNT ID             00032300
+          %03=(FIXLEN=18,ENDBEFR=C'|'),         *ACTMNC                 00032400
+          %04=(FIXLEN=08,ENDBEFR=C'|'),         *IMS NUMBER             00032500
+          %05=(FIXLEN=08,ENDBEFR=C'|'),         *CPI                    00032600
+          %06=(FIXLEN=30,ENDBEFR=C'|'),         *GFCID                  00032700
+          %07=(FIXLEN=30,ENDBEFR=C'|'),         *ACCOUNT SHORT NAME     00032800
+          %08=(FIXLEN=30,ENDBEFR=C'|'),         *SALESPERSON            00032900
+          %09=(FIXLEN=04,ENDBEFR=C'|'),         *SALESPERSON COUNTRY COD00033000
+          %10=(FIXLEN=06,ENDBEFR=C'|'),         *FC                     00033100
+          %11=(FIXLEN=30,ENDBEFR=C'|'),         *FC NAME                00033200
+          %12=(FIXLEN=18,ENDBEFR=C'|'),         *MG#                    00033300
+          %13=(FIXLEN=30,ENDBEFR=C'|'),         *MG NAME                00033400
+          %14=(FIXLEN=06,ENDBEFR=C'|'),         *GP#                    00033500
+          %15=(FIXLEN=30,ENDBEFR=C'|'),         *GP NAME                00033600
+          %16=(FIXLEN=04,ENDBEFR=C'|'),         *SOC                    00033700
+          %17=(FIXLEN=10,ENDBEFR=C'|'),         *ACCOUNT OWNERSHIP      00033800
+          %18=(FIXLEN=120,ENDBEFR=C'|'),        *ADDRESS                00033900
+          %19=(FIXLEN=180,ENDBEFR=C'|'),        *STREET                 00034000
+          %20=(FIXLEN=30,ENDBEFR=C'|'),         *CITY                   00034100
+          %21=(FIXLEN=255,ENDBEFR=C'|'),        *COUNTRY                00034200
+          %22=(FIXLEN=10,ENDBEFR=C'|'),         *ACCOUNT OPENED BY      00034300
+          %23=(FIXLEN=10,ENDBEFR=C'|'),         *ACCOUNT OPEN DATE      00034400
+          %24=(FIXLEN=10,ENDBEFR=C'|'),         *LAST UPDATED BY        00034500
+          %25=(FIXLEN=10,ENDBEFR=C'|'),         *LAST UPDATED ON        00034600
+          %26=(FIXLEN=04,ENDBEFR=C'|'),         *ACCT TYPE              00034700
+          %27=(FIXLEN=10,ENDBEFR=C'|'),         *STATUS                 00034800
+          %28=(FIXLEN=30,ENDBEFR=C'|'),         *ALERT ACRONYM          00034900
+          %29=(FIXLEN=30,ENDBEFR=C'|'),         *ACCESS CODE            00035000
+          %30=(FIXLEN=06,ENDBEFR=C'|'),         *MCLE ID                00035100
+          %31=(FIXLEN=04,ENDBEFR=C'|'),         *CLASSIFICATION SUMMARY 00035200
+          %32=(FIXLEN=255,ENDBEFR=C'|'),        *SUB TYPE DESCRIPTION   00035300
+          %33=(FIXLEN=04,ENDBEFR=C'|'),         *INDUSTRY CLASSIFICATION00035400
+          %34=(FIXLEN=255,ENDBEFR=C'|'),        *CUSTOMER TYPE DESCRIPTI00035500
+          %35=(FIXLEN=03,ENDBEFR=C'|'),         *CATEGORY               00035600
+          %36=(FIXLEN=255,ENDBEFR=C'|'),        *CATEGORY DESCRIPTION   00035700
+          %37=(FIXLEN=40,ENDBEFR=C'|'),         *RISK RATING            00035800
+          %38=(FIXLEN=255,ENDBEFR=C'|'),        *COUNTRY OF INCORP/CITSH00035900
+          %39=(FIXLEN=255,ENDBEFR=C'|'),        *CNTRY OF INCORP/CSHP DE00036000
+          %40=(FIXLEN=04,ENDBEFR=C'|'),         *PARENT COUNTRY OF INCOR00036100
+          %41=(FIXLEN=255,ENDBEFR=C'|'),        *PARENT CNTY INCOR DESC 00036200
+          %42=(FIXLEN=30,ENDBEFR=C'|'),         *GP COUNTRY OF INCORP   00036300
+          %43=(FIXLEN=255,ENDBEFR=C'|'),        *GP COUNTRY OF INCORP DE00036400
+          %44=(FIXLEN=01,ENDBEFR=C'|'),         *OASYS CLIENT           00036500
+          %45=(FIXLEN=30,ENDBEFR=C'|'),         *BASE NUMBER            00036600
+          %46=(FIXLEN=255,ENDBEFR=C'|'),        *ETC INSTID             00036700
+          %47=(FIXLEN=04,ENDBEFR=C'|'),         *SALESPERSON ID         00036800
+          %48=(FIXLEN=03,ENDBEFR=C'|'),         *FC BRANCH              00036900
+          %49=(FIXLEN=255,ENDBEFR=C'|'),        *FC BRANCH DESCRIPTION  00037000
+          %50=(FIXLEN=03,ENDBEFR=C'|'),         *FIRMCODE               00037100
+          %51=(FIXLEN=13,ENDBEFR=C'|'),         *LTID-1                 00037200
+          %52=(FIXLEN=13,ENDBEFR=C'|'),         *LTID-2                 00037300
+          %53=(FIXLEN=13,ENDBEFR=C'|'),         *LTID-3                 00037400
+          %54=(FIXLEN=01,ENDBEFR=C'|'),         *LTID FLAG(Y/N)         00037500
+          %55=(FIXLEN=10,ENDBEFR=C'|')),        *MCLE-GFCID             00037600
+        BUILD=(1,4,%01,           ACTI/10,MNC/18,IMS/8,CPI/8            00037700
+        %06,C'|',                 *GFCID                30              00037800
+        %07,C'|',                 *ACCOUNT SHORT NAME   30              00037900
+               %12,C'|',           MG                   18              00038000
+               %14,C'|',          GP                     6              00038100
+               %23,UFF,EDIT=(TTTTTTTT),C'|',    * STRIP '/' FROM OPN DT 00038200
+               %26,C'|',%30,C'|',%31,C'|',     ACTYPE/4,MCLEID/6,CLASF/400038300
+               %35,C'|',%50,C'|',%51,C'|',     CATG/3, FIRMC/3,LTID1/13 00038400
+               %52,C'|',%53,C'|',%54,          LTID2,3,FLAG             00038500
+               %55,%27,                    MCLEGFC                      00038600
+               %25,UFF,EDIT=(TTTTTTTT),13X)     * STRIP '/' FROM OPN DT 00038700
+      OUTFIL FNAMES=OUTFIL1,VTOF,                                       00038800
+             OUTREC=(5,250)                                             00038900
+//SYSOUT   DD SYSOUT=X                                                  00039000
+//SORTMSG  DD SYSOUT=X                                                  00039100
+//****************RESTORE TAPE************                              00039200
+//ZCCR002N JOB (TEST),'CATLG UNCATLG',CLASS=C,MSGCLASS=A,               00039300
+//   NOTIFY=X115                                                        00039400
+//*                                                                     00039500
+//STEP01  EXEC PGM=IEFBR14                                              00039600
+//DD001   DD DSN=SHS.NCA.CMW01.PCAM780N.EQTORDHT.MT201401,              00039700
+//        DISP=(OLD,UNCATLG),UNIT=(,,DEFER)                             00039800
+//STEP02  EXEC PGM=IEFBR14                                              00039900
+//DD002   DD DSN=SHS.NCA.CMW01.PCAM780N.EQTORDHT.MT201401,              00040000
+//    DISP=(OLD,CATLG),DCB=(LRECL=5084,RECFM=FB),UNIT=(SILO,,DEFER),    00040100
+//    VOLUME=SER=(X14899,X26916,X28250,X28646,X14941,X30762,X34038,     00040200
+//    X17131,X17149,X44406,X20707,X21245,X56418,X24261,X24921,M03218,   00040300
+//    X25023,M04256,X31489,X33045,M16978,X33691,M17160,N82448,X43783,   00040400
+//    M84876,M71314,M90764,X46609,M49774,M50964,X49803)                 00040500
+//STEP03  EXEC PGM=IEFBR14                                              00040600
+//DD003   DD DSN=SHS.NCA.CMW01.PCAM780N.EQTOPORD.MT201401,              00040700
+//        DISP=(OLD,UNCATLG),UNIT=(,,DEFER)                             00040800
+//STEP04  EXEC PGM=IEFBR14                                              00040900
+//DD004   DD DSN=SHS.NCA.CMW01.PCAM780N.EQTOPORD.MT201401,              00041000
+//    DISP=(OLD,CATLG),DCB=(LRECL=2101,RECFM=FB),UNIT=(SILO,,DEFER),    00041100
+//    VOLUME=SER=(U65537,X50240,U66863)                                 00041200
+//STEP05  EXEC PGM=IEFBR14                                              00041300
+//DD005   DD DSN=SHS.NCA.CMW01.PCAM780N.EQEXEHST.MT201401,              00041400
+//        DISP=(OLD,UNCATLG),UNIT=(,,DEFER)                             00041500
+//STEP06  EXEC PGM=IEFBR14                                              00041600
+//DD006   DD DSN=SHS.NCA.CMW01.PCAM780N.EQEXEHST.MT201401,              00041700
+//    DISP=(OLD,CATLG),DCB=(LRECL=6850,RECFM=FB),UNIT=(SILO,,DEFER),    00041800
+//    VOLUME=SER=(X22963,X59404,X23095,X59416,X60150,X60362,X23735,     00041900
+//          X60488,X23997)                                              00042000
+//***********SARLOAD REPORT**************************                   00042100
+//X115221  JOB (SSY73),'COMPLIANCE',CLASS=H,MSGCLASS=X,                 00042200
+//         MSGLEVEL=(1,1),NOTIFY=X115                                   00042300
+//*                                                                     00042400
+//PRINT    PROC                                                         00042500
+//PSY0010  EXEC PGM=SARBCH,REGION=2M                                    00042600
+//******************************************************************    00042700
+//SYSPRINT DD SYSOUT=*                                                  00042800
+//SYSIN    DD DDNAME=SYSIN                                              00042900
+//        PEND                                                          00043000
+//******************************************************************    00043100
+//JSY0013 EXEC PRINT                                                    00043200
+//PSY0010.SARLOAD  DD DSN=WRKT.NCC.ZCCD932N.R01.D140630,                00043300
+//  DISP=(MOD,CATLG),                                                   00043400
+//  LRECL=180,RECFM=FBA,UNIT=(SYSDA,59),SPACE=(TRK,(10,10),RLSE)        00043500
+//PSY0010.SYSIN DD *                                                    00043600
+/DBASE NAME=ITSX00P.PB.VIEWE                                            00043700
+/LOAD ID=ZCCD932N-R01                                                   00043800
+//******************************************************************    00043900
+//*****************COUNT RECORDS************************************    00044000
+//X115CNTP JOB (X115),'KAMESH',CLASS=H,MSGCLASS=X,                      00044100
+//        NOTIFY=X115                                                   00044200
+//*-----------------------------------------------------------------    00044300
+//*-----------------------------------------------------------------    00044400
+//*-----------------------------------------------------------------    00044500
+//STEP10   EXEC PGM=SORT                                                00044600
+//SORTIN   DD DISP=SHR,DSN=SHS.NCA.CMW01.PCAM454N.PTC297.MT201107       00044700
+//*                                                                     00044800
+//SORTOUT  DD DSN=ECNS.PCAD454N.JULY.COUNTS,                            00044900
+//            DISP=(,CATLG,DELETE),SPACE=(TRK,(50,50),RLSE),            00045000
+//            DCB=(RECFM=FB,LRECL=17)                                   00045100
+//SYSOUT   DD SYSOUT=*                                                  00045200
+//SYSIN    DD *                                                         00045300
+   SORT FIELDS=(1,8,CH,A)                                               00045400
+   INREC FIELDS=(455,8,C' 00000001')                                    00045500
+   SUM FIELDS=(10,8,ZD)                                                 00045600
+//*-----------------------------------------------------------------    00045700
+//*****************OUTFILE EXAM************************************     00045800
+//SYSIN    DD *                                                         00045900
+   SORT FIELDS=COPY                                                     00046000
+   OUTFIL FNAMES=SORTO01,ENDREC=316941                                  00046100
+   OUTFIL FNAMES=SORTO02,STARTREC=316942,ENDREC=633883                  00046200
+/*                                                                      00046300
+//*****************OUTF1 EG....************************************     00046400
+//X116SPLT JOB (TEST),'TEST',CLASS=5,MSGCLASS=X,                        00046500
+//     MSGLEVEL=(1,1),NOTIFY=X116,TIME=1440                             00046600
+//*                                                                     00046700
+//JOBLIB   DD DISP=SHR,DSN=SYS3.MVSV5.RUNTIME   INSERTED FOR LE RUNTIME 00046800
+//STEP010  EXEC PGM=ICETOOL                                             00046900
+//INFILE   DD DISP=SHR,DSN=SHS.NCA.CMW01.PCAM454N.PTC297.MT201107       00047000
+//OUTF1 DD DSN=WRKT.NCA.CMW01.PCAM454N.PTC297.FILE1,                    00047100
+//         DISP=(,CATLG,DELETE),                                        00047200
+//         SPACE=(CYL,(2000,2000),RLSE),VOL=(,,,200),                   00047300
+//         DCB=*.INFILE                                                 00047400
+//OUTF2 DD DSN=WRKT.NCA.CMW01.PCAM454N.PTC297.FILE2,                    00047500
+//         DISP=(,CATLG,DELETE),                                        00047600
+//         SPACE=(CYL,(2000,2000),RLSE),VOL=(,,,200),                   00047700
+//         DCB=*.INFILE                                                 00047800
+//OUTF3 DD DSN=WRKT.NCA.CMW01.PCAM454N.PTC297.FILE3,                    00047900
+//         DISP=(,CATLG,DELETE),                                        00048000
+//         SPACE=(CYL,(2000,2000),RLSE),VOL=(,,,200),                   00048100
+//         DCB=*.INFILE                                                 00048200
+//OUTF4 DD DSN=WRKT.NCA.CMW01.PCAM454N.PTC297.FILE4,                    00048300
+//         DISP=(,CATLG,DELETE),                                        00048400
+//         SPACE=(CYL,(2000,2000),RLSE),VOL=(,,,200),                   00048500
+//         DCB=*.INFILE                                                 00048600
+//SYSOUT   DD  SYSOUT=*                                                 00048700
+//TOOLIN   DD *                                                         00048800
+   COPY FROM(INFILE) TO(OUTF1,OUTF2,OUTF3,OUTF4) USING(CTL1)            00048900
+//CTL1CNTL DD *                                                         00049000
+  OPTION COPY                                                           00049100
+  OUTFIL FNAMES=(OUTF1,OUTF2,OUTF3,OUTF4),SPLIT                         00049200
+//DFSMSG  DD SYSOUT=*                                                   00049300
+//TOOLMSG  DD SYSOUT=*                                                  00049400
+//*******************SAR LIST*****************                          00049500
+//X115SCHE JOB (KAMESH),'TEST',CLASS=H,MSGCLASS=X,MSGLEVEL=(1,1),       00049600
+//    NOTIFY=X115                                                       00049700
+//STEP20 EXEC PGM=IEFBR14                                               00049800
+//DD01O DD DSN=ECNS.TEST.SAR1A,                                         00049900
+// DISP=(MOD,CATLG),DCB=(RECFM=FB,LRECL=121)                            00050000
+//****                                                                  00050100
+//STEP30 EXEC PGM=SARBCH,PARM='ITSX00P.PB.VIEWA'                        00050200
+//SYSPRINT DD SYSOUT=*                                                  00050300
+//SYSUDUMP DD SYSOUT=*                                                  00050400
+//REPORT DD DSN=ECNS.TEST.SAR1A,DISP=MOD                                00050500
+//SYSIN DD *                                                            00050600
+/LIST ID=ZCA* GEN=*                                                     00050700
+/LIST ID=ZCC* GEN=*                                                     00050800
+/LIST ID=ZGC* GEN=*                                                     00050900
+//***                                                                   00051000
+//*****************EDIT**************                                   00051100
+//X115STIF JOB (X115),'KAMESH',CLASS=H,MSGCLASS=X,NOTIFY=X115           00051200
+//STEP010  EXEC PGM=SORT                                                00051300
+//SYSOUT   DD SYSOUT=*                                                  00051400
+//SORTIN   DD DISP=SHR,DSN=WRKT.USER.PROD.TMS0320.STIFRALL              00051500
+//SORTOUT  DD DSN=WRKT.USER.PROD.TMS0320.SORT,                          00051600
+//            DISP=(NEW,CATLG,DELETE),                                  00051700
+//            DCB=(LRECL=178,RECFM=FB)                                  00051800
+//SYSIN    DD *                                                         00051900
+  SORT FIELDS=COPY                                                      00052000
+  OUTFIL FNAMES=SORTOUT,                                                00052100
+  OUTREC=(1,4,5,2,PD,EDIT=('TTT')                                       00052200
+          7,5,PD,EDIT=('TTTTTTTTT')                                     00052300
+         12,4,PD,EDIT=('TTTTTTT')                                       00052400
+         17,5,PD,EDIT=('TTTTTTTTT')                                     00052500
+         22,4,PD,EDIT=('TTTTTTT')                                       00052600
+         26,15,41,5,PD,EDIT=('TTTTTTTTT')                               00052700
+         46,4,PD,EDIT=('TTTTTTT')                                       00052800
+         50,21,71,5,PD,EDIT=('TTTTTTTTT')                               00052900
+         76,4,PD,EDIT=('TTTTTTT')                                       00053000
+         80,5,PD,EDIT=('TTTTTTTTT')                                     00053100
+         85,4,PD,EDIT=('TTTTTTT')                                       00053200
+         89,5,PD,EDIT=('TTTTTTTTT')                                     00053300
+         94,4,PD,EDIT=('TTTTTTT')                                       00053400
+         98,5,PD,EDIT=('TTTTTTTTT')                                     00053500
+        103,4,PD,EDIT=('TTTTTTT'))                                      00053600
+/*                                                                      00053700
+//**************DEFINE VSAM************                                 00053800
+//ZCCR008N JOB (PROD),'MSD',CLASS=C,MSGCLASS=A,NOTIFY=X116              00053900
+//*  YOU ARE VIEWING JCL THAT FILE-AID 9.4 HAS GENERATED TO             00054000
+//*  PERFORM THE REQUIRED FUNCTION.                                     00054100
+//*                                                                     00054200
+//*  YOU CAN CHANGE THIS JCL IF DESIRED AND USE THE SUBMIT PRIMARY      00054300
+//*  COMMAND TO SUBMIT THE JOB. THE CREATE OR REPLACE PRIMARY COMMAND   00054400
+//*  CAN BE USED TO KEEP THIS JOBSTREAM FOR FUTURE USE.                 00054500
+//*                                                                     00054600
+//*  USE THE END COMMAND TO EXIT WITHOUT SUBMITTING THE JOB.            00054700
+//*                                                                     00054800
+//*  COPYRIGHT (C) 2012 BY COMPUWARE CORPORATION, ALL RIGHTS RESERVED.  00054900
+//*                                                                     00055000
+//JS10     EXEC PGM=IDCAMS                                              00055100
+//SYSPRINT DD  SYSOUT=*                                                 00055200
+//SYSIN    DD  *                                                        00055300
+    DEFINE CLUSTER -                                                    00055400
+    (NAME(WRKT.NSM.SMQSPMST) -                                          00055500
+    BUFFERSPACE(13682) -                                                00055600
+    INDEXED -                                                           00055700
+    KEYS(12 26) -                                                       00055800
+    OWNER(X002) -                                                       00055900
+    RECORDSIZE(698 1700) -                                              00056000
+    REUSE -                                                             00056100
+    SHAREOPTIONS(2 3) -                                                 00056200
+    SPEED -                                                             00056300
+    STAGE) -                                                            00056400
+    DATA(NAME(WRKT.NSM.SMQSPMST.DATA) -                                 00056500
+    VOLUMES(* * * * * * * * * * * * * * * ) -                           00056600
+    CYLINDERS(250 250) -                                                00056700
+    CONTROLINTERVALSIZE(4096)) -                                        00056800
+    INDEX(NAME(WRKT.NSM.SMQSPMST.INDEX) -                               00056900
+    VOLUMES(* * * * * * * * * * * * * * * ))                            00057000
+/*                                                                      00057100
+//****************TMC LEV*************************                      00057200
+//SSY122J JOB (SY122),'L.BARINSKY',CLASS=F,MSGCLASS=X,                  00057300
+//        NOTIFY=SSY122,PRTY=13 RESTART=STEP4                           00057400
+//*------------------------------------------------------               00057500
+//STEP2    EXEC PGM=SORT,REGION=4096K                                   00057600
+//***    PARM='SKIPREC=000000,STOPAFT=100000'                           00057700
+//SORTLIB  DD DSN=SYS1.SORTLIB,DISP=SHR                                 00057800
+//SORTIN  DD DISP=SHR,DSN=SHS.CA1.TMC                                   00057900
+//SORTOUT  DD DSN=ECNS.T4.TMC01.TMCEXT2,                                00058000
+//         DISP=(NEW,CATLG,DELETE),                                     00058100
+//         SPACE=(TRK,(250,90),RLSE),UNIT=(SYSDA,9),                    00058200
+//         DCB=*.SORTIN                                                 00058300
+//SYSOUT   DD SYSOUT=*                                                  00058400
+//SORTMSG  DD SYSOUT=*                                                  00058500
+//SYSIN    DD *                                                         00058600
+* SORT FIELDS=COPY                                                      00058700
+  SORT FIELDS=(7,44,CH,A)                                               00058800
+  INCLUDE COND=(7,20,CH,EQ,C'SHS.NCA.CMW01.PCAM78')                     00058900
+//ASDASD DD *                                                           00059000
+//* THIS CODE WAS COMMENTED BEFORE JOB SUBMIT                           00059100
+  INCLUDE COND=(7,44,SS,EQ,C'.MSD',                                     00059200
+   AND,1,1,CH,GE,C'A',AND,6,1,CH,GE,C'0')                               00059300
+  INCLUDE COND=(7,22,CH,EQ,C'SHS.NCA.CMW00.PCAD025N')                   00059400
+  INCLUDE COND=(7,44,SS,EQ,C'.SR0')                                     00059500
+  INCLUDE COND=(7,23,CH,EQ,C'SHS.NCA.CMW01.EDTS.EXEC')                  00059600
+  INCLUDE COND=(7,19,CH,EQ,C'SHS.CC0320.SIACBKUP')                      00059700
+  INCLUDE COND=(7,22,CH,EQ,C'SHS.PCCD324N.FINRA.REQ',OR,                00059800
+   7,22,CH,EQ,C'PROD.PCCD324N.FINRA.RE')                                00059900
+  INCLUDE COND=(7,23,CH,EQ,C'SSYG.NCA.PCCM651N.TRDHI')                  00060000
+  INCLUDE COND=(7,23,CH,EQ,C'PROD.PCCD324N.FINRA.REQ')                  00060100
+  INCLUDE COND=(7,20,CH,EQ,C'SHS.NCA.CMW00.ZCAD69',AND,                 00060200
+    30,21,SS,EQ,C'ASOF')                                                00060300
+  INCLUDE COND=(7,23,CH,EQ,C'PROD.PCCD324N.FINRA.REQ')                  00060400
+  INCLUDE COND=(7,19,CH,EQ,C'SHS.CC0320.SIACBKUP')                      00060500
+  INCLUDE COND=(7,19,SS,EQ,C'SHS.CC0320.SIACBKUP')                      00060600
+  INCLUDE COND=(7,44,SS,EQ,C'CPILOG',OR,7,44,SS,EQ,C'CPITRN')           00060700
+  INCLUDE COND=(7,44,SS,EQ,C'CPIMAST')                                  00060800
+  INCLUDE COND=(7,11,CH,EQ,C'SHS.NCC.WRM',AND,7,44,SS,EQ,C'CPIMAST')    00060900
+  INCLUDE COND=(7,17,CH,EQ,C'SHS.CPILOG.BACKUP')                        00061000
+  INCLUDE COND=(7,20,CH,EQ,C'SHS.NCA.CMW02.PCAD53')                     00061100
+  INCLUDE COND=(7,44,SS,EQ,C'LOPR',OR,7,44,SS,EQ,C'CCD93')              00061200
+  INCLUDE COND=(7,23,CH,EQ,C'PROD.PCCD324N.FINRA.REQ')                  00061300
+  INCLUDE COND=(7,20,CH,EQ,C'SHS.TMS0320.STIFRALL')                     00061400
+  INCLUDE COND=(7,23,CH,EQ,C'SHS.NCCD299.SELECT.BKUP')                  00061500
+  INCLUDE COND=(7,16,CH,EQ,C'SHS.PS01S.SRTXCT',                         00061600
+  OR,7,20,CH,EQ,C'SHS.NCCD104.WTDACCUM')                                00061700
+  INCLUDE COND=(7,23,CH,EQ,C'SHS.NCC.PCCD433.HIST12M',OR,               00061800
+                7,24,CH,EQ,C'SHS.NCC.PCCD442N.DBUYTRN',OR,              00061900
+                7,28,CH,EQ,C'SHS.NCC.PCCD806N.SELECT.BUYS',OR,          00062000
+                7,32,CH,EQ,C'SHS.NCC.PCCD806N.SWDRIVE2.SELECT',OR,      00062100
+                7,28,CH,EQ,C'SHS.NCC.PCCD812N.ROAI.DB2BKP',OR,          00062200
+                7,22,CH,EQ,C'SHS.NCC.PCCD819.PNVNET',OR,                00062300
+                7,27,CH,EQ,C'SHS.NCC.PCCD820.PNVNET.UNIT',OR,           00062400
+                7,27,CH,EQ,C'SHS.NCC.PCCD878.MGHOLD.EXTR',OR,           00062500
+                7,33,CH,EQ,C'SHS.NCC.PCCM413N.TRANBKUP.KEEPALL',OR,     00062600
+                7,25,CH,EQ,C'SHS.NCCB123.MNTHBKUP.CMDY',OR,             00062700
+                7,27,CH,EQ,C'SHS.NCCB124.REPORT.SBS.BKUP',OR,           00062800
+                7,30,CH,EQ,C'SHS.NCCB124.RPT.BR070.SBS.BKUP',OR,        00062900
+                7,20,CH,EQ,C'SHS.NCCB133.MNTHBKUP',OR,                  00063000
+                7,23,CH,EQ,C'SHS.NCCB133.WEEKLY.BKUP',OR,               00063100
+                7,24,CH,EQ,C'SHS.NCCB134.WKLYRPT.BKUP',OR,              00063200
+                7,25,CH,EQ,C'SHS.NCCB152.BYREGION.BKUP',OR,             00063300
+                7,25,CH,EQ,C'SHS.NCCB158.CMDY.RPRTBKUP',OR,             00063400
+                7,25,CH,EQ,C'SHS.NCCB159.CMDY.RPRTBKUP',OR,             00063500
+                7,20,CH,EQ,C'SHS.NCCB430.PRFTRANS',OR,                  00063600
+                7,25,CH,EQ,C'SHS.NCCB434.CURRTRAN.COMB',OR,             00063700
+                7,30,CH,EQ,C'SHS.PCCD396N.OXCTRANS.EXCHACTV',OR,        00063800
+                7,21,CH,EQ,C'SHS.PCCD456N.HLDOCLAY',OR,                 00063900
+                7,20,CH,EQ,C'SHS.PCCW401N.HIST12M',OR,                  00064000
+                7,20,CH,EQ,C'SHS.PCCW401N.HIST90D',OR,                  00064100
+                7,21,CH,EQ,C'WORK.PCCD875N.BOOKOUT',OR,                 00064200
+                7,21,CH,EQ,C'SHS.NCC.PCCD064N.HIST',OR,                 00064300
+                7,31,CH,EQ,C'SHS.NCC.PCCM741N.SOPTCURR.COMPL',OR,       00064400
+                7,31,CH,EQ,C'SHS.NCC.PCCM741N.SOPTCURR.TRICK',OR,       00064500
+                7,25,CH,EQ,C'SHS.NCCB042.CLOSE.REPBKUP',OR,             00064600
+                7,30,CH,EQ,C'WORK.NCC.PCCM741N.BOOKOUT.ACCT')           00064700
+//*                                                                     00064800
+//*INCLUDE COND=(7,34,CH,EQ,C'SHS.NCA.CMW01.PCAM544N.STIFDATA.MT')      00064900
+//*NCLUDE COND=(7,20,CH,EQ,C'SHS.TMS0320.STIFRALL')                     00065000
+//*NCLUDE COND=(7,20,CH,EQ,C'SHS.NKG.NPSB908.IDCN')                     00065100
+//*NCLUDE COND=(7,20,CH,EQ,C'SHS.TMS0320.STIFRALL')                     00065200
+//*NCLUDE COND=(7,24,CH,EQ,C'SHS.SBS.TMS0320.STIFRALL')                 00065300
+//*NCLUDE COND=(7,4,CH,EQ,C'SHS.',AND,                                  00065400
+//*        18,5,CH,EQ,C'.STIF')                                         00065500
+//*NCLUDE COND=(7,21,CH,EQ,C'SHS.NCA.NCAB125.TR950')                    00065600
+//*NCLUDE COND=(7,13,CH,EQ,C'SHS.NCA.CMW01')                            00065700
+//*NCLUDE COND=(7,15,CH,EQ,C'SHS.NCA.NCAB125')                          00065800
+//*R,7,12,CH,EQ,C'SHS.NCA.PCAR',OR,7,12,CH,EQ,C'SHS.NCA.ZCAR')          00065900
+//**------------------------------------------------------------------* 00066000
+//**                                                                  * 00066100
+//**       TMSRPT2 - DATASET NAME SEQUENCE REPORT                     * 00066200
+//**                                                                  * 00066300
+//**------------------------------------------------------------------* 00066400
+//STEP4    EXEC PGM=EARL,REGION=4096K                                   00066500
+//EARLLIB  DD DISP=SHR,DSN=SYS3.CA1.R12.CTAPSRC                         00066600
+//TAPEDB   DD DSN=ECNS.T4.TMC01.TMCEXT2,DISP=SHR                        00066700
+//SYSEARL  DD SYSOUT=X                                                  00066800
+//SYSPRINT DD SYSOUT=X                                                  00066900
+//EARLOBJ  DD UNIT=SYSDA,SPACE=(CYL,(3,1))                              00067000
+//SYSUT1   DD UNIT=SYSDA,SPACE=(CYL,(25,5))                             00067100
+//SYSUT2   DD UNIT=SYSDA,SPACE=(CYL,(25,5))                             00067200
+//SYSUT3   DD UNIT=SYSDA,SPACE=(CYL,(25,5))                             00067300
+//SYSUT4   DD UNIT=SYSDA,SPACE=(CYL,(25,5))                             00067400
+//SYSUT5   DD UNIT=SYSDA,SPACE=(CYL,(25,5))                             00067500
+//SYSUT6   DD UNIT=SYSDA,SPACE=(CYL,(25,5))                             00067600
+//SORTLIB  DD DSN=SYS1.SORTLIB,DISP=SHR                                 00067700
+//SORTIN   DD UNIT=SYSDA,SPACE=(CYL,(50,5))                             00067800
+//SORTOUT  DD UNIT=SYSDA,SPACE=(CYL,(50,5))                             00067900
+//SYSOUT   DD SYSOUT=X                                                  00068000
+//WORK1    DD UNIT=SYSDA,SPACE=(CYL,(75,15))                            00068100
+//SORTWK01 DD UNIT=SYSDA,SPACE=(CYL,(50,5))                             00068200
+//SORTWK02 DD UNIT=SYSDA,SPACE=(CYL,(50,5))                             00068300
+//SORTWK03 DD UNIT=SYSDA,SPACE=(CYL,(50,5))                             00068400
+//SYSUDUMP DD SYSOUT=X                                                  00068500
+//SYSIN    DD DSN=SYS3.CA1.R12.CTAPSRC(TMEDSN01),DISP=SHR               00068600
+//****************MSD FEED JCL***************************************** 00068700
+//X116MSD JOB (X115),'TEST MSD',CLASS=F,MSGCLASS=X,                     00068800
+//        NOTIFY=X116,PRTY=13                                           00068900
+//*------------------------------------------------------               00069000
+//MSDPR PROC DT01=XXXXXX                                                00069100
+//STEP030  EXEC PGM=SORT,COND=(4,LT)                                    00069200
+//SORTIN   DD DISP=SHR,DSN=SHS.NCA.CMW01.PCAMM11N.MSDDATA.&DT01         00069300
+//SORTOUT  DD DSN=ECNS.NCA.MSD01.CNT.&DT01,                             00069400
+//         DISP=(,CATLG,DELETE),DCB=*.SORTIN                            00069500
+//SORTMSG  DD SYSOUT=*                                                  00069600
+//SYSOUT   DD SYSOUT=*                                                  00069700
+//SYSIN    DD *                                                         00069800
+  SORT FIELDS=(1,8,CH,A)                                                00069900
+  INREC FIELDS=(1,8,X'00000001')                                        00070000
+  SUM FIELDS=(9,4,FI)                                                   00070100
+  OUTREC FIELDS=(1,8,9,4,FI,TO=ZD,LENGTH=8)                             00070200
+//*-------------------------------------------------------------------* 00070300
+//    PEND                                                              00070400
+//S201506 EXEC MSDPR,DT01=MT201506                                      00070500
+//S201507 EXEC MSDPR,DT01=MT201507                                      00070600
+//S201508 EXEC MSDPR,DT01=MT201508                                      00070700
+//S201509 EXEC MSDPR,DT01=MT201509                                      00070800
+//S201510 EXEC MSDPR,DT01=MT201510                                      00070900
+//S201511 EXEC MSDPR,DT01=MT201511                                      00071000
+//S201512 EXEC MSDPR,DT01=MT201512                                      00071100
+//S201601 EXEC MSDPR,DT01=MT201601                                      00071200
+//S201602 EXEC MSDPR,DT01=MT201602                                      00071300
+//S201603 EXEC MSDPR,DT01=MT201603                                      00071400
+//S201604 EXEC MSDPR,DT01=MT201604                                      00071500
+//S201605 EXEC MSDPR,DT01=MT201605                                      00071600
+//*-------------------------------------------------------------------* 00071700
+//STEP060  EXEC PGM=SORT,COND=(4,LT)                                    00071800
+//SORTIN   DD DISP=SHR,DSN=ECNS.NCA.MSD01.CNT.MT201506                  00071900
+//         DD DISP=SHR,DSN=ECNS.NCA.MSD01.CNT.MT201507                  00072000
+//         DD DISP=SHR,DSN=ECNS.NCA.MSD01.CNT.MT201508                  00072100
+//         DD DISP=SHR,DSN=ECNS.NCA.MSD01.CNT.MT201509                  00072200
+//         DD DISP=SHR,DSN=ECNS.NCA.MSD01.CNT.MT201510                  00072300
+//         DD DISP=SHR,DSN=ECNS.NCA.MSD01.CNT.MT201511                  00072400
+//         DD DISP=SHR,DSN=ECNS.NCA.MSD01.CNT.MT201512                  00072500
+//         DD DISP=SHR,DSN=ECNS.NCA.MSD01.CNT.MT201601                  00072600
+//         DD DISP=SHR,DSN=ECNS.NCA.MSD01.CNT.MT201602                  00072700
+//         DD DISP=SHR,DSN=ECNS.NCA.MSD01.CNT.MT201603                  00072800
+//         DD DISP=SHR,DSN=ECNS.NCA.MSD01.CNT.MT201604                  00072900
+//         DD DISP=SHR,DSN=ECNS.NCA.MSD01.CNT.MT201605                  00073000
+//SORTOUT  DD DSN=ECNS.NCA.MSD.CNT.MERGE,                               00073100
+//*           LABEL=RETPD=30,UNIT=SILO,                                 00073200
+//            DISP=(,CATLG,DELETE),DCB=(RECFM=FB,LRECL=16)              00073300
+//SORTMSG  DD SYSOUT=*                                                  00073400
+//SYSOUT   DD SYSOUT=*                                                  00073500
+//SYSIN    DD *  P=SHR,DSN=CHGMAN.PRD.BNCC.#005531.CT1(NCC651S4)        00073600
+  SORT FIELDS=(1,8,CH,A)                                                00073700
+  SUM FIELDS=(9,8,ZD)                                                   00073800
+//****************SORT EXAMJCL***************************************** 00073900
+//X187S1   JOB (X187),'SORT',CLASS=H,MSGCLASS=X,NOTIFY=X187             00074000
+//*-------------------------------------------------------------------* 00074100
+//* GET THE MIN & MAX DATES FROM ASOF FILE                            * 00074200
+//*-------------------------------------------------------------------* 00074300
+//S010     EXEC PGM=SORT                                                00074400
+//SORTIN   DD DISP=SHR,DSN=SHS.NCA.PCAD540N.GMRSDATA.ASOFTRAD.G3182     00074500
+//DTRANGE  DD DSN=WRKT.NCA.DSNXREF.DTRANGE.ASOF,                        00074600
+//         DISP=(,CATLG,DELETE),DCB=(RECFM=FB,LRECL=80)                 00074700
+//SYSOUT   DD SYSOUT=*                                                  00074800
+//SYSIN    DD *                                                         00074900
+  OPTION COPY                                                           00075000
+  OUTFIL FNAMES=DTRANGE,REMOVECC,NODETAIL,                              00075100
+  TRAILER1=(C'MINDT1,C''',MIN=(125,8,ZD,M11),C'''',/,                   00075200
+            C'MAXDT1,C''',MAX=(125,8,ZD,M11),C'''')                     00075300
+//*-------------------------------------------------------------------* 00075400
+//* GET THE MIN & MAX DATES FROM CURR FILE                            * 00075500
+//*-------------------------------------------------------------------* 00075600
+//S020     EXEC PGM=SORT                                                00075700
+//SORTIN   DD DISP=SHR,DSN=SHS.NCA.PCAD540N.GMRSDATA.CURRENT.G3169      00075800
+//DTRANGE  DD DSN=WRKT.NCA.DSNXREF.DTRANGE.CURR,                        00075900
+//         DISP=(,CATLG,DELETE),DCB=(RECFM=FB,LRECL=80)                 00076000
+//SYSOUT   DD SYSOUT=*                                                  00076100
+//SYSIN    DD *                                                         00076200
+  OPTION COPY                                                           00076300
+  OUTFIL FNAMES=DTRANGE,REMOVECC,NODETAIL,                              00076400
+  TRAILER1=(C'MINDT2,C''',MIN=(125,8,ZD,M11),C'''',/,                   00076500
+            C'MAXDT2,C''',MAX=(125,8,ZD,M11),C'''')                     00076600
+//*-------------------------------------------------------------------* 00076700
+//* DEFINE ECNS FILE FOR BACKING UP PROD DSNXREF BEFORE DEL & UPD     * 00076800
+//*-------------------------------------------------------------------* 00076900
+//S030     EXEC PGM=IDCAMS                                              00077000
+//SYSPRINT DD  SYSOUT=*                                                 00077100
+//SYSIN    DD  *                                                        00077200
+    DEFINE CLUSTER -                                                    00077300
+    (NAME(ECNS.NCA.DATAWHSE.DSNXREF.D030316) -                          00077400
+    BUFFERSPACE(61440) -                                                00077500
+    DATACLAS(VSAM5   ) -                                                00077600
+    INDEXED -                                                           00077700
+    KEYS(74 0) -                                                        00077800
+    MANAGEMENTCLASS(V180N999) -                                         00077900
+    OWNER(NCA540U2) -                                                   00078000
+    RECORDSIZE(100 100) -                                               00078100
+    SHAREOPTIONS(2 3) -                                                 00078200
+    SPEED -                                                             00078300
+    STORAGECLASS(STD     )) -                                           00078400
+    DATA(NAME(ECNS.NCA.DATAWHSE.DSNXREF.D030316.DATA) -                 00078500
+    CYLINDERS(1 1) -                                                    00078600
+    CONTROLINTERVALSIZE(8192)) -                                        00078700
+    INDEX(NAME(ECNS.NCA.DATAWHSE.DSNXREF.D030316.INDEX) -               00078800
+    TRACKS(5 2) -                                                       00078900
+    CONTROLINTERVALSIZE(4096))                                          00079000
+/*                                                                      00079100
+//*-------------------------------------------------------------------* 00079200
+//* COPY PROD DSNXREF TO ECNS BACK UP & A FLAT FILE                   * 00079300
+//*-------------------------------------------------------------------* 00079400
+//S040     EXEC PGM=FASTCOPY                                            00079500
+//SYSPRINT DD SYSOUT=*                                                  00079600
+//SYSUT01  DD DISP=SHR,DSN=PRODV.NCA.DATAWHSE.DSNXREF                   00079700
+//SYSUT01A DD DISP=OLD,DSN=ECNS.NCA.DATAWHSE.DSNXREF.D030316            00079800
+//SYSUT01B DD DSN=WRKT.NCA.DATAWHSE.DSNXREF.D030316,                    00079900
+//         DISP=(,CATLG,DELETE),DCB=(RECFM=FB,LRECL=100)                00080000
+//SYSPRI01 DD SYSOUT=*                                                  00080100
+//*-------------------------------------------------------------------* 00080200
+//* SEPARATE RECORDS TO BE REPLACED FROM DSNXREF                      * 00080300
+//*-------------------------------------------------------------------* 00080400
+//S050     EXEC PGM=SORT                                                00080500
+//SORTIN   DD DISP=SHR,DSN=WRKT.NCA.DATAWHSE.DSNXREF.D030316            00080600
+//OUT1     DD DSN=WRKT.NCA.DSNXREF.OUT1,                                00080700
+//         DISP=(,CATLG,DELETE),DCB=(RECFM=FB,LRECL=100)                00080800
+//OUT2     DD DSN=WRKT.NCA.DSNXREF.OUT2,                                00080900
+//         DISP=(,CATLG,DELETE),DCB=(RECFM=FB,LRECL=100)                00081000
+//SYSOUT   DD SYSOUT=*                                                  00081100
+//SYSIN    DD *                                                         00081200
+  OPTION COPY                                                           00081300
+  OUTFIL FNAMES=OUT1,OMIT=(1,4,CH,EQ,C'GMRS',AND,                       00081400
+  23,6,SS,EQ,C'CURR31,PREV31')                                          00081500
+  OUTFIL FNAMES=OUT2,INCLUDE=(1,4,CH,EQ,C'GMRS',AND,                    00081600
+  23,6,SS,EQ,C'CURR31,PREV31',AND,15,6,CH,NE,C'PREV01')                 00081700
+/*                                                                      00081800
+//*-------------------------------------------------------------------* 00081900
+//* REPLACE THE DATES & FILE NAMES                                    * 00082000
+//*-------------------------------------------------------------------* 00082100
+//S060     EXEC PGM=SORT                                                00082200
+//SORTIN   DD DISP=SHR,DSN=WRKT.NCA.DSNXREF.OUT2                        00082300
+//SORTOUT  DD DSN=WRKT.NCA.DSNXREF.OUT3,                                00082400
+//         DISP=(,CATLG,DELETE),DCB=(RECFM=FB,LRECL=100)                00082500
+//SYSOUT   DD SYSOUT=*                                                  00082600
+//SYMNAMES DD DISP=SHR,DSN=WRKT.NCA.DSNXREF.DTRANGE.ASOF                00082700
+//         DD DISP=SHR,DSN=WRKT.NCA.DSNXREF.DTRANGE.CURR                00082800
+//         DD DISP=SHR,DSN=ECNS.NCA.DATAWHSE.GMRS.FILEUPD               00082900
+//SYSIN    DD *                                                         00083000
+  OPTION COPY                                                           00083100
+  INREC FINDREP=(INOUT=(C'CURR01  ',MINDT2,                             00083200
+                        C'CURR31  ',MAXDT2,                             00083300
+                        C'PREV01  ',MINDT1,                             00083400
+                        C'PREV31  ',MAXDT1,                             00083500
+                        ASFO,ASFN,                                      00083600
+                        CURO,CURN))                                     00083700
+/*                                                                      00083800
+//*-------------------------------------------------------------------* 00083900
+//* SORT ON KEY BEFORE LOADING INTO VSAM                              * 00084000
+//*-------------------------------------------------------------------* 00084100
+//S070     EXEC PGM=SORT                                                00084200
+//SORTIN   DD DISP=SHR,DSN=WRKT.NCA.DSNXREF.OUT1                        00084300
+//         DD DISP=SHR,DSN=WRKT.NCA.DSNXREF.OUT3                        00084400
+//SORTOUT  DD DSN=WRKT.NCA.DSNXREF.FINAL,                               00084500
+//         DISP=(,CATLG,DELETE),DCB=*.SORTIN                            00084600
+//SYSOUT   DD SYSOUT=*                                                  00084700
+//SYSIN    DD *                                                         00084800
+  SORT FIELDS=(1,74,CH,A)                                               00084900
+//*                                                                     00085000
+//* DELETE PROD XREF                                                    00085100
+//S080     EXEC PGM=IDCAMS                                              00085200
+//SYSPRINT DD  SYSOUT=*                                                 00085300
+//SYSIN    DD  *                                                        00085400
+    DELETE -                                                            00085500
+    PRODV.NCA.DATAWHSE.DSNXREF -                                        00085600
+    CLUSTER                                                             00085700
+/*                                                                      00085800
+//* DEFINE PROD XREF                                                    00085900
+//S090     EXEC PGM=IDCAMS                                              00086000
+//SYSPRINT DD  SYSOUT=*                                                 00086100
+//SYSIN    DD  *                                                        00086200
+    DEFINE CLUSTER -                                                    00086300
+    (NAME(PRODV.NCA.DATAWHSE.DSNXREF) -                                 00086400
+    BUFFERSPACE(61440) -                                                00086500
+    DATACLAS(VSAM5   ) -                                                00086600
+    INDEXED -                                                           00086700
+    KEYS(74 0) -                                                        00086800
+    MANAGEMENTCLASS(V180N999) -                                         00086900
+    OWNER(NCA540U2) -                                                   00087000
+    RECORDSIZE(100 100) -                                               00087100
+    SHAREOPTIONS(2 3) -                                                 00087200
+    SPEED -                                                             00087300
+    STORAGECLASS(STD     )) -                                           00087400
+    DATA(NAME(PRODV.NCA.DATAWHSE.DSNXREF.DATA) -                        00087500
+    CYLINDERS(1 1) -                                                    00087600
+    CONTROLINTERVALSIZE(8192)) -                                        00087700
+    INDEX(NAME(PRODV.NCA.DATAWHSE.DSNXREF.INDEX) -                      00087800
+    TRACKS(5 2) -                                                       00087900
+    CONTROLINTERVALSIZE(4096))                                          00088000
+/*                                                                      00088100
+//* COPY ECNS TO PROD                                                   00088200
+//S100     EXEC PGM=IDCAMS                                              00088300
+//SYSPRINT DD SYSOUT=*                                                  00088400
+//UPD      DD DISP=SHR,DSN=WRKT.NCA.DSNXREF.FINAL                       00088500
+//NEW      DD DISP=OLD,DSN=PRODV.NCA.DATAWHSE.DSNXREF                   00088600
+//SYSIN DD *                                                            00088700
+  REPRO -                                                               00088800
+  INFILE(UPD) -                                                         00088900
+  OUTFILE(NEW)                                                          00089000
+/*                                                                      00089100
+//****************STIF EX LEV ***************************************** 00089200
+//SSY1227 JOB (SY122),'L.BARINSKY',CLASS=F,MSGCLASS=X,                  00089300
+//        NOTIFY=SSY122,PRTY=13                                         00089400
+//*------------------------------------------------------               00089500
+//STIFCNT1 PROC DATE1='NOT FOUND'                                       00089600
+//STEP10   EXEC PGM=SORT,REGION=4096K                                   00089700
+//SORTLIB  DD DSN=SYS1.SORTLIB,DISP=SHR                                 00089800
+//SORTIN   DD DISP=SHR,UNIT=(,,DEFER),                                  00089900
+//            DSN=SHS.NCA.CMW01.PCAM544N.STIFDATA.MT&DATE1              00090000
+//SORTOUT  DD DISP=(,CATLG,DELETE),DSN=SSYG.NCA.STIFCNT.MT&DATE1,       00090100
+//         DCB=(RECFM=FB,LRECL=16)                                      00090200
+//SYSOUT   DD SYSOUT=*                                                  00090300
+//SORTMSG  DD SYSOUT=*                                                  00090400
+//SYSIN    DD DISP=SHR,DSN=SSY122.USER.DAWA(STIFCNTS)                   00090500
+//*------------------------------------------------------               00090600
+ SORT FIELDS=(1,8,CH,A)                                                 00090700
+ INREC FIELDS=(2,8,X'00000001')                                         00090800
+ SUM FIELDS=(9,4,FI)                                                    00090900
+ OUTREC FIELDS=(1,8,9,4,FI,TO=ZD,LENGTH=8)                              00091000
+//*------------------------------------------------------               00091100
+// PEND                                                                 00091200
+//*1501 EXEC STIFCNT1,DATE1=201501                                      00091300
+//*1502 EXEC STIFCNT1,DATE1=201502                                      00091400
+//*1503 EXEC STIFCNT1,DATE1=201503                                      00091500
+//*1504 EXEC STIFCNT1,DATE1=201504                                      00091600
+//*1505 EXEC STIFCNT1,DATE1=201505                                      00091700
+//*1506 EXEC STIFCNT1,DATE1=201506                                      00091800
+//*1507 EXEC STIFCNT1,DATE1=201507                                      00091900
+//*1508 EXEC STIFCNT1,DATE1=201508                                      00092000
+//*1509 EXEC STIFCNT1,DATE1=201509                                      00092100
+//*1510 EXEC STIFCNT1,DATE1=201510                                      00092200
+//*1511 EXEC STIFCNT1,DATE1=201511                                      00092300
+//*1512 EXEC STIFCNT1,DATE1=201512                                      00092400
+//*1601 EXEC STIFCNT1,DATE1=201601                                      00092500
+//*1602 EXEC STIFCNT1,DATE1=201602                                      00092600
+//****************SQL EXAMPLES***************************************** 00092700
+SELECT H.ACCOUNT_NBR,                                                   00092800
+H.SECURITY_NBR,                                                         00092900
+P.SB_BUS_AREA_FLAG,                                                     00093000
+P.UNITIZED_PROD_IND,                                                    00093100
+'YES' AS POST_VAL_ACTIVITY,                                             00093200
+H.TOTAL_COMMITMENT,                                                     00093300
+H.VAL_TOT_COMT_AMT,                                                     00093400
+H.TOTAL_CONTRIBUTION,                                                   00093500
+H.VAL_TOT_CNTB_AMT,                                                     00093600
+T2.TOTAL_CNTB AS POST_VAL_CNTB,                                         00093700
+H.VAL_TOT_CNTB_AMT + T2.TOTAL_CNTB AS EXP_CNTB,                         00093800
+H.TOT_DIST_AMT,                                                         00093900
+H.VAL_TOT_DIST_AMT,                                                     00094000
+T2.TOTAL_DIST AS POST_VAL_DIST,                                         00094100
+H.VAL_TOT_DIST_AMT + T2.TOTAL_DIST AS EXP_DIST,                         00094200
+H.NO_OF_UNIT,                                                           00094300
+H.VAL_NO_OF_UNIT,                                                       00094400
+T2.TOTAL_UNITS AS POST_VAL_UNITS,                                       00094500
+H.VAL_NO_OF_UNIT + T2.TOTAL_UNITS AS EXP_UNITS,                         00094600
+H.CURR_NAV,                                                             00094700
+H.VAL_NAV,                                                              00094800
+T2.TOTAL_AMT AS POST_VAL_AMT,                                           00094900
+H.VAL_NAV + T2.TOTAL_AMT AS EXP_AMT,                                    00095000
+H.POSN_DT,                                                              00095100
+H.LST_VALN_DT                                                           00095200
+FROM VGRDB2P.TPIF_HOLDING_SH_NAMR H                                     00095300
+INNER JOIN                                                              00095400
+VGRDB2P.PRODUCT_DIM P ON P.CUSIP = H.SECURITY_NBR                       00095500
+INNER JOIN                                                              00095600
+(SELECT T1.SECURITY_NBR AS SECURITY_NBR,                                00095700
+T1.ACCOUNT_NBR AS ACCOUNT_NBR,                                          00095800
+SUM(T1.UNITS) AS TOTAL_UNITS,                                           00095900
+SUM(T1.TOT_COMT_AMT) AS TOTAL_COMT,                                     00096000
+SUM(T1.TOT_CNTB_AMT) AS TOTAL_CNTB,                                     00096100
+SUM(T1.TOT_DIST_AMT) AS TOTAL_DIST,                                     00096200
+SUM(T1.CURR_VAL) AS TOTAL_AMT                                           00096300
+FROM VGRDB2P.TRANSACTION_DETAILS_NAMR T1                                00096400
+INNER JOIN VGRDB2P.TPIF_HOLDING_SH_NAMR H1                              00096500
+ON T1.SECURITY_NBR = H1.SECURITY_NBR                                    00096600
+AND T1.ACCOUNT_NBR = H1.ACCOUNT_NBR                                     00096700
+WHERE                                                                   00096800
+H1.PEND_DEL_FL_CTL = 'N'                                                00096900
+AND T1.ACTIVE_FLAG = 'Y'                                                00097000
+AND T1.PENDING_FLAG = 'N'                                               00097100
+AND T1.SETTLEMENT_DATE > H1.LST_VALN_DT                                 00097200
+GROUP BY T1.SECURITY_NBR, T1.ACCOUNT_NBR                                00097300
+) T2 ON H.SECURITY_NBR = T2.SECURITY_NBR                                00097400
+AND H.ACCOUNT_NBR = T2.ACCOUNT_NBR                                      00097500
+WHERE H.PEND_DEL_FL_CTL = 'N'                                           00097600
+AND P.MKT_RGN_CD IN ('NAMR')                                            00097700
+AND ((P.SB_BUS_AREA_FLAG IN ('HF')                                      00097800
+AND P.UNITIZED_PROD_IND != 'Y'                                          00097900
+AND ((H.CURR_NAV != H.VAL_NAV + T2.TOTAL_AMT)                           00098000
+OR (H.TOTAL_CONTRIBUTION != H.VAL_TOT_CNTB_AMT + T2.TOTAL_CNTB)         00098100
+OR (H.TOT_DIST_AMT != H.VAL_TOT_DIST_AMT + T2.TOTAL_DIST)               00098200
+)) OR                                                                   00098300
+((P.SB_BUS_AREA_FLAG IN ('HF')                                          00098400
+AND P.UNITIZED_PROD_IND = 'Y' AND                                       00098500
+((H.TOTAL_CONTRIBUTION != H.VAL_TOT_CNTB_AMT + T2.TOTAL_CNTB)           00098600
+OR (H.TOT_DIST_AMT != H.VAL_TOT_DIST_AMT + T2.TOTAL_DIST)               00098700
+OR (H.NO_OF_UNIT != H.VAL_NO_OF_UNIT + T2.TOTAL_UNITS)                  00098800
+))))                                                                    00098900
+AND P.CUSIP NOT IN                                                      00099000
+(SELECT P1.CUSIP                                                        00099100
+FROM VGRDB2P.PRODUCT_DIM P1                                             00099200
+INNER JOIN VGRDB2P.PROD_GROUP PG1                                       00099300
+ON P1.PROD_ID = PG1.CHLD_PROD_ID                                        00099400
+WHERE PG1.RESN_CD IN ('RECEV', 'COTPU'))                                00099500
+UNION                                                                   00099600
+SELECT H.ACCOUNT_NBR,                                                   00099700
+H.SECURITY_NBR,                                                         00099800
+P.SB_BUS_AREA_FLAG,                                                     00099900
+P.UNITIZED_PROD_IND,                                                    00100000
+'NO' AS POST_VAL_ACTIVITY,                                              00100100
+H.TOTAL_COMMITMENT,                                                     00100200
+H.VAL_TOT_COMT_AMT,                                                     00100300
+H.TOTAL_CONTRIBUTION,                                                   00100400
+H.VAL_TOT_CNTB_AMT,                                                     00100500
+0 AS POST_VAL_CNTB,                                                     00100600
+H.VAL_TOT_CNTB_AMT AS EXP_CNTB,                                         00100700
+H.TOT_DIST_AMT,                                                         00100800
+H.VAL_TOT_DIST_AMT,                                                     00100900
+0 AS POST_VAL_DIST,                                                     00101000
+H.VAL_TOT_DIST_AMT AS EXP_DIST,                                         00101100
+H.NO_OF_UNIT,                                                           00101200
+H.VAL_NO_OF_UNIT,                                                       00101300
+0 AS POST_VAL_UNITS,                                                    00101400
+H.VAL_NO_OF_UNIT AS EXP_UNITS,                                          00101500
+H.CURR_NAV,                                                             00101600
+H.VAL_NAV,                                                              00101700
+0 AS POST_VAL_AMT,                                                      00101800
+H.VAL_NAV AS EXP_AMT,                                                   00101900
+H.POSN_DT,                                                              00102000
+H.LST_VALN_DT                                                           00102100
+FROM VGRDB2P.TPIF_HOLDING_SH_NAMR H                                     00102200
+INNER JOIN                                                              00102300
+VGRDB2P.PRODUCT_DIM P ON P.CUSIP = H.SECURITY_NBR                       00102400
+WHERE NOT EXISTS (                                                      00102500
+SELECT 1                                                                00102600
+FROM VGRDB2P.TRANSACTION_DETAILS_NAMR T                                 00102700
+WHERE T.SECURITY_NBR = H.SECURITY_NBR                                   00102800
+AND T.ACCOUNT_NBR = H.ACCOUNT_NBR                                       00102900
+AND T.ACTIVE_FLAG = 'Y'                                                 00103000
+AND T.SETTLEMENT_DATE > H.LST_VALN_DT                                   00103100
+)                                                                       00103200
+AND H.PEND_DEL_FL_CTL = 'N'                                             00103300
+AND P.MKT_RGN_CD IN ('NAMR')                                            00103400
+AND ((P.SB_BUS_AREA_FLAG IN ('HF')                                      00103500
+AND P.UNITIZED_PROD_IND != 'Y'                                          00103600
+AND                                                                     00103700
+((H.CURR_NAV != H.VAL_NAV)                                              00103800
+OR (H.TOTAL_CONTRIBUTION != H.VAL_TOT_CNTB_AMT)                         00103900
+OR (H.TOT_DIST_AMT != H.VAL_TOT_DIST_AMT)                               00104000
+)) OR                                                                   00104100
+((P.SB_BUS_AREA_FLAG IN ('HF')                                          00104200
+AND P.UNITIZED_PROD_IND = 'Y' AND                                       00104300
+((H.TOTAL_CONTRIBUTION != H.VAL_TOT_CNTB_AMT)                           00104400
+OR (H.TOT_DIST_AMT != H.VAL_TOT_DIST_AMT)                               00104500
+OR (H.NO_OF_UNIT != H.VAL_NO_OF_UNIT)                                   00104600
+))))                                                                    00104700
+AND P.CUSIP NOT IN                                                      00104800
+(SELECT P1.CUSIP                                                        00104900
+FROM VGRDB2P.PRODUCT_DIM P1                                             00105000
+INNER JOIN VGRDB2P.PROD_GROUP PG1                                       00105100
+ON P1.PROD_ID = PG1.CHLD_PROD_ID                                        00105200
+WHERE PG1.RESN_CD IN ('RECEV', 'COTPU')) ;                              00105300
+                                                                        00105400
+                                                                        00105500
+SELECT H.ACCOUNT_NBR,                                                   00105600
+H.SECURITY_NBR,                                                         00105700
+P.SB_BUS_AREA_FLAG,                                                     00105800
+P.UNITIZED_PROD_IND,                                                    00105900
+'YES' AS POST_VAL_ACTIVITY,                                             00106000
+H.TOTAL_COMMITMENT,                                                     00106100
+H.VAL_TOT_COMT_AMT,                                                     00106200
+T2.TOTAL_COMT,                                                          00106300
+H.TOTAL_CONTRIBUTION,                                                   00106400
+H.VAL_TOT_CNTB_AMT,                                                     00106500
+T2.TOTAL_CNTB AS POST_VAL_CNTB,                                         00106600
+H.VAL_TOT_CNTB_AMT + T2.TOTAL_CNTB AS EXP_CNTB,                         00106700
+H.TOT_DIST_AMT,                                                         00106800
+H.VAL_TOT_DIST_AMT,                                                     00106900
+T2.TOTAL_DIST AS POST_VAL_DIST,                                         00107000
+H.VAL_TOT_DIST_AMT + T2.TOTAL_DIST AS EXP_DIST,                         00107100
+H.NO_OF_UNIT,                                                           00107200
+H.VAL_NO_OF_UNIT,                                                       00107300
+T2.TOTAL_UNITS AS POST_VAL_UNITS,                                       00107400
+H.VAL_NO_OF_UNIT + T2.TOTAL_UNITS AS EXP_UNITS,                         00107500
+H.CURR_NAV,                                                             00107600
+H.VAL_NAV,                                                              00107700
+T2.TOTAL_CURR_VAL AS POST_VAL_CURR_VAL,                                 00107800
+H.VAL_NAV + T2.TOTAL_CURR_VAL AS EXP_NAV,                               00107900
+H.POSN_DT,                                                              00108000
+H.LST_VALN_DT                                                           00108100
+FROM VGRDB2P.TPIF_HOLDING_SH_NAMR H                                     00108200
+INNER JOIN                                                              00108300
+VGRDB2P.PRODUCT_DIM P ON P.CUSIP = H.SECURITY_NBR                       00108400
+INNER JOIN                                                              00108500
+(SELECT T1.SECURITY_NBR AS SECURITY_NBR,                                00108600
+T1.ACCOUNT_NBR AS ACCOUNT_NBR,                                          00108700
+SUM(T1.UNITS) AS TOTAL_UNITS,                                           00108800
+SUM(T1.TOT_COMT_AMT) AS TOTAL_COMT,                                     00108900
+SUM(T1.TOT_CNTB_AMT) AS TOTAL_CNTB,                                     00109000
+SUM(T1.TOT_DIST_AMT) AS TOTAL_DIST,                                     00109100
+SUM(T1.CURR_VAL) AS TOTAL_CURR_VAL                                      00109200
+FROM VGRDB2P.TRANSACTION_DETAILS_NAMR T1                                00109300
+INNER JOIN VGRDB2P.TPIF_HOLDING_SH_NAMR H1                              00109400
+ON T1.SECURITY_NBR = H1.SECURITY_NBR                                    00109500
+AND T1.ACCOUNT_NBR = H1.ACCOUNT_NBR                                     00109600
+WHERE                                                                   00109700
+H1.PEND_DEL_FL_CTL = 'N'                                                00109800
+AND T1.ACTIVE_FLAG = 'Y'                                                00109900
+AND T1.PENDING_FLAG = 'N'                                               00110000
+AND T1.SETTLEMENT_DATE > H1.LST_VALN_DT                                 00110100
+GROUP BY T1.SECURITY_NBR, T1.ACCOUNT_NBR                                00110200
+) T2 ON H.SECURITY_NBR = T2.SECURITY_NBR                                00110300
+AND H.ACCOUNT_NBR = T2.ACCOUNT_NBR                                      00110400
+WHERE H.PEND_DEL_FL_CTL = 'N'                                           00110500
+AND P.MKT_RGN_CD IN ('NAMR')                                            00110600
+AND ((P.SB_BUS_AREA_FLAG IN ('PE', 'RE')                                00110700
+AND P.UNITIZED_PROD_IND != 'Y' AND                                      00110800
+((H.CURR_NAV != H.VAL_NAV + T2.TOTAL_CURR_VAL)                          00110900
+OR (H.TOTAL_CONTRIBUTION != H.VAL_TOT_CNTB_AMT + T2.TOTAL_CNTB)         00111000
+OR (H.TOT_DIST_AMT != H.VAL_TOT_DIST_AMT + T2.TOTAL_DIST)               00111100
+)))                                                                     00111200
+UNION                                                                   00111300
+SELECT H.ACCOUNT_NBR,                                                   00111400
+H.SECURITY_NBR,                                                         00111500
+P.SB_BUS_AREA_FLAG,                                                     00111600
+P.UNITIZED_PROD_IND,                                                    00111700
+'NO' AS POST_VAL_ACTIVITY,                                              00111800
+H.TOTAL_COMMITMENT,                                                     00111900
+H.VAL_TOT_COMT_AMT,                                                     00112000
+0 AS TOTAL_COMT,                                                        00112100
+H.TOTAL_CONTRIBUTION,                                                   00112200
+H.VAL_TOT_CNTB_AMT,                                                     00112300
+0 AS POST_VAL_CNTB,                                                     00112400
+H.VAL_TOT_CNTB_AMT AS EXP_CNTB,                                         00112500
+H.TOT_DIST_AMT,                                                         00112600
+H.VAL_TOT_DIST_AMT,                                                     00112700
+0 AS POST_VAL_DIST,                                                     00112800
+H.VAL_TOT_DIST_AMT AS EXP_DIST,                                         00112900
+H.NO_OF_UNIT,                                                           00113000
+H.VAL_NO_OF_UNIT,                                                       00113100
+0 AS POST_VAL_UNITS,                                                    00113200
+H.VAL_NO_OF_UNIT AS EXP_UNITS,                                          00113300
+H.CURR_NAV,                                                             00113400
+H.VAL_NAV,                                                              00113500
+0 AS POST_VAL_CURR_VAL,                                                 00113600
+H.VAL_NAV AS EXP_NAV,                                                   00113700
+H.POSN_DT,                                                              00113800
+H.LST_VALN_DT                                                           00113900
+FROM VGRDB2P.TPIF_HOLDING_SH_NAMR H                                     00114000
+INNER JOIN                                                              00114100
+VGRDB2P.PRODUCT_DIM P ON P.CUSIP = H.SECURITY_NBR                       00114200
+WHERE NOT EXISTS (                                                      00114300
+SELECT 1                                                                00114400
+FROM VGRDB2P.TRANSACTION_DETAILS_NAMR T                                 00114500
+WHERE T.SECURITY_NBR = H.SECURITY_NBR                                   00114600
+AND T.ACCOUNT_NBR = H.ACCOUNT_NBR                                       00114700
+AND T.ACTIVE_FLAG = 'Y'                                                 00114800
+AND T.SETTLEMENT_DATE > H.LST_VALN_DT                                   00114900
+)                                                                       00115000
+AND H.PEND_DEL_FL_CTL = 'N'                                             00115100
+AND P.MKT_RGN_CD IN ('NAMR')                                            00115200
+AND ((P.SB_BUS_AREA_FLAG IN ('PE', 'RE')                                00115300
+AND P.UNITIZED_PROD_IND != 'Y' AND                                      00115400
+((H.CURR_NAV != H.VAL_NAV)                                              00115500
+OR (H.TOTAL_CONTRIBUTION != H.VAL_TOT_CNTB_AMT)                         00115600
+OR (H.TOT_DIST_AMT != H.VAL_TOT_DIST_AMT)                               00115700
+)));                                                                    00115800
+//****************SQL EXAMPLE2***************************************** 00115900
+SELECT H.ACCOUNT_NBR,                                                   00116000
+H.SECURITY_NBR,                                                         00116100
+P.SB_BUS_AREA_FLAG,                                                     00116200
+P.UNITIZED_PROD_IND,                                                    00116300
+'YES' AS POST_VAL_ACTIVITY,                                             00116400
+H.TOTAL_COMMITMENT,                                                     00116500
+H.VAL_TOT_COMT_AMT,                                                     00116600
+T2.TOTAL_COMT,                                                          00116700
+H.TOTAL_CONTRIBUTION,                                                   00116800
+H.VAL_TOT_CNTB_AMT,                                                     00116900
+T2.TOTAL_CNTB AS POST_VAL_CNTB,                                         00117000
+H.VAL_TOT_CNTB_AMT + T2.TOTAL_CNTB AS EXP_CNTB,                         00117100
+H.TOT_DIST_AMT,                                                         00117200
+H.VAL_TOT_DIST_AMT,                                                     00117300
+T2.TOTAL_DIST AS POST_VAL_DIST,                                         00117400
+H.VAL_TOT_DIST_AMT + T2.TOTAL_DIST AS EXP_DIST,                         00117500
+H.NO_OF_UNIT,                                                           00117600
+H.VAL_NO_OF_UNIT,                                                       00117700
+T2.TOTAL_UNITS AS POST_VAL_UNITS,                                       00117800
+H.VAL_NO_OF_UNIT + T2.TOTAL_UNITS AS EXP_UNITS,                         00117900
+H.CURR_NAV,                                                             00118000
+H.VAL_NAV,                                                              00118100
+T2.TOTAL_CURR_VAL AS POST_VAL_CURR_VAL,                                 00118200
+H.VAL_NAV + T2.TOTAL_CURR_VAL AS EXP_NAV,                               00118300
+H.POSN_DT,                                                              00118400
+H.LST_VALN_DT                                                           00118500
+FROM VGRDB2P.TPIF_HOLDING_SH_APSG H                                     00118600
+INNER JOIN                                                              00118700
+VGRDB2P.PRODUCT_DIM P ON P.CUSIP = H.SECURITY_NBR                       00118800
+INNER JOIN                                                              00118900
+(SELECT T1.SECURITY_NBR AS SECURITY_NBR,                                00119000
+T1.ACCOUNT_NBR AS ACCOUNT_NBR,                                          00119100
+SUM(T1.UNITS) AS TOTAL_UNITS,                                           00119200
+SUM(T1.TOT_COMT_AMT) AS TOTAL_COMT,                                     00119300
+SUM(T1.TOT_CNTB_AMT) AS TOTAL_CNTB,                                     00119400
+SUM(T1.TOT_DIST_AMT) AS TOTAL_DIST,                                     00119500
+SUM(T1.CURR_VAL) AS TOTAL_CURR_VAL                                      00119600
+FROM VGRDB2P.TRANSACTION_DETAILS_APSG T1                                00119700
+INNER JOIN VGRDB2P.TPIF_HOLDING_SH_APSG H1                              00119800
+ON T1.SECURITY_NBR = H1.SECURITY_NBR                                    00119900
+AND T1.ACCOUNT_NBR = H1.ACCOUNT_NBR                                     00120000
+WHERE                                                                   00120100
+H1.PEND_DEL_FL_CTL = 'N'                                                00120200
+AND T1.ACTIVE_FLAG = 'Y'                                                00120300
+AND T1.PENDING_FLAG = 'N'                                               00120400
+AND T1.SETTLEMENT_DATE > H1.LST_VALN_DT                                 00120500
+GROUP BY T1.SECURITY_NBR, T1.ACCOUNT_NBR                                00120600
+) T2 ON H.SECURITY_NBR = T2.SECURITY_NBR                                00120700
+AND H.ACCOUNT_NBR = T2.ACCOUNT_NBR                                      00120800
+WHERE H.PEND_DEL_FL_CTL = 'N'                                           00120900
+AND P.MKT_RGN_CD IN ('APSG')                                            00121000
+AND ((P.SB_BUS_AREA_FLAG IN ('PE', 'RE')                                00121100
+AND P.UNITIZED_PROD_IND != 'Y' AND                                      00121200
+((H.CURR_NAV != H.VAL_NAV + T2.TOTAL_CURR_VAL)                          00121300
+OR (H.TOTAL_CONTRIBUTION != H.VAL_TOT_CNTB_AMT + T2.TOTAL_CNTB)         00121400
+OR (H.TOT_DIST_AMT != H.VAL_TOT_DIST_AMT + T2.TOTAL_DIST)               00121500
+)))                                                                     00121600
+UNION                                                                   00121700
+SELECT H.ACCOUNT_NBR,                                                   00121800
+H.SECURITY_NBR,                                                         00121900
+P.SB_BUS_AREA_FLAG,                                                     00122000
+P.UNITIZED_PROD_IND,                                                    00122100
+'NO' AS POST_VAL_ACTIVITY,                                              00122200
+H.TOTAL_COMMITMENT,                                                     00122300
+H.VAL_TOT_COMT_AMT,                                                     00122400
+0 AS TOTAL_COMT,                                                        00122500
+H.TOTAL_CONTRIBUTION,                                                   00122600
+H.VAL_TOT_CNTB_AMT,                                                     00122700
+0 AS POST_VAL_CNTB,                                                     00122800
+H.VAL_TOT_CNTB_AMT AS EXP_CNTB,                                         00122900
+H.TOT_DIST_AMT,                                                         00123000
+H.VAL_TOT_DIST_AMT,                                                     00123100
+0 AS POST_VAL_DIST,                                                     00123200
+H.VAL_TOT_DIST_AMT AS EXP_DIST,                                         00123300
+H.NO_OF_UNIT,                                                           00123400
+H.VAL_NO_OF_UNIT,                                                       00123500
+0 AS POST_VAL_UNITS,                                                    00123600
+H.VAL_NO_OF_UNIT AS EXP_UNITS,                                          00123700
+H.CURR_NAV,                                                             00123800
+H.VAL_NAV,                                                              00123900
+0 AS POST_VAL_CURR_VAL,                                                 00124000
+H.VAL_NAV AS EXP_NAV,                                                   00124100
+H.POSN_DT,                                                              00124200
+H.LST_VALN_DT                                                           00124300
+FROM VGRDB2P.TPIF_HOLDING_SH_APSG H                                     00124400
+INNER JOIN                                                              00124500
+VGRDB2P.PRODUCT_DIM P ON P.CUSIP = H.SECURITY_NBR                       00124600
+WHERE NOT EXISTS (                                                      00124700
+SELECT 1                                                                00124800
+FROM VGRDB2P.TRANSACTION_DETAILS_APSG T                                 00124900
+WHERE T.SECURITY_NBR = H.SECURITY_NBR                                   00125000
+AND T.ACCOUNT_NBR = H.ACCOUNT_NBR                                       00125100
+AND T.ACTIVE_FLAG = 'Y'                                                 00125200
+AND T.SETTLEMENT_DATE > H.LST_VALN_DT                                   00125300
+)                                                                       00125400
+AND H.PEND_DEL_FL_CTL = 'N'                                             00125500
+AND P.MKT_RGN_CD IN ('APSG')                                            00125600
+AND ((P.SB_BUS_AREA_FLAG IN ('PE', 'RE')                                00125700
+AND P.UNITIZED_PROD_IND != 'Y' AND                                      00125800
+((H.CURR_NAV != H.VAL_NAV)                                              00125900
+OR (H.TOTAL_CONTRIBUTION != H.VAL_TOT_CNTB_AMT)                         00126000
+OR (H.TOT_DIST_AMT != H.VAL_TOT_DIST_AMT)                               00126100
+)));                                                                    00126200

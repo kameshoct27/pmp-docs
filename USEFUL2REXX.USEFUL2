@@ -1,0 +1,1270 @@
+*************************REXX USEFUL*****************                   00000010
+/*REXX*/                                                                00000100
+/*VIEW A DATASET FROM INSIDE A PANEL*/                                  00000200
+ADDRESS ISPEXEC "CONTROL ERRORS RETURN"                                 00000300
+ADDRESS ISREDIT "MACRO PROCESS"                                         00000400
+ADDRESS ISREDIT "(USTAT) = USER_STATE "                                 00000500
+ADDRESS ISREDIT "RESET"                                                 00000600
+ADDRESS ISREDIT "(TOTALLIN) = LINENUM .ZLAST"                           00000700
+CALL CHKCOPY                                                            00000800
+ADDRESS ISREDIT "USER_STATE = (USTAT)"                                  00000900
+ZEDSMSG = "DONE"                                                        00001000
+ZEDLMSG = 'EXPANSION COMPLETED'                                         00001100
+ADDRESS ISPEXEC "SETMSG MSG(ISRZ001)"                                   00001200
+EXIT                                                                    00001300
+                                                                        00001400
+CHKCOPY:                                                                00001500
+  DO K = 1 TO TOTALLIN                                                  00001600
+     ADDRESS ISREDIT "(CURRLINE) = LINE" K                              00001700
+     IF SUBSTR(CURRLINE,7,1) = '*' THEN DO                              00001800
+        ITERATE                                                         00001900
+     END                                                                00002000
+     IF POS('++INCLUDE',CURRLINE) > 0 THEN DO                           00002100
+        PARSE VAR CURRLINE . '++INCLUDE' CPYEXP .                       00002200
+        PARSE VAR CPYEXP CPYEXP '.'                                     00002300
+        CPYEXP = STRIP(CPYEXP)                                          00002400
+        CALL EXPANDCPY                                                  00002500
+        CALL INSERTCPY                                                  00002600
+     END                                                                00002700
+     IF POS(' COPY ',CURRLINE) > 0 THEN DO                              00002800
+        PARSE VAR CURRLINE . ' COPY ' CPYEXP .                          00002900
+        PARSE VAR CPYEXP CPYEXP '.'                                     00003000
+        CPYEXP = STRIP(CPYEXP)                                          00003100
+        CALL EXPANDCPY                                                  00003200
+        CALL INSERTCPY                                                  00003300
+     END                                                                00003400
+  END                                                                   00003500
+  RETURN                                                                00003600
+EXPANDCPY:                                                              00003700
+  INPGLEX. = ''                                                         00003800
+  L = 1                                                                 00003900
+  INPGLEX.L = '*******#####EXPANDING COPY 'CPYEXP' #####********'       00004000
+                                                                        00004100
+  COPYNAME = "'CHGMAN.CMN.BDS.COPYLIB("||CPYEXP||")'"                   00004200
+  IF SYSDSN(COPYNAME) <> OK THEN DO                                     00004300
+     COPYNAME = "'IOCP00P.CM.BASE.COPYLIB("||CPYEXP||")'"               00004400
+     IF SYSDSN(COPYNAME) <> OK THEN DO                                  00004500
+       COPYNAME = "'CHGMAN.CMN.OMS.COPYLIB("||CPYEXP||")'"              00004600
+       IF SYSDSN(COPYNAME) <> OK THEN DO                                00004700
+        L = L + 1                                                       00004800
+        INPGLEX.L = '*******#####COPY 'CPYEXP' NOT FOUND #####********' 00004900
+        RETURN                                                          00005000
+       END                                                              00005100
+     END                                                                00005200
+  END                                                                   00005300
+                                                                        00005400
+  "ALLOC SHR FILE(INCOPY) DATASET("COPYNAME")"                          00005500
+  "EXECIO * DISKR INCOPY (STEM INCPL. FINIS)"                           00005600
+  "FREE FILE(INCOPY)"                                                   00005700
+                                                                        00005800
+  DO M = 1 TO INCPL.0                                                   00005900
+     L = L + 1                                                          00006000
+     INPGLEX.L = INCPL.M                                                00006100
+  END                                                                   00006200
+  L = L + 1                                                             00006300
+  INPGLEX.L = '*******#####END EXPANDING 'CPYEXP' #####********'        00006400
+  INPGLEX.0 = L                                                         00006500
+                                                                        00006600
+  RETURN                                                                00006700
+INSERTCPY:                                                              00006800
+   DO I = INPGLEX.0 TO 1 BY -1                                          00006900
+      DATAVAR = STRIP(SUBSTR(INPGLEX.I,1,72))                           00007000
+      ADDRESS ISREDIT "LINE_AFTER" K "= INFOLINE (DATAVAR)"             00007100
+   END                                                                  00007200
+   RETURN                                                               00007300
+*************************REXX USEFUL*****************                   00007400
+/*REXX*/                                                                00007500
+/*FIND IF THE FIELDS IN THE COPYBOOK ARE BEING USED IN PROGRAM*/        00007600
+"EXECIO 0 DISKW OUTFILE(OPEN"                                           00007700
+"EXECIO * DISKR CPYFILE(STEM CPYREC. FINIS"                             00007800
+FLDNO = 0                                                               00007900
+FLDNAME. = ''                                                           00008000
+BUILDLINE = ''                                                          00008100
+DO I = 1 TO CPYREC.0                                                    00008200
+  IF SUBSTR(CPYREC.I,7,1) = '*' THEN ITERATE                            00008300
+  TLINE = SUBSTR(CPYREC.I,8,65)                                         00008400
+  IF STRIP(TLINE) = '' THEN ITERATE                                     00008500
+  BUILDLINE = BUILDLINE || TLINE                                        00008600
+  SAY TLINE                                                             00008700
+  LASTWORD = STRIP(WORD(TLINE,WORDS(TLINE)))                            00008800
+  LASTLETTER = SUBSTR(LASTWORD,LENGTH(LASTWORD),1)                      00008900
+  IF LASTLETTER = '.' THEN DO                                           00009000
+     LEVELNO = STRIP(WORD(BUILDLINE,1))                                 00009100
+     IF DATATYPE(LEVELNO) = 'NUM' THEN DO                               00009200
+        TFLDNAME = STRIP(WORD(BUILDLINE,2))                             00009300
+        IF TFLDNAME = 'PIC' |,                                          00009400
+           TFLDNAME = 'PICTURE' |,                                      00009500
+           TFLDNAME = 'FILLER' |,                                       00009600
+           TFLDNAME = 'REDEFINES' |,                                    00009700
+           TFLDNAME = 'OCCURS' THEN DO                                  00009800
+           NOP                                                          00009900
+        END                                                             00010000
+        ELSE DO                                                         00010100
+           PARSE VAR TFLDNAME TFLDNAME '.' .                            00010200
+           FLDNO = FLDNO + 1                                            00010300
+           FLDNAME.FLDNO = TFLDNAME                                     00010400
+        END                                                             00010500
+     END                                                                00010600
+     BUILDLINE = ''                                                     00010700
+  END                                                                   00010800
+END                                                                     00010900
+FLDNAME.0 = FLDNO                                                       00011000
+/*SEARCH PROGRAMS*/                                                     00011100
+"EXECIO 1 DISKR PGMPDS(STEM PGMPDSREC. FINIS"                           00011200
+PGMPDS = STRIP(SUBSTR(PGMPDSREC.1,1,72))                                00011300
+"EXECIO * DISKR PGMLIST(STEM PGMLSTREC. FINIS"                          00011400
+DO K = 1 TO PGMLSTREC.0                                                 00011500
+   PGMNAME = STRIP(SUBSTR(PGMLSTREC.K,1,72))                            00011600
+   CALL SRCHPROG                                                        00011700
+END                                                                     00011800
+"EXECIO 0 DISKW OUTFILE(FINIS"                                          00011900
+EXIT                                                                    00012000
+                                                                        00012100
+SRCHPROG:                                                               00012200
+PROGRAM = "'" || STRIP(PGMPDS) || '(' || STRIP(PGMNAME) || ')' || "'"   00012300
+IF SYSDSN(PROGRAM) = 'OK' THEN DO                                       00012400
+  "ALLOC DSN("PROGRAM") FILE(PGMFILE) SHR REUSE"                        00012500
+END                                                                     00012600
+ELSE DO                                                                 00012700
+  SAY 'INVALID PGM DATASET: ' PROGRAM                                   00012800
+END                                                                     00012900
+                                                                        00013000
+DO J = 1 TO FLDNAME.0                                                   00013100
+   FLDFND.J = 'N'                                                       00013200
+END                                                                     00013300
+PGMEOF = 'N'                                                            00013400
+"EXECIO 0 DISKR PGMFILE(OPEN"                                           00013500
+DO UNTIL PGMEOF = 'Y'                                                   00013600
+  "EXECIO 1 DISKR PGMFILE(STEM PGMREC."                                 00013700
+  IF RC > 0 THEN DO                                                     00013800
+     PGMEOF = 'Y'                                                       00013900
+     ITERATE                                                            00014000
+  END                                                                   00014100
+  IF SUBSTR(PGMREC.1,7,1) = '*' THEN ITERATE                            00014200
+  DO J = 1 TO FLDNAME.0                                                 00014300
+     IF FLDFND.J = 'Y' THEN ITERATE                                     00014400
+     IF INDEX(PGMREC.1,FLDNAME.J) > 0 THEN DO                           00014500
+        FLDFND.J = 'Y'                                                  00014600
+     END                                                                00014700
+  END                                                                   00014800
+END                                                                     00014900
+"EXECIO 0 DISKR PGMFILE(FINIS"                                          00015000
+DO J = 1 TO FLDNAME.0                                                   00015100
+  OUTREC.1 = ''                                                         00015200
+  OUTREC.1 = OVERLAY(STRIP(PGMNAME),OUTREC.1,1,10)                      00015300
+  OUTREC.1 = OVERLAY('|',OUTREC.1,11,1)                                 00015400
+  OUTREC.1 = OVERLAY(STRIP(FLDNAME.J),OUTREC.1,12,50)                   00015500
+  OUTREC.1 = OVERLAY('|',OUTREC.1,62,1)                                 00015600
+  OUTREC.1 = OVERLAY(STRIP(FLDFND.J),OUTREC.1,63,1)                     00015700
+  OUTREC.1 = OVERLAY('|',OUTREC.1,64,1)                                 00015800
+  "EXECIO 1 DISKW OUTFILE(STEM OUTREC."                                 00015900
+END                                                                     00016000
+"FREE FILE(PGMFILE)"                                                    00016100
+RETURN                                                                  00016200
+*/                                                                      00016300
+*************************REXX USEFUL*****************                   00016400
+//X115CPY JOB (XX115),'COPY SCAN',                                      00016500
+//             CLASS=H,                                                 00016600
+//             NOTIFY=X115,                                             00016700
+//             MSGCLASS=X                                               00016800
+//*CREATE POSITION DATA FIXML                                           00016900
+//SIACFILE EXEC PGM=IKJEFT1B,REGION=5M,DYNAMNBR=50,                     00017000
+//             PARM='%FLDCOPY'                                          00017100
+//SYSEXEC DD  DISP=SHR,DSN=X115.USER.PDS.REXX                           00017200
+//SYSTSPRT DD  SYSOUT=*                                                 00017300
+//SYSUDUMP DD  SYSOUT=*                                                 00017400
+//SYSOUT   DD  SYSOUT=*                                                 00017500
+//SYSPRINT DD  SYSOUT=*                                                 00017600
+//SYSTSIN  DD  DUMMY                                                    00017700
+//OUTFILE  DD  DSN=WRKT.USER.FLDCOPY.OUTFILE,                           00017800
+//       DISP=(NEW,CATLG,DELETE),SPACE=(CYL,(10,10),RLSE),              00017900
+//       DCB=(RECFM=FB,LRECL=100)                                       00018000
+//CPYFILE  DD DISP=SHR,DSN=IOCP00P.CM.BASE.COPYLIB(ITRDDET)             00018100
+//PGMPDS DD *                                                           00018200
+CHGMAN.CMN.BDS.SRCLIB                                                   00018300
+/*                                                                      00018400
+//PGMLIST DD *                                                          00018500
+NCAB125                                                                 00018600
+/*                                                                      00018700
+*************************REXX USEFUL*****************                   00018800
+/*REXX*/                                                                00018900
+/*FIND IF THE FIELDS IN THE COPYBOOK ARE BEING USED IN PROGRAM*/        00019000
+"EXECIO 0 DISKW OUTFILE(OPEN"                                           00019100
+"EXECIO * DISKR CPYFILE(STEM CPYREC. FINIS"                             00019200
+FLDNO = 0                                                               00019300
+FLDNAME. = ''                                                           00019400
+BUILDLINE = ''                                                          00019500
+DO I = 1 TO CPYREC.0                                                    00019600
+  IF SUBSTR(CPYREC.I,7,1) = '*' THEN ITERATE                            00019700
+  TLINE = SUBSTR(CPYREC.I,8,65)                                         00019800
+  IF STRIP(TLINE) = '' THEN ITERATE                                     00019900
+  BUILDLINE = BUILDLINE || TLINE                                        00020000
+  SAY TLINE                                                             00020100
+  LASTWORD = STRIP(WORD(TLINE,WORDS(TLINE)))                            00020200
+  LASTLETTER = SUBSTR(LASTWORD,LENGTH(LASTWORD),1)                      00020300
+  IF LASTLETTER = '.' THEN DO                                           00020400
+     LEVELNO = STRIP(WORD(BUILDLINE,1))                                 00020500
+     IF DATATYPE(LEVELNO) = 'NUM' THEN DO                               00020600
+        TFLDNAME = STRIP(WORD(BUILDLINE,2))                             00020700
+        IF TFLDNAME = 'PIC' |,                                          00020800
+           TFLDNAME = 'PICTURE' |,                                      00020900
+           TFLDNAME = 'FILLER' |,                                       00021000
+           TFLDNAME = 'REDEFINES' |,                                    00021100
+           TFLDNAME = 'OCCURS' THEN DO                                  00021200
+           NOP                                                          00021300
+        END                                                             00021400
+        ELSE DO                                                         00021500
+           PARSE VAR TFLDNAME TFLDNAME '.' .                            00021600
+           FLDNO = FLDNO + 1                                            00021700
+           FLDNAME.FLDNO = TFLDNAME                                     00021800
+        END                                                             00021900
+     END                                                                00022000
+     BUILDLINE = ''                                                     00022100
+  END                                                                   00022200
+END                                                                     00022300
+FLDNAME.0 = FLDNO                                                       00022400
+/*SEARCH PROGRAMS*/                                                     00022500
+"EXECIO 1 DISKR PGMPDS(STEM PGMPDSREC. FINIS"                           00022600
+PGMPDS = STRIP(SUBSTR(PGMPDSREC.1,1,72))                                00022700
+"EXECIO * DISKR PGMLIST(STEM PGMLSTREC. FINIS"                          00022800
+DO K = 1 TO PGMLSTREC.0                                                 00022900
+   PGMNAME = STRIP(SUBSTR(PGMLSTREC.K,1,72))                            00023000
+   CALL SRCHPROG                                                        00023100
+END                                                                     00023200
+"EXECIO 0 DISKW OUTFILE(FINIS"                                          00023300
+EXIT                                                                    00023400
+                                                                        00023500
+SRCHPROG:                                                               00023600
+PROGRAM = "'" || STRIP(PGMPDS) || '(' || STRIP(PGMNAME) || ')' || "'"   00023700
+IF SYSDSN(PROGRAM) = 'OK' THEN DO                                       00023800
+  "ALLOC DSN("PROGRAM") FILE(PGMFILE) SHR REUSE"                        00023900
+END                                                                     00024000
+ELSE DO                                                                 00024100
+  SAY 'INVALID PGM DATASET: ' PROGRAM                                   00024200
+END                                                                     00024300
+                                                                        00024400
+DO J = 1 TO FLDNAME.0                                                   00024500
+   FLDFND.J = 'N'                                                       00024600
+END                                                                     00024700
+PGMEOF = 'N'                                                            00024800
+"EXECIO 0 DISKR PGMFILE(OPEN"                                           00024900
+DO UNTIL PGMEOF = 'Y'                                                   00025000
+  "EXECIO 1 DISKR PGMFILE(STEM PGMREC."                                 00025100
+  IF RC > 0 THEN DO                                                     00025200
+     PGMEOF = 'Y'                                                       00025300
+     ITERATE                                                            00025400
+  END                                                                   00025500
+  IF SUBSTR(PGMREC.1,7,1) = '*' THEN ITERATE                            00025600
+  DO J = 1 TO FLDNAME.0                                                 00025700
+     IF FLDFND.J = 'Y' THEN ITERATE                                     00025800
+     IF INDEX(PGMREC.1,FLDNAME.J) > 0 THEN DO                           00025900
+        FLDFND.J = 'Y'                                                  00026000
+     END                                                                00026100
+  END                                                                   00026200
+END                                                                     00026300
+"EXECIO 0 DISKR PGMFILE(FINIS"                                          00026400
+DO J = 1 TO FLDNAME.0                                                   00026500
+  OUTREC.1 = ''                                                         00026600
+  OUTREC.1 = OVERLAY(STRIP(PGMNAME),OUTREC.1,1,10)                      00026700
+  OUTREC.1 = OVERLAY('|',OUTREC.1,11,1)                                 00026800
+  OUTREC.1 = OVERLAY(STRIP(FLDNAME.J),OUTREC.1,12,50)                   00026900
+  OUTREC.1 = OVERLAY('|',OUTREC.1,62,1)                                 00027000
+  OUTREC.1 = OVERLAY(STRIP(FLDFND.J),OUTREC.1,63,1)                     00027100
+  OUTREC.1 = OVERLAY('|',OUTREC.1,64,1)                                 00027200
+  OUTREC.1 = OVERLAY(STRIP(CPYFILE.J),OUTREC.1,66,8)                    00027300
+  OUTREC.1 = OVERLAY('|',OUTREC.1,74,1)                                 00027400
+  "EXECIO 1 DISKW OUTFILE(STEM OUTREC."                                 00027500
+END                                                                     00027600
+"FREE FILE(PGMFILE)"                                                    00027700
+RETURN                                                                  00027800
+*/                                                                      00027900
+*************************REXX USEFUL*****************                   00028000
+/*REXX*/                                                                00028100
+"EXECIO 0 DISKW OUTFILE (OPEN"                                          00028200
+"EXECIO 0 DISKW OUTFIL1 (OPEN"                                          00028300
+"EXECIO * DISKR FILE1 (STEM FLLIN1. FINIS"                              00028400
+"EXECIO * DISKR FILE2 (STEM FLLIN2. FINIS"                              00028500
+ENDLOOP = 'N'                                                           00028600
+FILPTR1 = 1                                                             00028700
+FILPTR2 = 1                                                             00028800
+ENDOFFILE1 = 'N'                                                        00028900
+ENDOFFILE2 = 'N'                                                        00029000
+CALL GETFLDLST                                                          00029100
+CALL GETPGMLST                                                          00029200
+DO UNTIL ENDLOOP = 'Y'                                                  00029300
+   IF FILENM1 = FILENM2 THEN DO                                         00029400
+      CALL SRCHPGM                                                      00029500
+      CALL GETFLDLST                                                    00029600
+      CALL GETPGMLST                                                    00029700
+   END                                                                  00029800
+   ELSE DO                                                              00029900
+      IF FILENM1 < FILENM2 | ENDOFFILE2 = 'Y' THEN DO                   00030000
+         CALL GETFLDLST                                                 00030100
+      END                                                               00030200
+      ELSE DO                                                           00030300
+         CALL GETPGMLST                                                 00030400
+      END                                                               00030500
+   END                                                                  00030600
+   IF ENDOFFILE1 = 'Y' & ENDOFFILE2 = 'Y' THEN DO                       00030700
+      ENDLOOP = 'Y'                                                     00030800
+   END                                                                  00030900
+END                                                                     00031000
+IF FILENM1 = FILENM2 THEN DO                                            00031100
+   CALL SRCHPGM                                                         00031200
+END                                                                     00031300
+"EXECIO 0 DISKW OUTFILE (FINIS"                                         00031400
+"EXECIO 0 DISKW OUTFIL1 (FINIS"                                         00031500
+EXIT                                                                    00031600
+                                                                        00031700
+GETFLDLST:                                                              00031800
+  J = 0                                                                 00031900
+  FILENM1 = STRIP(SUBSTR(FLLIN1.FILPTR1,1,45))                          00032000
+  DO I = FILPTR1 TO FLLIN1.0                                            00032100
+     IF STRIP(SUBSTR(FLLIN1.I,1,45)) = FILENM1 THEN DO                  00032200
+        J = J + 1                                                       00032300
+        FLDLST.J = STRIP(SUBSTR(FLLIN1.I,46,50))                        00032400
+     END                                                                00032500
+     ELSE LEAVE I                                                       00032600
+     IF I = FLLIN1.0 THEN ENDOFFILE1 = 'Y'                              00032700
+  END                                                                   00032800
+  FILPTR1 = I                                                           00032900
+  FLDLST.0 = J                                                          00033000
+  RETURN                                                                00033100
+                                                                        00033200
+GETPGMLST:                                                              00033300
+  J = 0                                                                 00033400
+  FILENM2 = STRIP(SUBSTR(FLLIN2.FILPTR2,1,45))                          00033500
+  DO I = FILPTR2 TO FLLIN2.0                                            00033600
+     IF STRIP(SUBSTR(FLLIN2.I,1,45)) = FILENM2 THEN DO                  00033700
+        J = J + 1                                                       00033800
+        PGMLST.J = STRIP(SUBSTR(FLLIN2.I,46,50))                        00033900
+     END                                                                00034000
+     ELSE LEAVE I                                                       00034100
+     IF I = FLLIN2.0 THEN ENDOFFILE2 = 'Y'                              00034200
+  END                                                                   00034300
+  FILPTR2 = I                                                           00034400
+  PGMLST.0 = J                                                          00034500
+  RETURN                                                                00034600
+                                                                        00034700
+SRCHPGM:                                                                00034800
+   DO I = 1 TO PGMLST.0                                                 00034900
+      PROGRAM = "'CHGMAN.CMN.BDS.SRCLIB(" || STRIP(PGMLST.I) || ")'"    00035000
+      IF SYSDSN(PROGRAM) \= 'OK' THEN DO                                00035100
+         PROGRAM = "'CHGMAN.CMN.RET.SRCLIB(" || STRIP(PGMLST.I) || ")'" 00035200
+         IF SYSDSN(PROGRAM) \= 'OK' THEN DO                             00035300
+            SAY STRIP(PGMLST.I) 'NOT FOUND'                             00035400
+            ITERATE                                                     00035500
+         END                                                            00035600
+      END                                                               00035700
+      "ALLOC FILE(PGMNAM) DATASET("PROGRAM") SHR REUSE"                 00035800
+      "EXECIO * DISKR PGMNAM (STEM PGMLIN. FINIS"                       00035900
+      "FREE FILE(PGMNAM)"                                               00036000
+      DO J = 1 TO FLDLST.0                                              00036100
+         FLDCNT.J = 0                                                   00036200
+      END                                                               00036300
+      DO J = 1 TO PGMLIN.0                                              00036400
+         IF SUBSTR(PGMLIN.J,7,1) = '*' THEN DO                          00036500
+            ITERATE                                                     00036600
+         END                                                            00036700
+         DO K = 1 TO FLDLST.0                                           00036800
+            SRCHF1 = ' ' || FLDLST.K || ' '                             00036900
+            SRCHF2 = '(' || FLDLST.K || '('                             00037000
+            SRCHF3 = ' ' || FLDLST.K || '('                             00037100
+            SRCHF4 = '(' || FLDLST.K || ' '                             00037200
+            IF POS(SRCHF1,PGMLIN.J) > 0 |,                              00037300
+               POS(SRCHF2,PGMLIN.J) > 0 |,                              00037400
+               POS(SRCHF3,PGMLIN.J) > 0 |,                              00037500
+               POS(SRCHF4,PGMLIN.J) > 0 THEN DO                         00037600
+               FLDCNT.K = FLDCNT.K + 1                                  00037700
+            END                                                         00037800
+         END                                                            00037900
+      END                                                               00038000
+      TOTALCNT = 0                                                      00038100
+      DO K = 1 TO FLDLST.0                                              00038200
+        OUTREC.1 = ''                                                   00038300
+        OUTREC.1 = OVERLAY(FILENM1,OUTREC.1,1,45)                       00038400
+        OUTREC.1 = OVERLAY(PGMLST.I,OUTREC.1,46,10)                     00038500
+        OUTREC.1 = OVERLAY(STRIP(FLDLST.K),OUTREC.1,56,50)              00038600
+        OUTREC.1 = OVERLAY(FLDCNT.K,OUTREC.1,106,10)                    00038700
+        "EXECIO 1 DISKW OUTFILE (STEM OUTREC."                          00038800
+        TOTALCNT = TOTALCNT + FLDCNT.K                                  00038900
+      END                                                               00039000
+      OUTREC.1 = ''                                                     00039100
+      OUTREC.1 = OVERLAY(PGMLST.I,OUTREC.1,1,10)                        00039200
+      OUTREC.1 = OVERLAY(TOTALCNT,OUTREC.1,11,10)                       00039300
+      "EXECIO 1 DISKW OUTFIL1 (STEM OUTREC."                            00039400
+   END                                                                  00039500
+   RETURN                                                               00039600
+*************************REXX USEFUL*****************                   00039700
+//X116FND  JOB (X116),'FLDFIND',CLASS=H,NOTIFY=X116,MSGCLASS=X          00039800
+//***************************                                           00039900
+//** X116.USER.FLDFIND.OUT1 --> LIST OF FIELDS WITH THE FILE NAMES      00040000
+//** X116.USER.FLDFIND.OUT2 --> LIST OF PROGRAMS WITH THE FILE NAMES    00040100
+//***************************                                           00040200
+//STEPDEL EXEC PGM=IEFBR14                                              00040300
+//DD001    DD DSN=X116.USER.FLDFINDJ.SORT1,                             00040400
+//         DISP=(MOD,DELETE,DELETE)                                     00040500
+//DD002    DD DSN=X116.USER.FLDFINDJ.SORT2,                             00040600
+//         DISP=(MOD,DELETE,DELETE)                                     00040700
+//DD003    DD DSN=X116.USER.FINAL.SUMMARY.FLDOCCUR,                     00040800
+//         DISP=(MOD,DELETE,DELETE)                                     00040900
+//DD004    DD DSN=X116.USER.FINAL.SUMMARY.PGMCOUNT,                     00041000
+//         DISP=(MOD,DELETE,DELETE)                                     00041100
+//DD005    DD DSN=WRKT.USER.JOBS.OUTPUT.FINAL,                          00041200
+//         DISP=(MOD,DELETE,DELETE)                                     00041300
+//***************************                                           00041400
+//STEP1  EXEC PGM=SORT,COND=(4,LT)                                      00041500
+//SORTIN DD DISP=SHR,DSN=X116.USER.FLDFIND.OUT1                         00041600
+//SORTOUT  DD DSN=X116.USER.FLDFINDJ.SORT1,                             00041700
+//            DISP=(NEW,CATLG,DELETE),                                  00041800
+//            DCB=*.SORTIN                                              00041900
+//SYSIN    DD *                                                         00042000
+ SORT FIELDS=(1,45,CH,A,46,50,CH,A)                                     00042100
+ SUM FIELDS=NONE                                                        00042200
+//SYSOUT   DD SYSOUT=*                                                  00042300
+//***************************                                           00042400
+//STEP2  EXEC PGM=SORT,COND=(4,LT)                                      00042500
+//SORTIN DD DISP=SHR,DSN=X116.USER.FLDFIND.OUT2                         00042600
+//SORTOUT  DD DSN=X116.USER.FLDFINDJ.SORT2,                             00042700
+//            DISP=(NEW,CATLG,DELETE),                                  00042800
+//            DCB=*.SORTIN                                              00042900
+//SYSIN    DD *                                                         00043000
+ SORT FIELDS=(1,45,CH,A,46,10,CH,A)                                     00043100
+ SUM FIELDS=NONE                                                        00043200
+//SYSOUT   DD SYSOUT=*                                                  00043300
+//***                                                                   00043400
+//STEP3  EXEC PGM=IKJEFT1B,REGION=5M,DYNAMNBR=50,                       00043500
+//             PARM='%FLDFIND'                                          00043600
+//SYSEXEC DD  DISP=SHR,DSN=X116.USER.SARMA.REXX                         00043700
+//SYSTSPRT DD  SYSOUT=*                                                 00043800
+//SYSUDUMP DD  SYSOUT=*                                                 00043900
+//SYSOUT   DD  SYSOUT=*                                                 00044000
+//SYSPRINT DD  SYSOUT=*                                                 00044100
+//SYSTSIN  DD  DUMMY                                                    00044200
+//FILE1 DD DISP=SHR,DSN=X116.USER.FLDFINDJ.SORT1                        00044300
+//FILE2 DD DISP=SHR,DSN=X116.USER.FLDFINDJ.SORT2                        00044400
+//OUTFILE DD  DSN=X116.USER.FINAL.SUMMARY.FLDOCCUR,                     00044500
+//       DISP=(NEW,CATLG,DELETE),SPACE=(CYL,(10,10),RLSE),              00044600
+//       DCB=(RECFM=FB,LRECL=150)                                       00044700
+//OUTFIL1 DD  DSN=X116.USER.FINAL.SUMMARY.PGMCOUNT,                     00044800
+//       DISP=(NEW,CATLG,DELETE),SPACE=(CYL,(10,10),RLSE),              00044900
+//       DCB=(RECFM=FB,LRECL=150)                                       00045000
+*************************REXX USEFUL*****************                   00045100
+/*REXX*/                                                                00045200
+"ALLOC FILE(FILE1) DATASET('WRKT.USER.X110.FILE1') SHR REUSE"           00045300
+"ALLOC FILE(FILE2) DATASET('WRKT.USER.X110.FILE2') SHR REUSE"           00045400
+"ALLOC FILE(OUTFILE) DATASET('WRKT.USER.X110.OUTFILE') SHR REUSE"       00045500
+"ALLOC FILE(OUTFIL1) DATASET('WRKT.USER.X110.OUTFIL1') SHR REUSE"       00045600
+"EXECIO 0 DISKW OUTFILE (OPEN"                                          00045700
+"EXECIO 0 DISKW OUTFIL1 (OPEN"                                          00045800
+"EXECIO * DISKR FILE1 (STEM FLLIN1. FINIS"                              00045900
+"EXECIO * DISKR FILE2 (STEM FLLIN2. FINIS"                              00046000
+ENDLOOP = 'N'                                                           00046100
+FILPTR1 = 1                                                             00046200
+FILPTR2 = 1                                                             00046300
+ENDOFFILE1 = 'N'                                                        00046400
+ENDOFFILE2 = 'N'                                                        00046500
+CALL GETFLDLST                                                          00046600
+CALL GETPGMLST                                                          00046700
+DO UNTIL ENDLOOP = 'Y'                                                  00046800
+   IF FILENM1 = FILENM2 THEN DO                                         00046900
+      CALL SRCHPGM                                                      00047000
+      CALL GETFLDLST                                                    00047100
+      CALL GETPGMLST                                                    00047200
+   END                                                                  00047300
+   ELSE DO                                                              00047400
+      IF FILENM1 < FILENM2 | ENDOFFILE2 = 'Y' THEN DO                   00047500
+         CALL GETFLDLST                                                 00047600
+      END                                                               00047700
+      ELSE DO                                                           00047800
+         CALL GETPGMLST                                                 00047900
+      END                                                               00048000
+   END                                                                  00048100
+   IF ENDOFFILE1 = 'Y' & ENDOFFILE2 = 'Y' THEN DO                       00048200
+      ENDLOOP = 'Y'                                                     00048300
+   END                                                                  00048400
+END                                                                     00048500
+IF FILENM1 = FILENM2 THEN DO                                            00048600
+   CALL SRCHPGM                                                         00048700
+END                                                                     00048800
+"EXECIO 0 DISKW OUTFILE (FINIS"                                         00048900
+"EXECIO 0 DISKW OUTFIL1 (FINIS"                                         00049000
+"FREE FILE(FILE1)"                                                      00049100
+"FREE FILE(FILE2)"                                                      00049200
+"FREE FILE(OUTFILE)"                                                    00049300
+"FREE FILE(OUTFIL1)"                                                    00049400
+EXIT                                                                    00049500
+                                                                        00049600
+GETFLDLST:                                                              00049700
+  J = 0                                                                 00049800
+  FILENM1 = STRIP(SUBSTR(FLLIN1.FILPTR1,1,45))                          00049900
+  DO I = FILPTR1 TO FLLIN1.0                                            00050000
+     IF STRIP(SUBSTR(FLLIN1.I,1,45)) = FILENM1 THEN DO                  00050100
+        J = J + 1                                                       00050200
+        FLDLST.J = STRIP(SUBSTR(FLLIN1.I,46,50))                        00050300
+     END                                                                00050400
+     ELSE LEAVE I                                                       00050500
+     IF I = FLLIN1.0 THEN ENDOFFILE1 = 'Y'                              00050600
+  END                                                                   00050700
+  FILPTR1 = I                                                           00050800
+  FLDLST.0 = J                                                          00050900
+  RETURN                                                                00051000
+                                                                        00051100
+GETPGMLST:                                                              00051200
+  J = 0                                                                 00051300
+  FILENM2 = STRIP(SUBSTR(FLLIN2.FILPTR2,1,45))                          00051400
+  DO I = FILPTR2 TO FLLIN2.0                                            00051500
+     IF STRIP(SUBSTR(FLLIN2.I,1,45)) = FILENM2 THEN DO                  00051600
+        J = J + 1                                                       00051700
+        PGMLST.J = STRIP(SUBSTR(FLLIN2.I,46,50))                        00051800
+     END                                                                00051900
+     ELSE LEAVE I                                                       00052000
+     IF I = FLLIN2.0 THEN ENDOFFILE2 = 'Y'                              00052100
+  END                                                                   00052200
+  FILPTR2 = I                                                           00052300
+  PGMLST.0 = J                                                          00052400
+  RETURN                                                                00052500
+                                                                        00052600
+SRCHPGM:                                                                00052700
+   DO I = 1 TO PGMLST.0                                                 00052800
+      PROGRAM = "'CHGMAN.CMN.BDS.SRCLIB(" || STRIP(PGMLST.I) || ")'"    00052900
+      "ALLOC FILE(PGMNAM) DATASET("PROGRAM") SHR REUSE"                 00053000
+      "EXECIO * DISKR PGMNAM (STEM PGMLIN. FINIS"                       00053100
+      "FREE FILE(PGMNAM)"                                               00053200
+      DO J = 1 TO FLDLST.0                                              00053300
+         FLDCNT.J = 0                                                   00053400
+      END                                                               00053500
+      DO J = 1 TO PGMLIN.0                                              00053600
+         IF SUBSTR(PGMLIN.J,7,1) = '*' THEN DO                          00053700
+            ITERATE                                                     00053800
+         END                                                            00053900
+         DO K = 1 TO FLDLST.0                                           00054000
+            SRCHF1 = ' ' || FLDLST.K || ' '                             00054100
+            SRCHF2 = '(' || FLDLST.K || '('                             00054200
+            SRCHF3 = ' ' || FLDLST.K || '('                             00054300
+            SRCHF4 = '(' || FLDLST.K || ' '                             00054400
+            IF POS(SRCHF1,PGMLIN.J) > 0 |,                              00054500
+               POS(SRCHF2,PGMLIN.J) > 0 |,                              00054600
+               POS(SRCHF3,PGMLIN.J) > 0 |,                              00054700
+               POS(SRCHF4,PGMLIN.J) > 0 THEN DO                         00054800
+               FLDCNT.K = FLDCNT.K + 1                                  00054900
+            END                                                         00055000
+         END                                                            00055100
+      END                                                               00055200
+      TOTALCNT = 0                                                      00055300
+      DO K = 1 TO FLDLST.0                                              00055400
+        OUTREC.1 = ''                                                   00055500
+        OUTREC.1 = OVERLAY(FILENM1,OUTREC.1,1,45)                       00055600
+        OUTREC.1 = OVERLAY(PGMLST.I,OUTREC.1,46,10)                     00055700
+        OUTREC.1 = OVERLAY(STRIP(FLDLST.K),OUTREC.1,56,50)              00055800
+        OUTREC.1 = OVERLAY(FLDCNT.K,OUTREC.1,106,10)                    00055900
+        "EXECIO 1 DISKW OUTFILE (STEM OUTREC."                          00056000
+        TOTALCNT = TOTALCNT + FLDCNT.K                                  00056100
+      END                                                               00056200
+      OUTREC.1 = ''                                                     00056300
+      OUTREC.1 = OVERLAY(PGMLST.I,OUTREC.1,1,10)                        00056400
+      OUTREC.1 = OVERLAY(TOTALCNT,OUTREC.1,11,10)                       00056500
+      "EXECIO 1 DISKW OUTFIL1 (STEM OUTREC."                            00056600
+   END                                                                  00056700
+   RETURN                                                               00056800
+*************************REXX USEFUL*****************                   00056900
+/*REXX*/                                                                00057000
+PGMWRITTEN = 0                                                          00057100
+"EXECIO 0 DISKW OUTFIL1 (OPEN"                                          00057200
+"EXECIO * DISKR FILE1 (STEM FLLIN1. FINIS"                              00057300
+"EXECIO * DISKR FILE2 (STEM FLLIN2. FINIS"                              00057400
+ENDLOOP = 'N'                                                           00057500
+FILPTR1 = 1                                                             00057600
+FILPTR2 = 1                                                             00057700
+ENDOFFILE1 = 'N'                                                        00057800
+ENDOFFILE2 = 'N'                                                        00057900
+CALL GETFLDLST                                                          00058000
+CALL GETPGMLST                                                          00058100
+DO UNTIL ENDLOOP = 'Y'                                                  00058200
+   IF FILENM1 = FILENM2 THEN DO                                         00058300
+      CALL SRCHPGM                                                      00058400
+      CALL GETFLDLST                                                    00058500
+      CALL GETPGMLST                                                    00058600
+   END                                                                  00058700
+   ELSE DO                                                              00058800
+      IF FILENM1 < FILENM2 | ENDOFFILE2 = 'Y' THEN DO                   00058900
+         CALL GETFLDLST                                                 00059000
+      END                                                               00059100
+      ELSE DO                                                           00059200
+         CALL GETPGMLST                                                 00059300
+      END                                                               00059400
+   END                                                                  00059500
+   IF ENDOFFILE1 = 'Y' & ENDOFFILE2 = 'Y' THEN DO                       00059600
+      ENDLOOP = 'Y'                                                     00059700
+   END                                                                  00059800
+END                                                                     00059900
+IF FILENM1 = FILENM2 THEN DO                                            00060000
+   CALL SRCHPGM                                                         00060100
+END                                                                     00060200
+"EXECIO 0 DISKW OUTFIL1 (FINIS"                                         00060300
+EXIT                                                                    00060400
+                                                                        00060500
+GETFLDLST:                                                              00060600
+  J = 0                                                                 00060700
+  FILENM1 = STRIP(SUBSTR(FLLIN1.FILPTR1,1,45))                          00060800
+  DO I = FILPTR1 TO FLLIN1.0                                            00060900
+     IF STRIP(SUBSTR(FLLIN1.I,1,45)) = FILENM1 THEN DO                  00061000
+        J = J + 1                                                       00061100
+        FLDLST.J = STRIP(SUBSTR(FLLIN1.I,46,50))                        00061200
+     END                                                                00061300
+     ELSE LEAVE I                                                       00061400
+     IF I = FLLIN1.0 THEN ENDOFFILE1 = 'Y'                              00061500
+  END                                                                   00061600
+  FILPTR1 = I                                                           00061700
+  FLDLST.0 = J                                                          00061800
+  RETURN                                                                00061900
+                                                                        00062000
+GETPGMLST:                                                              00062100
+  J = 0                                                                 00062200
+  FILENM2 = STRIP(SUBSTR(FLLIN2.FILPTR2,1,45))                          00062300
+  DO I = FILPTR2 TO FLLIN2.0                                            00062400
+     IF STRIP(SUBSTR(FLLIN2.I,1,45)) = FILENM2 THEN DO                  00062500
+        J = J + 1                                                       00062600
+        PGMLST.J = STRIP(SUBSTR(FLLIN2.I,46,50))                        00062700
+     END                                                                00062800
+     ELSE LEAVE I                                                       00062900
+     IF I = FLLIN2.0 THEN ENDOFFILE2 = 'Y'                              00063000
+  END                                                                   00063100
+  FILPTR2 = I                                                           00063200
+  PGMLST.0 = J                                                          00063300
+  RETURN                                                                00063400
+                                                                        00063500
+SRCHPGM:                                                                00063600
+   DO I = 1 TO PGMLST.0                                                 00063700
+      PROGRAM = "'CHGMAN.CMN.BDS.SRCLIB(" || STRIP(PGMLST.I) || ")'"    00063800
+      "ALLOC FILE(PGMNAM) DATASET("PROGRAM") SHR REUSE"                 00063900
+      "EXECIO * DISKR PGMNAM (STEM PGMLIN. FINIS"                       00064000
+      "FREE FILE(PGMNAM)"                                               00064100
+      DO J = 1 TO FLDLST.0                                              00064200
+         FLDCNT.J = 0                                                   00064300
+      END                                                               00064400
+      DO J = 1 TO PGMLIN.0                                              00064500
+         IF SUBSTR(PGMLIN.J,7,1) = '*' THEN DO                          00064600
+            ITERATE                                                     00064700
+         END                                                            00064800
+         DO K = 1 TO FLDLST.0                                           00064900
+            SRCHF1 = ' ' || FLDLST.K || ' '                             00065000
+            SRCHF2 = '(' || FLDLST.K || '('                             00065100
+            SRCHF3 = ' ' || FLDLST.K || '('                             00065200
+            SRCHF4 = '(' || FLDLST.K || ' '                             00065300
+            IF POS(SRCHF1,PGMLIN.J) > 0 |,                              00065400
+               POS(SRCHF2,PGMLIN.J) > 0 |,                              00065500
+               POS(SRCHF3,PGMLIN.J) > 0 |,                              00065600
+               POS(SRCHF4,PGMLIN.J) > 0 THEN DO                         00065700
+               FLDCNT.K = FLDCNT.K + 1                                  00065800
+            END                                                         00065900
+         END                                                            00066000
+      END                                                               00066100
+      TOTALCNT = 0                                                      00066200
+      DO K = 1 TO FLDLST.0                                              00066300
+        OUTREC.1 = ''                                                   00066400
+        OUTREC.1 = OVERLAY(FILENM1,OUTREC.1,1,45)                       00066500
+        OUTREC.1 = OVERLAY(PGMLST.I,OUTREC.1,46,10)                     00066600
+        OUTREC.1 = OVERLAY(STRIP(FLDLST.K),OUTREC.1,56,50)              00066700
+        OUTREC.1 = OVERLAY(FLDCNT.K,OUTREC.1,106,10)                    00066800
+        TOTALCNT = TOTALCNT + FLDCNT.K                                  00066900
+      END                                                               00067000
+      OUTREC.1 = ''                                                     00067100
+      OUTREC.1 = OVERLAY(FILENM1,OUTREC.1,1,45)                         00067200
+      OUTREC.1 = OVERLAY(PGMLST.I,OUTREC.1,46,10)                       00067300
+      OUTREC.1 = OVERLAY(TOTALCNT,OUTREC.1,56,10)                       00067400
+      "EXECIO 1 DISKW OUTFIL1 (STEM OUTREC."                            00067500
+      PGMWRITTEN = PGMWRITTEN + 1                                       00067600
+      SAY PGMWRITTEN ':' PGMLST.I                                       00067700
+   END                                                                  00067800
+   RETURN                                                               00067900
+*************************REXX USEFUL*****************                   00068000
+/*REXX*/                                                                00068100
+"EXECIO 0 DISKW OUTFILE (OPEN"                                          00068200
+"EXECIO * DISKR FILE1 (STEM FLLIN1. FINIS"                              00068300
+DO I = 1 TO FLLIN1.0                                                    00068400
+   PROCNAME = WORD(STRIP(FLLIN1.I),1)                                   00068500
+   PROC = "'SHS.PROCLIB(" || PROCNAME || ")'"                           00068600
+   "ALLOC FILE(PROCF) DATASET("PROC") SHR REUSE"                        00068700
+   "EXECIO * DISKR PROCF (STEM PRCLIN. FINIS"                           00068800
+   "FREE FILE(PROCF)"                                                   00068900
+   STEPCNT = 0                                                          00069000
+   DO J = 1 TO PRCLIN.0                                                 00069100
+      IF SUBSTR(PRCLIN.J,1,3) = '//*' THEN DO                           00069200
+         ITERATE                                                        00069300
+      END                                                               00069400
+      PARSE VAR PRCLIN.J WORD1 WORD2 .                                  00069500
+      IF STRIP(WORD2) = 'EXEC' THEN DO                                  00069600
+         STEPCNT = STEPCNT + 1                                          00069700
+      END                                                               00069800
+   END                                                                  00069900
+   OUTREC.1 = ''                                                        00070000
+   OUTREC.1 = OVERLAY(PROCNAME,OUTREC.1,1,10)                           00070100
+   OUTREC.1 = OVERLAY(STEPCNT,OUTREC.1,11,10)                           00070200
+   "EXECIO 1 DISKW OUTFILE (STEM OUTREC."                               00070300
+END                                                                     00070400
+"EXECIO 0 DISKW OUTFILE (FINIS"                                         00070500
+EXIT                                                                    00070600
+*************************REXX USEFUL*****************                   00070700
+//X116STEP JOB (X116),'FLDFIND',CLASS=H,NOTIFY=X116,MSGCLASS=X          00070800
+//*        RESTART=STEP3                                                00070900
+//*THIS JOB IS TO FIND THE PROGRAMS FOR THE GIVEN PROC AND STEP NAMES.  00071000
+//*************       NOTE      ******************                      00071100
+//*PROC NAME SHOULD START IN COLUMN 1 AND STEP NAME SHOULD BEGIN IN     00071200
+//*COULMN 13 IN THE INPUT FILE                                          00071300
+//*************       NOTE      ******************                      00071400
+//JOBLIB   DD DISP=SHR,DSN=SYS3.MVSV5.RUNTIME   INSERTED FOR LE RUNTIME 00071500
+//STEP1  EXEC PGM=SORT,COND=(4,LT)                                      00071600
+//SORTIN DD DISP=SHR,DSN=WRKT.USER.PROCNAME.STEPNAME                    00071700
+//SORTOUT  DD DSN=WRKT.USER.PROCLIST.GETPGM,                            00071800
+//            DISP=(SHR,CATLG,DELETE),                                  00071900
+//            DCB=*.SORTIN                                              00072000
+//SYSIN    DD *                                                         00072100
+ SORT FIELDS=(1,10,CH,A)                                                00072200
+ SUM FIELDS=NONE                                                        00072300
+//SYSOUT   DD SYSOUT=*                                                  00072400
+//***************************                                           00072500
+//STEP2  EXEC PGM=SORT,COND=(4,LT)                                      00072600
+//SORTIN DD DISP=SHR,DSN=WRKT.USER.PROCNAME.STEPNAME                    00072700
+//SORTOUT  DD DSN=WRKT.USER.PROCLIST.GETPGM.IN1,                        00072800
+//            DISP=(SHR,CATLG,DELETE),                                  00072900
+//            DCB=*.SORTIN                                              00073000
+//SYSIN    DD *                                                         00073100
+ SORT FIELDS=(1,10,CH,A,13,10,CH,A)                                     00073200
+ SUM FIELDS=NONE                                                        00073300
+//SYSOUT   DD SYSOUT=*                                                  00073400
+//***************************                                           00073500
+//STEP3  EXEC PGM=IKJEFT1B,REGION=5M,DYNAMNBR=50,                       00073600
+//             PARM='%GETSTPG'                                          00073700
+//SYSEXEC DD  DISP=SHR,DSN=X116.USER.SARMA.REXX                         00073800
+//SYSTSPRT DD  SYSOUT=*                                                 00073900
+//SYSUDUMP DD  SYSOUT=*                                                 00074000
+//SYSOUT   DD  SYSOUT=*                                                 00074100
+//SYSPRINT DD  SYSOUT=*                                                 00074200
+//SYSTSIN  DD  DUMMY                                                    00074300
+//FILE1 DD DISP=SHR,DSN=WRKT.USER.PROCLIST.GETPGM                       00074400
+//OUTFILE DD  DSN=WRKT.USER.PROCLIST.GETPGM.OUT,                        00074500
+//       DISP=(SHR,CATLG,DELETE),SPACE=(CYL,(10,10),RLSE),              00074600
+//       DCB=(RECFM=FB,LRECL=80)                                        00074700
+//***************************                                           00074800
+//STEP4  EXEC PGM=SORT,COND=(4,LT)                                      00074900
+//SORTIN DD DISP=SHR,DSN=WRKT.USER.PROCLIST.GETPGM.OUT                  00075000
+//SORTOUT  DD DSN=WRKT.USER.PROCLIST.GETPGM.IN2,                        00075100
+//            DISP=(SHR,CATLG,DELETE),                                  00075200
+//            DCB=*.SORTIN                                              00075300
+//SYSIN    DD *                                                         00075400
+ SORT FIELDS=(1,10,CH,A,11,10,CH,A)                                     00075500
+//SYSOUT   DD SYSOUT=*                                                  00075600
+//***************************                                           00075700
+//STEP5    EXEC PGM=EZTPA00,COND=(0,NE)                                 00075800
+//STEPLIB  DD DSN=SYSSUPP.EZTRIEVE.V6R1.LOAD,DISP=SHR                   00075900
+//*        DD DSN=PROD.VS231DAT.LOADLIB,DISP=SHR                        00076000
+//         DD DSN=SLR1.LINKLIB,DISP=SHR                                 00076100
+//         DD DSN=PROD.ADP.LOADLIB,DISP=SHR                             00076200
+//         DD DSN=SYS1.VSCOBOL.COB2LIB,DISP=SHR                         00076300
+//         DD DSN=SYS3.MVSV5.RUNTIME,DISP=SHR                           00076400
+//         DD DISP=SHR,DSN=SYS3.MVSV5.RUNTIME   INSERTED FOR LE RUNTIME 00076500
+//SYSPRINT DD SYSOUT=*                                                  00076600
+//SYSSNAP  DD SYSOUT=*                                                  00076700
+//SYSOUT   DD SYSOUT=*                                                  00076800
+//INFILE1  DD DISP=SHR,DSN=WRKT.USER.PROCLIST.GETPGM.IN1                00076900
+//INFILE2  DD DISP=SHR,DSN=WRKT.USER.PROCLIST.GETPGM.IN2                00077000
+//MATCH    DD DSN=WRKT.USER.GETPGM.MATCH,                               00077100
+//            DISP=(SHR,CATLG,DELETE),SPACE=(CYL,(10,10),RLSE),         00077200
+//            DCB=(RECFM=FB,LRECL=80)                                   00077300
+//NOMTCH   DD DSN=WRKT.USER.GETPGM.NOMATCH,                             00077400
+//            DISP=(SHR,CATLG,DELETE),SPACE=(CYL,(10,10),RLSE),         00077500
+//            DCB=(RECFM=FB,LRECL=80)                                   00077600
+//SYSIN    DD *                                                         00077700
+ *                                                                      00077800
+  FILE INFILE1                                                          00077900
+  IN1-REC               0001  0080  A                                   00078000
+  IN1-PROC              0001  0010  A                                   00078100
+  IN1-STEP              0013  0010  A                                   00078200
+ *                                                                      00078300
+  FILE INFILE2                                                          00078400
+  IN2-REC               0001  0080  A                                   00078500
+  IN2-PROC              0001  0010  A                                   00078600
+  IN2-STEP              0011  0010  A                                   00078700
+ *                                                                      00078800
+  FILE MATCH                                                            00078900
+  OUT1-REC              0001  0080  A                                   00079000
+*                                                                       00079100
+  FILE NOMTCH                                                           00079200
+  OUT2-REC              0001  0080  A                                   00079300
+*                                                                       00079400
+*****************************************************************       00079500
+  JOB INPUT ( INFILE1  KEY (IN1-PROC IN1-STEP)+                         00079600
+              INFILE2 KEY (IN2-PROC IN2-STEP))                          00079700
+*****************************************************************       00079800
+*                                                                       00079900
+*                                                                       00080000
+  IF MATCHED                                                            00080100
+     OUT1-REC = IN2-REC                                                 00080200
+     PUT MATCH                                                          00080300
+  ELSE                                                                  00080400
+     IF INFILE1                                                         00080500
+        OUT2-REC = IN1-REC                                              00080600
+        PUT NOMTCH                                                      00080700
+     END-IF                                                             00080800
+  END-IF.                                                               00080900
+*                                                                       00081000
+*************************REXX USEFUL*****************                   00081100
+/*REXX*/                                                                00081200
+"EXECIO 0 DISKW OUTFILE (OPEN"                                          00081300
+"EXECIO * DISKR FILE1 (STEM FLLIN1. FINIS"                              00081400
+DO I = 1 TO FLLIN1.0                                                    00081500
+   PROCNAME = WORD(STRIP(FLLIN1.I),1)                                   00081600
+   PROC = "'SHS.PROCLIB(" || PROCNAME || ")'"                           00081700
+   IF SYSDSN(PROC) \= 'OK' THEN DO                                      00081800
+      SAY 'PROC' PROCNAME 'NOT FOUND'                                   00081900
+      ITERATE                                                           00082000
+   END                                                                  00082100
+   "ALLOC FILE(PROCF) DATASET("PROC") SHR REUSE"                        00082200
+   "EXECIO * DISKR PROCF (STEM PRCLIN. FINIS"                           00082300
+   "FREE FILE(PROCF)"                                                   00082400
+   STEPCNT = 0                                                          00082500
+   DO J = 1 TO PRCLIN.0                                                 00082600
+      IF SUBSTR(PRCLIN.J,1,3) = '//*' THEN DO                           00082700
+         ITERATE                                                        00082800
+      END                                                               00082900
+      PARSE VAR PRCLIN.J WORD1 WORD2 WORD3 .                            00083000
+      IF STRIP(WORD2) = 'EXEC' THEN DO                                  00083100
+         PARSE VAR WORD1 . '//' STEPNAME .                              00083200
+         PARSE VAR WORD3 . 'PGM=' PROGNAME .                            00083300
+         PARSE VAR PROGNAME PROGNAME ',' .                              00083400
+         PARSE VAR PROGNAME PROGNAME '&' .                              00083500
+         OUTREC.1 = ''                                                  00083600
+         OUTREC.1 = OVERLAY(PROCNAME,OUTREC.1,1,10)                     00083700
+         OUTREC.1 = OVERLAY(STEPNAME,OUTREC.1,11,10)                    00083800
+         OUTREC.1 = OVERLAY(PROGNAME,OUTREC.1,21,10)                    00083900
+         "EXECIO 1 DISKW OUTFILE (STEM OUTREC."                         00084000
+      END                                                               00084100
+   END                                                                  00084200
+END                                                                     00084300
+"EXECIO 0 DISKW OUTFILE (FINIS"                                         00084400
+EXIT                                                                    00084500
+*************************REXX USEFUL*****************                   00084600
+/* REXX */                                                              00084700
+"ALLOCATE DSNAME('X115.USER.PDS.REXX') FILE(SYSEXEC) SHR REUSE"         00084800
+EXIT                                                                    00084900
+*************************REXX USEFUL*****************                   00085000
+/*REXX*/                                                                00085100
+/*VIEW A DATASET FROM INSIDE A PANEL*/                                  00085200
+ADDRESS ISPEXEC "CONTROL ERRORS RETURN"                                 00085300
+ADDRESS ISREDIT "MACRO PROCESS"                                         00085400
+ADDRESS ISREDIT "(USTAT) = USER_STATE "                                 00085500
+ADDRESS ISREDIT "(CURSL,CURSC) = CURSOR"                                00085600
+ADDRESS ISREDIT "(THELINE) = LINE .ZCSR"                                00085700
+PARSE VAR THELINE FILENA1 .                                             00085800
+MAXCOL = LENGTH(THELINE)                                                00085900
+CONTINUE = 'YES'                                                        00086000
+I = CURSC                                                               00086100
+DO WHILE CONTINUE = 'YES'                                               00086200
+  LETTER = SUBSTR(THELINE,I,1)                                          00086300
+  IF (LETTER >= 'A' & LETTER <= 'Z') | ,                                00086400
+     (LETTER >= '0' & LETTER <= '9') | ,                                00086500
+     LETTER = '#' | LETTER = '@' | LETTER = '$' | LETTER = '-' |,       00086600
+     LETTER = 'C0'X | LETTER = '.' | LETTER = '(' | LETTER = ')' THEN DO00086700
+     CONTINUE = 'YES'                                                   00086800
+     I = I + 1                                                          00086900
+  END                                                                   00087000
+  ELSE DO                                                               00087100
+     CONTINUE = 'NO'                                                    00087200
+  END                                                                   00087300
+  IF I > MAXCOL THEN CONTINUE = 'NO'                                    00087400
+END                                                                     00087500
+ENDCOL = I - 1                                                          00087600
+CONTINUE = 'YES'                                                        00087700
+I = CURSC                                                               00087800
+DO WHILE CONTINUE = 'YES'                                               00087900
+  LETTER = SUBSTR(THELINE,I,1)                                          00088000
+  IF (LETTER >= 'A' & LETTER <= 'Z') | ,                                00088100
+     (LETTER >= '0' & LETTER <= '9') | ,                                00088200
+     LETTER = '#' | LETTER = '@' | LETTER = '$' | LETTER = '-' |,       00088300
+     LETTER = 'C0'X | LETTER = '.' | LETTER = '(' | LETTER = ')' THEN DO00088400
+     CONTINUE = 'YES'                                                   00088500
+     I = I - 1                                                          00088600
+  END                                                                   00088700
+  ELSE DO                                                               00088800
+     CONTINUE = 'NO'                                                    00088900
+  END                                                                   00089000
+  IF I <= 0 THEN CONTINUE = 'NO'                                        00089100
+END                                                                     00089200
+STARTCOL = I + 1                                                        00089300
+FILLEN = ENDCOL - STARTCOL + 1                                          00089400
+IF STARTCOL > 0 & FILLEN > 0 THEN DO                                    00089500
+   FILENA1 = SUBSTR(THELINE,STARTCOL,FILLEN)                            00089600
+   FILENAM = "'"STRIP(FILENA1)"'"                                       00089700
+   IF SYSDSN(FILENAM) = 'OK' THEN DO                                    00089800
+      ADDRESS ISPEXEC "VIEW DATASET("FILENAM")"                         00089900
+      IF RC > 0 THEN DO                                                 00090000
+         ZEDSMSG = "REQUEST FAILED"                                     00090100
+         ZEDLMSG = "ERROR OPENING DATASET:" FILENA1                     00090200
+      END                                                               00090300
+   END                                                                  00090400
+   ELSE DO                                                              00090500
+      ZEDSMSG = "REQUEST FAILED"                                        00090600
+      ZEDLMSG = "UNABLE TO OPEN DATASET:" FILENA1                       00090700
+   END                                                                  00090800
+END                                                                     00090900
+ELSE DO                                                                 00091000
+   ZEDSMSG = "REQUEST FAILED"                                           00091100
+   ZEDLMSG = "INVALID DATASET"                                          00091200
+END                                                                     00091300
+ADDRESS ISREDIT "USER_STATE = (USTAT)"                                  00091400
+ADDRESS ISPEXEC "SETMSG MSG(ISRZ001)"                                   00091500
+EXIT                                                                    00091600
+*************************REXX USEFUL*****************                   00091700
+/*REXX*/                                                                00091800
+/*VIEW A PROGRAM FROM INSIDE A PANEL*/                                  00091900
+ADDRESS ISPEXEC "CONTROL ERRORS RETURN"                                 00092000
+ADDRESS ISREDIT "MACRO PROCESS"                                         00092100
+ADDRESS ISREDIT "(USTAT) = USER_STATE "                                 00092200
+ADDRESS ISREDIT "(CURSL,CURSC) = CURSOR"                                00092300
+ADDRESS ISREDIT "(THELINE) = LINE .ZCSR"                                00092400
+PARSE VAR THELINE FILENA1 .                                             00092500
+MAXCOL = LENGTH(THELINE)                                                00092600
+CONTINUE = 'YES'                                                        00092700
+I = CURSC                                                               00092800
+DO WHILE CONTINUE = 'YES'                                               00092900
+  LETTER = SUBSTR(THELINE,I,1)                                          00093000
+  IF (LETTER >= 'A' & LETTER <= 'Z') | ,                                00093100
+     (LETTER >= '0' & LETTER <= '9') | ,                                00093200
+     LETTER = '#' | LETTER = '@' | LETTER = '$' | LETTER = '-' |,       00093300
+     LETTER = 'C0'X | LETTER = '.' | LETTER = '(' | LETTER = ')' THEN DO00093400
+     CONTINUE = 'YES'                                                   00093500
+     I = I + 1                                                          00093600
+  END                                                                   00093700
+  ELSE DO                                                               00093800
+     CONTINUE = 'NO'                                                    00093900
+  END                                                                   00094000
+  IF I > MAXCOL THEN CONTINUE = 'NO'                                    00094100
+END                                                                     00094200
+ENDCOL = I - 1                                                          00094300
+CONTINUE = 'YES'                                                        00094400
+I = CURSC                                                               00094500
+DO WHILE CONTINUE = 'YES'                                               00094600
+  LETTER = SUBSTR(THELINE,I,1)                                          00094700
+  IF (LETTER >= 'A' & LETTER <= 'Z') | ,                                00094800
+     (LETTER >= '0' & LETTER <= '9') | ,                                00094900
+     LETTER = '#' | LETTER = '@' | LETTER = '$' | LETTER = '-' |,       00095000
+     LETTER = 'C0'X | LETTER = '.' | LETTER = '(' | LETTER = ')' THEN DO00095100
+     CONTINUE = 'YES'                                                   00095200
+     I = I - 1                                                          00095300
+  END                                                                   00095400
+  ELSE DO                                                               00095500
+     CONTINUE = 'NO'                                                    00095600
+  END                                                                   00095700
+  IF I <= 0 THEN CONTINUE = 'NO'                                        00095800
+END                                                                     00095900
+STARTCOL = I + 1                                                        00096000
+FILLEN = ENDCOL - STARTCOL + 1                                          00096100
+IF STARTCOL > 0 & FILLEN > 0 THEN DO                                    00096200
+   FILENA1 = SUBSTR(THELINE,STARTCOL,FILLEN)                            00096300
+   FILENAM = "'CHGMAN.CMN.BDS.SRCLIB("STRIP(FILENA1)")'"                00096400
+   IF SYSDSN(FILENAM) = 'OK' THEN DO                                    00096500
+      ADDRESS ISPEXEC "VIEW DATASET("FILENAM")"                         00096600
+      IF RC > 0 THEN DO                                                 00096700
+         ZEDSMSG = "REQUEST FAILED"                                     00096800
+         ZEDLMSG = "ERROR OPENING DATASET:" FILENA1                     00096900
+      END                                                               00097000
+   END                                                                  00097100
+   ELSE DO                                                              00097200
+      ZEDSMSG = "REQUEST FAILED"                                        00097300
+      ZEDLMSG = "UNABLE TO OPEN DATASET:" FILENAM                       00097400
+   END                                                                  00097500
+END                                                                     00097600
+ELSE DO                                                                 00097700
+   ZEDSMSG = "REQUEST FAILED"                                           00097800
+   ZEDLMSG = "INVALID DATASET"                                          00097900
+END                                                                     00098000
+ADDRESS ISREDIT "USER_STATE = (USTAT)"                                  00098100
+ADDRESS ISPEXEC "SETMSG MSG(ISRZ001)"                                   00098200
+EXIT                                                                    00098300
+*************************REXX USEFUL*****************                   00098400
+//X116REXF JOB (X116),'SARMA',CLASS=H,MSGCLASS=X,                       00098500
+//     MSGLEVEL=(1,1),NOTIFY=X116                                       00098600
+//* THIS JOB WILL LIST THE PROC,STEP,DD,JOB,FILE NAMES FOR THE GIVEN    00098700
+//* FILES                                                               00098800
+//STEP1  EXEC PGM=SORT,COND=(4,LT)                                      00098900
+//SORTIN DD DSN=PROD.DCMS.SMFDSN,DISP=SHR                               00099000
+//SORTOUT  DD DSN=WRKT.USER.ZEZ.OUTPUT1.FINAL,                          00099100
+//            DISP=(NEW,CATLG,DELETE),                                  00099200
+//            DCB=(LRECL=150,RECFM=FB)                                  00099300
+//SYSIN    DD *                                                         00099400
+ SORT FIELDS=(1,45,CH,A)                                                00099500
+//SYSOUT   DD SYSOUT=*                                                  00099600
+//*                                                                     00099700
+//STEP2  EXEC PGM=SORT,COND=(4,LT)                                      00099800
+//SORTIN DD DISP=SHR,DSN=WRKT.USER.ZEZ.FILELST                          00099900
+//SORTOUT  DD DSN=WRKT.USER.ZEZ.OUTPUT2.FINAL,                          00100000
+//            DISP=(NEW,CATLG,DELETE),                                  00100100
+//            DCB=(LRECL=80,RECFM=FB)                                   00100200
+//SYSIN    DD *                                                         00100300
+ SORT FIELDS=(1,45,CH,A)                                                00100400
+ SUM FIELDS=NONE                                                        00100500
+//SYSOUT   DD SYSOUT=*                                                  00100600
+//*                                                                     00100700
+//STEP3    EXEC PGM=EZTPA00,COND=(0,NE)                                 00100800
+//STEPLIB  DD DSN=SYSSUPP.EZTRIEVE.V6R1.LOAD,DISP=SHR                   00100900
+//*        DD DSN=PROD.VS231DAT.LOADLIB,DISP=SHR                        00101000
+//         DD DSN=SLR1.LINKLIB,DISP=SHR                                 00101100
+//         DD DSN=PROD.ADP.LOADLIB,DISP=SHR                             00101200
+//         DD DSN=SYS1.VSCOBOL.COB2LIB,DISP=SHR                         00101300
+//         DD DSN=SYS3.MVSV5.RUNTIME,DISP=SHR                           00101400
+//SYSPRINT DD SYSOUT=*                                                  00101500
+//SYSSNAP  DD SYSOUT=*                                                  00101600
+//SYSOUT   DD SYSOUT=*                                                  00101700
+//INFILE1  DD DISP=SHR,DSN=WRKT.USER.ZEZ.OUTPUT2.FINAL                  00101800
+//INFILE2  DD DISP=SHR,DSN=WRKT.USER.ZEZ.OUTPUT1.FINAL                  00101900
+//OUTFILE1 DD DSN=WRKT.USER.ZEZ.OUTPUT.FINAL.MATCH,                     00102000
+//            DISP=(,CATLG,DELETE),                                     00102100
+//            DSORG=PS,RECFM=FB,LRECL=150,BLKSIZE=0                     00102200
+//OUTFILE2 DD DSN=WRKT.USER.ZEZ.OUTPUT.FINAL.NOMATCH,                   00102300
+//            DISP=(,CATLG,DELETE),                                     00102400
+//            DSORG=PS,RECFM=FB,LRECL=80,BLKSIZE=0                      00102500
+//SYSIN    DD *                                                         00102600
+ *                                                                      00102700
+  FILE INFILE1                                                          00102800
+  IN1-REC               0001  0080  A                                   00102900
+  IN1-DS                0001  0045  A                                   00103000
+ *                                                                      00103100
+  FILE INFILE2                                                          00103200
+  IN2-REC               0001  0150  A                                   00103300
+  IN2-DS                0001  0045  A                                   00103400
+ *                                                                      00103500
+*                                                                       00103600
+  FILE OUTFILE1                                                         00103700
+  OUT1-REC              0001  0150  A                                   00103800
+*                                                                       00103900
+  FILE OUTFILE2                                                         00104000
+  OUT2-REC              0001  0080  A                                   00104100
+*                                                                       00104200
+*****************************************************************       00104300
+  JOB INPUT ( INFILE1  KEY (IN1-DS)+                                    00104400
+              INFILE2 KEY (IN2-DS))                                     00104500
+*****************************************************************       00104600
+*                                                                       00104700
+  MOVE SPACES                TO OUT1-REC                                00104800
+                                OUT2-REC                                00104900
+*                                                                       00105000
+  IF MATCHED                                                            00105100
+     OUT1-REC = IN2-REC                                                 00105200
+     PUT OUTFILE1                                                       00105300
+*                                                                       00105400
+  ELSE                                                                  00105500
+     IF INFILE1                                                         00105600
+        OUT2-REC = IN1-REC                                              00105700
+        PUT OUTFILE2                                                    00105800
+     END-IF                                                             00105900
+  END-IF.                                                               00106000
+*                                                                       00106100
+*************************REXX USEFUL*****************                   00106200
+//X116REXJ JOB (X116),'SARMA',CLASS=H,MSGCLASS=X,                       00106300
+//     MSGLEVEL=(1,1),NOTIFY=X116                                       00106400
+//* THIS JOB WILL LIST THE PROC,STEP,DD,JOB,FILE NAMES FOR THE GIVEN    00106500
+//* FILES                                                               00106600
+//STEPDEL EXEC PGM=IEFBR14                                              00106700
+//DD001    DD DSN=WRKT.USER.ZEZ.OUTPUT1.FINAL,                          00106800
+//         DISP=(MOD,DELETE,DELETE)                                     00106900
+//DD002    DD DSN=WRKT.USER.ZEZ.OUTPUT2.FINAL,                          00107000
+//         DISP=(MOD,DELETE,DELETE)                                     00107100
+//DD003    DD DSN=WRKT.USER.ZEZ.OUTPUT.FINAL.MATCH,                     00107200
+//         DISP=(MOD,DELETE,DELETE)                                     00107300
+//DD004    DD DSN=WRKT.USER.ZEZ.OUTPUT.FINAL.NOMATCH,                   00107400
+//         DISP=(MOD,DELETE,DELETE)                                     00107500
+//DD005    DD DSN=WRKT.USER.JOBS.OUTPUT.FINAL,                          00107600
+//         DISP=(MOD,DELETE,DELETE)                                     00107700
+//*                                                                     00107800
+//STEP1  EXEC PGM=SORT,COND=(4,LT)                                      00107900
+//SORTIN DD DSN=PROD.DCMS.SMFDSN,DISP=SHR                               00108000
+//SORTOUT  DD DSN=WRKT.USER.ZEZ.OUTPUT1.FINAL,                          00108100
+//            DISP=(NEW,CATLG,DELETE),                                  00108200
+//            DCB=(LRECL=150,RECFM=FB)                                  00108300
+//SYSIN    DD *                                                         00108400
+ SORT FIELDS=(1,45,CH,A)                                                00108500
+//SYSOUT   DD SYSOUT=*                                                  00108600
+//*                                                                     00108700
+//STEP2  EXEC PGM=SORT,COND=(4,LT)                                      00108800
+//SORTIN DD DISP=SHR,DSN=X116.USER.ZEZ.FILELST                          00108900
+//SORTOUT  DD DSN=WRKT.USER.ZEZ.OUTPUT2.FINAL,                          00109000
+//            DISP=(NEW,CATLG,DELETE),                                  00109100
+//            DCB=(LRECL=80,RECFM=FB)                                   00109200
+//SYSIN    DD *                                                         00109300
+ SORT FIELDS=(1,45,CH,A)                                                00109400
+ SUM FIELDS=NONE                                                        00109500
+//SYSOUT   DD SYSOUT=*                                                  00109600
+//*                                                                     00109700
+//STEP3    EXEC PGM=EZTPA00,COND=(0,NE)                                 00109800
+//STEPLIB  DD DSN=SYSSUPP.EZTRIEVE.V6R1.LOAD,DISP=SHR                   00109900
+//*        DD DSN=PROD.VS231DAT.LOADLIB,DISP=SHR                        00110000
+//         DD DSN=SLR1.LINKLIB,DISP=SHR                                 00110100
+//         DD DSN=PROD.ADP.LOADLIB,DISP=SHR                             00110200
+//         DD DSN=SYS1.VSCOBOL.COB2LIB,DISP=SHR                         00110300
+//         DD DSN=SYS3.MVSV5.RUNTIME,DISP=SHR                           00110400
+//SYSPRINT DD SYSOUT=*                                                  00110500
+//SYSSNAP  DD SYSOUT=*                                                  00110600
+//SYSOUT   DD SYSOUT=*                                                  00110700
+//INFILE1  DD DISP=SHR,DSN=WRKT.USER.ZEZ.OUTPUT2.FINAL                  00110800
+//INFILE2  DD DISP=SHR,DSN=WRKT.USER.ZEZ.OUTPUT1.FINAL                  00110900
+//OUTFILE1 DD DSN=WRKT.USER.ZEZ.OUTPUT.FINAL.MATCH,                     00111000
+//            DISP=(,CATLG,DELETE),                                     00111100
+//            DSORG=PS,RECFM=FB,LRECL=150,BLKSIZE=0                     00111200
+//OUTFILE2 DD DSN=WRKT.USER.ZEZ.OUTPUT.FINAL.NOMATCH,                   00111300
+//            DISP=(,CATLG,DELETE),                                     00111400
+//            DSORG=PS,RECFM=FB,LRECL=80,BLKSIZE=0                      00111500
+//SYSIN    DD *                                                         00111600
+ *                                                                      00111700
+  FILE INFILE1                                                          00111800
+  IN1-REC               0001  0080  A                                   00111900
+  IN1-DS                0001  0045  A                                   00112000
+ *                                                                      00112100
+  FILE INFILE2                                                          00112200
+  IN2-REC               0001  0150  A                                   00112300
+  IN2-DS                0001  0045  A                                   00112400
+ *                                                                      00112500
+*                                                                       00112600
+  FILE OUTFILE1                                                         00112700
+  OUT1-REC              0001  0150  A                                   00112800
+*                                                                       00112900
+  FILE OUTFILE2                                                         00113000
+  OUT2-REC              0001  0080  A                                   00113100
+*                                                                       00113200
+*****************************************************************       00113300
+  JOB INPUT ( INFILE1  KEY (IN1-DS)+                                    00113400
+              INFILE2 KEY (IN2-DS))                                     00113500
+*****************************************************************       00113600
+*                                                                       00113700
+  MOVE SPACES                TO OUT1-REC                                00113800
+                                OUT2-REC                                00113900
+*                                                                       00114000
+  IF MATCHED                                                            00114100
+     OUT1-REC = IN2-REC                                                 00114200
+     PUT OUTFILE1                                                       00114300
+*                                                                       00114400
+  ELSE                                                                  00114500
+     IF INFILE1                                                         00114600
+        OUT2-REC = IN1-REC                                              00114700
+        PUT OUTFILE2                                                    00114800
+     END-IF                                                             00114900
+  END-IF.                                                               00115000
+*                                                                       00115100
+*************************REXX USEFUL*****************                   00115200
+//X116REXJ JOB (X116),'SARMA',CLASS=H,MSGCLASS=X,                       00115300
+//     MSGLEVEL=(1,1),NOTIFY=X116                                       00115400
+//* THIS JOB WILL LIST THE PROC,STEP,DD,JOB,FILE NAMES FOR THE GIVEN    00115500
+//* JOBS                                                                00115600
+//STEPDEL EXEC PGM=IEFBR14                                              00115700
+//DD001    DD DSN=WRKT.USER.ZEZ.OUTPUT1.FINAL,                          00115800
+//         DISP=(MOD,DELETE,DELETE)                                     00115900
+//DD002    DD DSN=WRKT.USER.ZEZ.OUTPUT2.FINAL,                          00116000
+//         DISP=(MOD,DELETE,DELETE)                                     00116100
+//DD003    DD DSN=WRKT.USER.ZEZ.OUTPUT.FINAL.MATCH,                     00116200
+//         DISP=(MOD,DELETE,DELETE)                                     00116300
+//DD004    DD DSN=WRKT.USER.ZEZ.OUTPUT.FINAL.NOMATCH,                   00116400
+//         DISP=(MOD,DELETE,DELETE)                                     00116500
+//DD005    DD DSN=WRKT.USER.JOBS.OUTPUT.FINAL,                          00116600
+//         DISP=(MOD,DELETE,DELETE)                                     00116700
+//*                                                                     00116800
+//STEP1  EXEC PGM=SORT,COND=(4,LT)                                      00116900
+//SORTIN DD DSN=PROD.DCMS.SMFDSN,DISP=SHR                               00117000
+//SORTOUT  DD DSN=WRKT.USER.ZEZ.OUTPUT1.FINAL,                          00117100
+//            DISP=(NEW,CATLG,DELETE),                                  00117200
+//            DCB=(LRECL=150,RECFM=FB)                                  00117300
+//SYSIN    DD *                                                         00117400
+ SORT FIELDS=(50,8,CH,A)                                                00117500
+//SYSOUT   DD SYSOUT=*                                                  00117600
+//*                                                                     00117700
+//STEP2  EXEC PGM=SORT,COND=(4,LT)                                      00117800
+//SORTIN DD DISP=SHR,DSN=X116.USER.ZEZ.FILELST                          00117900
+//SORTOUT  DD DSN=WRKT.USER.ZEZ.OUTPUT2.FINAL,                          00118000
+//            DISP=(NEW,CATLG,DELETE),                                  00118100
+//            DCB=(LRECL=80,RECFM=FB)                                   00118200
+//SYSIN    DD *                                                         00118300
+ SORT FIELDS=(1,8,CH,A)                                                 00118400
+ SUM FIELDS=NONE                                                        00118500
+//SYSOUT   DD SYSOUT=*                                                  00118600
+//*                                                                     00118700
+//STEP3    EXEC PGM=EZTPA00,COND=(0,NE)                                 00118800
+//STEPLIB  DD DSN=SYSSUPP.EZTRIEVE.V6R1.LOAD,DISP=SHR                   00118900
+//*        DD DSN=PROD.VS231DAT.LOADLIB,DISP=SHR                        00119000
+//         DD DSN=SLR1.LINKLIB,DISP=SHR                                 00119100
+//         DD DSN=PROD.ADP.LOADLIB,DISP=SHR                             00119200
+//         DD DSN=SYS1.VSCOBOL.COB2LIB,DISP=SHR                         00119300
+//         DD DSN=SYS3.MVSV5.RUNTIME,DISP=SHR                           00119400
+//SYSPRINT DD SYSOUT=*                                                  00119500
+//SYSSNAP  DD SYSOUT=*                                                  00119600
+//SYSOUT   DD SYSOUT=*                                                  00119700
+//INFILE1  DD DISP=SHR,DSN=WRKT.USER.ZEZ.OUTPUT2.FINAL                  00119800
+//INFILE2  DD DISP=SHR,DSN=WRKT.USER.ZEZ.OUTPUT1.FINAL                  00119900
+//OUTFILE1 DD DSN=WRKT.USER.ZEZ.OUTPUT.FINAL.MATCH,                     00120000
+//            DISP=(,CATLG,DELETE),                                     00120100
+//            DSORG=PS,RECFM=FB,LRECL=150,BLKSIZE=0                     00120200
+//OUTFILE2 DD DSN=WRKT.USER.ZEZ.OUTPUT.FINAL.NOMATCH,                   00120300
+//            DISP=(,CATLG,DELETE),                                     00120400
+//            DSORG=PS,RECFM=FB,LRECL=80,BLKSIZE=0                      00120500
+//SYSIN    DD *                                                         00120600
+ *                                                                      00120700
+  FILE INFILE1                                                          00120800
+  IN1-REC               0001  0080  A                                   00120900
+  IN1-DS                0001  0008  A                                   00121000
+ *                                                                      00121100
+  FILE INFILE2                                                          00121200
+  IN2-REC               0001  0150  A                                   00121300
+  IN2-DS                0050  0008  A                                   00121400
+ *                                                                      00121500
+*                                                                       00121600
+  FILE OUTFILE1                                                         00121700
+  OUT1-REC              0001  0150  A                                   00121800
+*                                                                       00121900
+  FILE OUTFILE2                                                         00122000
+  OUT2-REC              0001  0080  A                                   00122100
+*                                                                       00122200
+*****************************************************************       00122300
+  JOB INPUT ( INFILE1  KEY (IN1-DS)+                                    00122400
+              INFILE2 KEY (IN2-DS))                                     00122500
+*****************************************************************       00122600
+*                                                                       00122700
+  MOVE SPACES                TO OUT1-REC                                00122800
+                                OUT2-REC                                00122900
+*                                                                       00123000
+  IF MATCHED                                                            00123100
+     OUT1-REC = IN2-REC                                                 00123200
+     PUT OUTFILE1                                                       00123300
+*                                                                       00123400
+  ELSE                                                                  00123500
+     IF INFILE1                                                         00123600
+        OUT2-REC = IN1-REC                                              00123700
+        PUT OUTFILE2                                                    00123800
+     END-IF                                                             00123900
+  END-IF.                                                               00124000
+*                                                                       00124100
+//STEP4    EXEC PGM=SORT                                                00124200
+//SYSOUT   DD SYSOUT=*                                                  00124300
+//SORTIN   DD DISP=SHR,DSN=X116.USER.JOBS.HEADER                        00124400
+//SORTOUT  DD DSN=WRKT.USER.JOBS.OUTPUT.FINAL,                          00124500
+//            DISP=(NEW,CATLG,DELETE),                                  00124600
+//            SPACE=(CYL,(2000,2000),RLSE),VOL=(,,,200),                00124700
+//            DCB=(RECFM=FB,LRECL=98,BLKSIZE=0)                         00124800
+//SYSIN    DD *                                                         00124900
+   SORT FIELDS=COPY                                                     00125000
+/*                                                                      00125100
+//STEP5    EXEC PGM=SORT                                                00125200
+//SYSOUT   DD SYSOUT=*                                                  00125300
+//SORTIN   DD DISP=SHR,DSN=WRKT.USER.ZEZ.OUTPUT.FINAL.MATCH             00125400
+//SORTOUT  DD DSN=WRKT.USER.JOBS.OUTPUT.FINAL,                          00125500
+//            DISP=MOD                                                  00125600
+//SYSIN    DD *                                                         00125700
+   SORT FIELDS=COPY                                                     00125800
+   INCLUDE COND=(68,5,CH,EQ,C'INPUT')                                   00125900
+   OUTREC FIELDS=(1,58,                                                 00126000
+                  2X,                                                   00126100
+                  59,8,                                                 00126200
+                  2X,                                                   00126300
+                  68,8,                                                 00126400
+                  2X,                                                   00126500
+                  132,8,                                                00126600
+                  2X,                                                   00126700
+                  141,8)                                                00126800
+/*                                                                      00126900
