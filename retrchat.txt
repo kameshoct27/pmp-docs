@@ -1,0 +1,2287 @@
+10/31/2014
+ Microsoft Lync Users: Please note that messages are subject to Monitoring and Compliance review. Inappropriate communications may be filtered and not delivered.
+Barinsky, Lev [CCC-OT] 3:42 PM
+Hello
+Somarouthu, Kameswararao [CCC-OT NE] 3:42 PM
+Hi 
+Are you still around?
+Please tell me
+Barinsky, Lev [CCC-OT] 3:42 PM
+yes, but not for long
+couple of things...
+Somarouthu, Kameswararao [CCC-OT NE] 3:42 PM
+Ok
+Barinsky, Lev [CCC-OT] 3:43 PM
+ZWSD86AN and ZWSD40AN, BN, CN, DN - we have 10/28 and 10/29 on hold
+Somarouthu, Kameswararao [CCC-OT NE] 3:43 PM
+Yes
+I will put 10/30 on hold
+today before 8AM EST
+Barinsky, Lev [CCC-OT] 3:44 PM
+ok, great
+they are having a call at 9:00
+on CDW status and next steps....do you have that invite by any chance
+Somarouthu, Kameswararao [CCC-OT NE] 3:46 PM
+Who sent the meeting request Lev?
+Barinsky, Lev [CCC-OT] 3:47 PM
+I dont have it, I thought you may be had it, but never mind. Anderw Oliu sent an email at 1:30 est and he mentioned about it
+I can ask Andrew
+he didnt say much, basically:
+DW recovery to the COB database was successful and we have begun re-running batch for October 27th. 
+Somarouthu, Kameswararao [CCC-OT NE] 3:48 PM
+Oh.. then I am not in the invitee list
+Yes even I got this update from the CDW GPA team here
+Barinsky, Lev [CCC-OT] 3:49 PM
+does COB have any impact on our jobs
+Somarouthu, Kameswararao [CCC-OT NE] 3:49 PM
+And I told them not to release any triggers before consultign me
+No..
+they said that it's just a test drill like how it works for 27th data since it was already proceessed in PROD but they will not send any of the feeds to their downstream
+Barinsky, Lev [CCC-OT] 3:50 PM
+ok, then I am lost - why they are doing it...as a test
+anyway jsut keep your ears open:)
+Somarouthu, Kameswararao [CCC-OT NE] 3:51 PM
+Just to confirm that everything works in COB accurately as if it works in PROD
+Barinsky, Lev [CCC-OT] 3:51 PM
+aside from CDW issues, one other item
+Somarouthu, Kameswararao [CCC-OT NE] 3:51 PM
+Ok. pls tell me
+Barinsky, Lev [CCC-OT] 3:52 PM
+BR Xref MSD file changes 
+Somarouthu, Kameswararao [CCC-OT NE] 3:52 PM
+I saw your mail 
+Shall I check with Mukul on this?
+Barinsky, Lev [CCC-OT] 3:53 PM
+Yes, please. I have to respond to MSD as they are implementing on 11/7
+ut I havent given them my final signoff
+they might implement anyway, I am not sure
+Somarouthu, Kameswararao [CCC-OT NE] 3:53 PM
+Ok..sure.. I will check
+Barinsky, Lev [CCC-OT] 3:54 PM
+the challenge is, just to repeat....
+Somarouthu, Kameswararao [CCC-OT NE] 3:54 PM
+But what about our mainframe changes?
+Are we done with that?
+Barinsky, Lev [CCC-OT] 3:54 PM
+that initially noone noticed how they are changing the schedule
+MSD changing the schedue
+the new file is ready 4:30-5:00 next morning vs current old file is done ad 20:00
+our MF changes are pretty much done (almost done)
+and we palnned to keep CDW file in the same format, just the two fields will be blank
+Somarouthu, Kameswararao [CCC-OT NE] 3:56 PM
+Yes.. I remember this as per our earlier discusssion
+Barinsky, Lev [CCC-OT] 3:57 PM
+but now, the concern is - can they wait until 5am and if so do they need to change their schedule
+Somarouthu, Kameswararao [CCC-OT NE] 3:57 PM
+Ok..
+I will bring this point with CDW
+Barinsky, Lev [CCC-OT] 3:57 PM
+woudl be good to know how important this is to their process and if any impact is possible at all
+for us on the MF, it is not that important any more. because the datra is not complete 100%, therefore it is not 100% reliable, so 95% or 80% - doesnt make a huge difference
+right now, we can live without this data
+Somarouthu, Kameswararao [CCC-OT NE] 3:59 PM
+Ok.. Yes.. I will discuss with them.. but the challenge is they are completely occupied with catch up
+Barinsky, Lev [CCC-OT] 4:00 PM
+yes, I know
+Somarouthu, Kameswararao [CCC-OT NE] 4:00 PM
+But I will definetly try to bring our concerns and get them clarified with them
+Barinsky, Lev [CCC-OT] 4:00 PM
+but I have to tell something to MSD
+Somarouthu, Kameswararao [CCC-OT NE] 4:00 PM
+Yes Lev I agree
+I will update you today itself
+Barinsky, Lev [CCC-OT] 4:01 PM
+thanks
+Somarouthu, Kameswararao [CCC-OT NE] 4:01 PM
+Lev, this job - ZSMD196N will be delayed after their impl
+Am I right?
+which runs in between 4 to 5AM?
+t+1
+Barinsky, Lev [CCC-OT] 4:02 PM
+not exactly. this job is being retured. The job that creates the new file ZSMD98N runs 4:30-5:00, it is already in production
+198
+Somarouthu, Kameswararao [CCC-OT NE] 4:02 PM
+Oh ok ok
+got it
+I will ping you in your morning time with update
+Barinsky, Lev [CCC-OT] 4:04 PM
+it is based on Delta from SMC; and they also have a weekly job which runs on Monday early am, and processes "full" file from SMC - but this has no impact on our schedule as we have nothing running on Sunday or Monday monrning
+Somarouthu, Kameswararao [CCC-OT NE] 4:04 PM
+Yes
+Somarouthu, Kameswararao [CCC-OT NE] 4:06 PM
+Ok.
+Lev.. go to bed
+I will ping you in your morning
+Have good sleep for few hours
+Barinsky, Lev [CCC-OT] 4:07 PM
+:)
+question of the day:
+if our batch is not going to run for a few more days
+what can we do to account for any CURR and ASOF files that may be expiring
+Somarouthu, Kameswararao [CCC-OT NE] 4:08 PM
+:)
+Barinsky, Lev [CCC-OT] 4:08 PM
+and maybe take preventive action, whatever that may be
+Somarouthu, Kameswararao [CCC-OT NE] 4:09 PM
+Yes ..I am expecting that they deliver today
+if not we need to look for backign up datasets
+Barinsky, Lev [CCC-OT] 4:10 PM
+ok - please keep that in mind, and maybe this needs to be documented somewhere, especially if you do run some backups. In case you are on vacation the next time this happens
+Somarouthu, Kameswararao [CCC-OT NE] 4:11 PM
+Ok Lev sure.. :)
+This conversation is saved in the Conversations tab in Lync and in the Conversation History folder in Outlook.
+Somarouthu, Kameswararao [CCC-OT NE] 8:44 PM
+Good morning Lev
+I checked with Mukul and they have to make changes to process the file due to change in the date at their end so he forwarded to Appala
+Barinsky, Lev [CCC-OT] 8:56 PM
+another option would be for us to continue sending the file at teh same time as we do today, but the data will be missing a few cusips. The file is not 100% complete today. The reason for this change is to moke it "more complete" by using a different source
+Somarouthu, Kameswararao [CCC-OT NE] 8:58 PM
+Ok..
+Based on their response,we can update them
+What do you say?
+Barinsky, Lev [CCC-OT] 8:58 PM
+what do you mean
+Somarouthu, Kameswararao [CCC-OT NE] 8:59 PM
+If CDW is ready to handle the date change then 
+it will be ok.. 
+they are receiving lot of file from us in similar fashion
+Barinsky, Lev [CCC-OT] 9:00 PM
+Are you convinced they have to make a change? - what date is he referring to?
+Somarouthu, Kameswararao [CCC-OT NE] 9:00 PM
+so the change would be simple I guess
+Mukul had a look into the code and then confimred to Appala thru mail statign that change is required
+Lev, on a different note
+This is related to ZCCDPA8N - LOPR job failure
+strange issue
+JOB54411 IGD17288I DATA SET OPIPRDC.USER.CPI.CPIMAST.REC01 530 
+          COULD NOT BE ALLOCATED NORMALLY AND IS NOT ELIGIBLE 
+          FOR SPACE CONSTRAINT RELIEF (MULTI VOLUME) BECAUSE IT IS 
+          A END-OF-VOLUME SITUATION. 
+          SPACE CONSTRAINT RELIEF (SPACE REDUCTION AND/OR 5 EXTENT 
+          LIMIT RELIEF) WILL BE ATTEMPTED 
+
+Shall I try with more FREE SPACE
+FREESPACE(22 5)
+
+Barinsky, Lev [CCC-OT] 9:03 PM
+do you want to join that call, it has not started yet
+freespace is different
+Somarouthu, Kameswararao [CCC-OT NE] 9:04 PM
+Sorry I forgot to tell you. CDW cob database has data up to last week which is why there started processing from 10/27
+regardign faiilure - Ok
+Barinsky, Lev [CCC-OT] 9:05 PM
+is there volume specified
+Somarouthu, Kameswararao [CCC-OT NE] 9:06 PM
+MGMTCLAS (X014N014) 
+
+In the log
+BPS.CARDLIB(ZCCCPYU3)
+
+VOLUMES(* * * * * * * * * * * * * * * * * * * * * * * * * * -
+* * * * * * * * * ) - 
+CYLINDERS(1700 2000) - 
+
+Somarouthu, Kameswararao [CCC-OT NE] 9:09 PM
+If I increase the CYL then will it work?
+Barinsky, Lev [CCC-OT] 9:11 PM
+Not sure. reading the message,,,it may work if you try again - if space becomes available on the sme volume
+Somarouthu, Kameswararao [CCC-OT NE] 9:12 PM
+I tried second time but it failed again
+Barinsky, Lev [CCC-OT] 9:19 PM
+any way to point to a different volume?
+Somarouthu, Kameswararao [CCC-OT NE] 9:20 PM
+you mean to code VOLUME parameter
+Barinsky, Lev [CCC-OT] 9:20 PM
+can you tell me what date has to change and why on the BR xref feed
+Somarouthu, Kameswararao [CCC-OT NE] 9:20 PM
+Ok sure
+Barinsky, Lev [CCC-OT] 9:20 PM
+yes, possibly volume
+Somarouthu, Kameswararao [CCC-OT NE] 9:21 PM
+We send the file with businesss date suffix like - Brxref_YYYYMMDD.txt 
+But on the same date at 20:00
+So they have the current date in their config files I guess 
+Since we will be sending the file around 4:30 AM next day then they have use Calender date which is business date instead of current date
+Barinsky, Lev [CCC-OT] 9:24 PM
+we can change the date too if that makes them happy
+Somarouthu, Kameswararao [CCC-OT NE] 9:24 PM
+Ok..
+Barinsky, Lev [CCC-OT] 9:25 PM
+of course it is better if they change, but we can do - as long as that will solve the problem and will not cause more issues
+Somarouthu, Kameswararao [CCC-OT NE] 9:26 PM
+If they ask for time to make this change then we will suggest our changes :)
+Appala has to take a decision on this since he is the CDW app manager
+But if you thnk that we can make changes then we can take a call
+Barinsky, Lev [CCC-OT] 9:27 PM
+if we make the change, then Appala does not have to make a decision, right?
+Somarouthu, Kameswararao [CCC-OT NE] 9:28 PM
+Yes Lev.. correct
+:)
+Barinsky, Lev [CCC-OT] 9:28 PM
+he may be too busy with cdw issues to even look at that emai;
+Somarouthu, Kameswararao [CCC-OT NE] 9:28 PM
+I agree.
+Shall I update to Mukul on this or will you be able to reply thru mail?
+Barinsky, Lev [CCC-OT] 9:29 PM
+i would be more concerned if this delay impacts their processing. it looks like the data is loaded when it is received, but the question is - when is it really used (if used at all)?
+Somarouthu, Kameswararao [CCC-OT NE] 9:31 PM
+Ok.. I think it is not used in any major process which is why they are not much concerned
+Barinsky, Lev [CCC-OT] 9:32 PM
+so it souds as if we "fix" the date then they will not be too upset about scheduling ?
+Somarouthu, Kameswararao [CCC-OT NE] 9:32 PM
+Yes Lev.. hopefully..
+Barinsky, Lev [CCC-OT] 9:32 PM
+I will reply n a few minutes
+to his email
+Somarouthu, Kameswararao [CCC-OT NE] 9:33 PM
+Ok.. 
+They are all in the call related to COB database issues
+Shall I code like this?
+VOLUMES(SHS996) -
+
+Barinsky, Lev [CCC-OT] 9:35 PM
+Volume not available
+
+Somarouthu, Kameswararao [CCC-OT NE] 9:39 PM
+Ok
+Barinsky, Lev [CCC-OT] 9:40 PM
+i think this is "data reduction", right?
+Somarouthu, Kameswararao [CCC-OT NE] 9:40 PM
+yes 
+Barinsky, Lev [CCC-OT] 9:41 PM
+then I think it is not critical at all? these files are loaded - but is anyone using them?
+Somarouthu, Kameswararao [CCC-OT NE] 9:42 PM
+No..it's not critical
+and also as you pointed out, they are not using them
+Barinsky, Lev [CCC-OT] 9:43 PM
+anyway, I think...when this was implemented, someone must have given "us" volumes to use, and these volumes should have space for us. if this is the case, then maybe this should be assigned to DASD team to figure out why space is not there
+Somarouthu, Kameswararao [CCC-OT NE] 9:44 PM
+Ok.. do you have their DL or any contact by chance?
+Barinsky, Lev [CCC-OT] 9:44 PM
+no, i doubt it
+GCC should know
+Somarouthu, Kameswararao [CCC-OT NE] 9:45 PM
+Ok.. 
+Somarouthu, Kameswararao [CCC-OT NE] 9:48 PM
+*GT US Mainframe Storage Mgmt
+I will try to talk to them
+This conversation is saved in the Conversations tab in Lync and in the Conversation History folder in Outlook.
+Somarouthu, Kameswararao [CCC-OT NE] 10:14 PM
+I called them Hotline and they suggested me to run with 500 500 CYL
+Exisign volumes are very high
+Barinsky, Lev [CCC-OT] 10:14 PM
+they know better
+Somarouthu, Kameswararao [CCC-OT NE] 10:15 PM
+Thank you Lev as always
+Somarouthu, Kameswararao [CCC-OT NE] 10:25 PM
+It went fine after pointing to 500 500
+Barinsky, Lev [CCC-OT] 10:26 PM
+great - they know better
+save that contact for the future too
+Somarouthu, Kameswararao [CCC-OT NE] 10:26 PM
+already saved it :)
+CPI technical support - Storage Management	877-208-9254 Option 6,1
+Somarouthu, Kameswararao [CCC-OT NE] 10:29 PM
+Just to give you an update, I have PUT hold for 10/30 as well
+and will take care of them once CDW is ready to send the files respectively
+Barinsky, Lev [CCC-OT] 10:29 PM
+thanks
+Somarouthu, Kameswararao [CCC-OT NE] 10:38 PM
+I am leaving from office and will login from home
+if required.. 
+otherwise tomorrow
+:)
+Barinsky, Lev [CCC-OT] 10:46 PM
+ok
+This conversation is saved in the Conversations tab in Lync and in the Conversation History folder in Outlook.
+11/1/2014
+Barinsky, Lev [CCC-OT] 9:14 AM
+hello
+Somarouthu, Kameswararao [CCC-OT NE] 9:15 AM
+Hi 
+Pls tell me
+Barinsky, Lev [CCC-OT] 9:15 AM
+I see they want you to run PB jobs
+Somarouthu, Kameswararao [CCC-OT NE] 9:15 AM
+Yes..
+Barinsky, Lev [CCC-OT] 9:15 AM
+pls remember to run from EMER with date overrides
+Somarouthu, Kameswararao [CCC-OT NE] 9:16 AM
+Sure.. I will run one set then successor set so that there is no issue like we had last time
+But FILRCR will be delivered in the evening it seems
+Barinsky, Lev [CCC-OT] 9:16 AM
+ok, take it slow, there is no rush - because users will not be looking at the reports until Monday
+Somarouthu, Kameswararao [CCC-OT NE] 9:17 AM
+Ok
+Barinsky, Lev [CCC-OT] 9:18 AM
+also, you should keep Satya in the loop
+Somarouthu, Kameswararao [CCC-OT NE] 9:18 AM
+sure. will do. Thanks for reminding me
+Barinsky, Lev [CCC-OT] 9:18 AM
+I think he was going to run his jobs without PB data, but I dont know if he actually did
+Somarouthu, Kameswararao [CCC-OT NE] 9:19 AM
+Ok
+Barinsky, Lev [CCC-OT] 9:19 AM
+i will be offline for a couple of hours, but I will be back
+Somarouthu, Kameswararao [CCC-OT NE] 9:19 AM
+Ok..no probs..
+I will be cautious while scheduling the jobs
+pls carry on
+I will update you once you are back
+:)
+Barinsky, Lev [CCC-OT] 9:20 AM
+ok, thanks
+This conversation is saved in the Conversations tab in Lync and in the Conversation History folder in Outlook.
+Somarouthu, Kameswararao [CCC-OT NE] 11:25 AM
+Just to give an update -  PB jobs ran fine as of 10/28 except ZGCD407N which is dependent on FILRCR
+Somarouthu, Kameswararao [CCC-OT NE] 11:37 AM
+They have sent the 10/29 trigger but i will start processing once we are done with 10/28
+This conversation is saved in the Conversations tab in Lync and in the Conversation History folder in Outlook.
+Barinsky, Lev [CCC-OT] 11:59 AM
+ok, great
+This conversation is being saved in your Outlook Inbox folder.
+Somarouthu, Kameswararao [CCC-OT NE] 12:42 PM
+Lev, you can go to bed.. I will take care since we have already done this earlier
+Atleast have good rest for tonight :)
+Barinsky, Lev [CCC-OT] 12:51 PM
+ok
+I will be around for a while, need to do other things besides work
+Somarouthu, Kameswararao [CCC-OT NE] 12:54 PM
+ok
+This conversation is saved in the Conversations tab in Lync and in the Conversation History folder in Outlook.
+Barinsky, Lev [CCC-OT] 1:18 PM
+can you please remind me - did we receive any feedback on BR MSD Xref regarding scheduling shift. I did sent an email on that, did you hear anything back? I suspect not since they are so busy:) 
+Somarouthu, Kameswararao [CCC-OT NE] 1:19 PM
+Yes Lev no reply from them 
+When I asked Mukul, the change is very simple at their end
+so it is better to make at their end
+What do you say?
+Barinsky, Lev [CCC-OT] 1:24 PM
+it doesnt matter who makes the change as long as we are in sync. The new MSD file is already in production. MSD is looking to retire the old job/file, that is why they are pushing, and they wanted to retire on 11/7 
+I think we can negotiate to push it back a few days.... What was Mukul's response on the fact that the file will come later - will that delay their process or do they run later than 5am anyway ? 
+Somarouthu, Kameswararao [CCC-OT NE] 1:28 PM
+He does not any issues with late delivery
+but we need a formal mail on this
+*not see
+I will try to push them to respond by Monday 
+we will implement Lev
+let them take a call
+since it's a small change for them :)
+This conversation is saved in the Conversations tab in Lync and in the Conversation History folder in Outlook.
+Barinsky, Lev [CCC-OT] 2:05 PM
+great! I think we can push the date maybe by a week but not more, but we must commit on the date to thel MSD team 
+Somarouthu, Kameswararao [CCC-OT NE] 2:05 PM
+ok
+Barinsky, Lev [CCC-OT] 2:06 PM
+it must be difficult for cdw to make any changes until they are cought up and runing stable
+Barinsky, Lev [CCC-OT] 2:08 PM
+we can adjust on our side a little, if necessary to sync up our hard date to CDW readiness, i.e. we can start reading new file, but continue sending it at 20:00 (although data will be a day old); then enter dependency on the MSD job and that will delay the job to 5:00
+Somarouthu, Kameswararao [CCC-OT NE] 2:12 PM
+yes Lev
+for now you pls confir m to MSD 
+Barinsky, Lev [CCC-OT] 2:13 PM
+what date ?
+it may be too late for 11/7
+I will chack with them on Monday
+they were looking for my approval on Thursday, so I assume they will now change the date anyway, we will know the situation Monday, 
+Somarouthu, Kameswararao [CCC-OT NE] 2:16 PM
+11/14
+YES
+I will update on Monday
+Barinsky, Lev [CCC-OT] 2:16 PM
+did taht come from MSD?
+from CDW I mean
+?
+Somarouthu, Kameswararao [CCC-OT NE] 2:26 PM
+No Lev
+I am just saying
+I will update once they confirm
+sorry I am having my lunch
+so bit late response
+This conversation is saved in the Conversations tab in Lync and in the Conversation History folder in Outlook.
+Somarouthu, Kameswararao [CCC-OT NE] 11:49 PM
+Are you around Lev?
+11/2/2014
+This conversation is saved in the Conversations tab in Lync and in the Conversation History folder in Outlook.
+Barinsky, Lev [CCC-OT] 12:01 AM
+yes, kind of
+Somarouthu, Kameswararao [CCC-OT NE] 12:01 AM
+Ok.. this is not urgent
+Did you get a chance to read my mail related to sftp jobs?
+Barinsky, Lev [CCC-OT] 12:02 AM
+yes, but did not look at the jobs
+Somarouthu, Kameswararao [CCC-OT NE] 12:03 AM
+Ok
+Barinsky, Lev [CCC-OT] 12:03 AM
+ok - I think I know what this is, we had this a while back
+just like it reads....someone holding the file - the user
+Somarouthu, Kameswararao [CCC-OT NE] 12:04 AM
+But I tried after 2 hour
+even then it failed
+Barinsky, Lev [CCC-OT] 12:05 AM
+user left the file open...
+Somarouthu, Kameswararao [CCC-OT NE] 12:05 AM
+Oh.. ok 
+Those are empty files
+is that ok If I skip them
+Barinsky, Lev [CCC-OT] 12:05 AM
+maybe even beyond that.....user's desktop may have crashed, but the file is somehow still locked by the user
+I can send him a quick note, he will respond omn Monday hopefully
+Somarouthu, Kameswararao [CCC-OT NE] 12:07 AM
+Ok. What do you suggest in this case?
+Is there any better way than my approach?
+Barinsky, Lev [CCC-OT] 12:07 AM
+If this happens, that file which causes the error should be removed from ftp cards
+Somarouthu, Kameswararao [CCC-OT NE] 12:08 AM
+I did the samething
+Barinsky, Lev [CCC-OT] 12:08 AM
+I cant think of anything better
+Somarouthu, Kameswararao [CCC-OT NE] 12:08 AM
+since the first 6 are processed already so I removed 7 including this from ftp cards
+Somarouthu, Kameswararao [CCC-OT NE] 12:10 AM
+Please let me know whenever you receive response from the user 
+just to be documented
+Thank you Lev
+Somarouthu, Kameswararao [CCC-OT NE] 12:16 AM
+Got your mail
+Thanks
+I am about loggin off
+Is there anything that you need from me?
+Somarouthu, Kameswararao [CCC-OT NE] 12:23 AM
+Ok..Bye Lev for now
+This conversation is saved in the Conversations tab in Lync and in the Conversation History folder in Outlook.
+11/4/2014
+Somarouthu, Kameswararao [CCC-OT NE] 9:16 AM
+Hi Lev
+I will verify the FillRCR file first and then will proceed with our jobs
+Barinsky, Lev [CCC-OT] 9:17 AM
+ok, thanks. Also, see if CDW can providfe an explanation of why this happened. I think we all know...but let;s hear it from them. after all, I will have to pass that to the user tomorrow.
+Somarouthu, Kameswararao [CCC-OT NE] 9:18 AM
+Ok.. sure will do
+Barinsky, Lev [CCC-OT] 9:18 AM
+the file is delimited and difficult to browse in TSO. either 1) need to run it throiugh zccd860n in test or 2) download to excel
+I can give you column headings for excel if you need
+Somarouthu, Kameswararao [CCC-OT NE] 9:19 AM
+Ok Lev..pls send it to me.
+Barinsky, Lev [CCC-OT] 9:19 AM
+in a few minutes
+Somarouthu, Kameswararao [CCC-OT NE] 9:19 AM
+I will download to excel and verify
+They are not giving any ETA
+I mean for the next set of files
+Barinsky, Lev [CCC-OT] 9:22 AM
+yes, I understand.
+Somarouthu, Kameswararao [CCC-OT NE] 9:29 AM
+w
+We need to take backup of Equity files 
+Barinsky, Lev [CCC-OT] 9:30 AM
+what about GMRS
+there was an email this morning from Milton, he told me GMRS has not run since 10/14 ?
+Somarouthu, Kameswararao [CCC-OT NE] 9:30 AM
+They started sending this feed so no problem for now
+ZCAD540N ZCAD540N JOB50675 11/02/2014 23:10
+ZCAD540N ZCAD540N JOB44363 11/01/2014 20:23
+ZCAD540N ZCAD540N JOB34066 10/28/2014 07:23
+ZCAD540N ZCAD540N JOB55433 10/27/2014 07:25
+ZCAD540N ZCAD540N JOB58657 10/24/2014 07:24
+ZCAD540N ZCAD540N JOB12479 10/23/2014 07:25
+ZCAD540N ZCAD540N JOB31630 10/22/2014 07:26
+ZCAD540N ZCAD540N JOB51091 10/21/2014 07:24
+ZCAD540N ZCAD540N JOB05014 10/20/2014 07:24
+ZCAD540N ZCAD540N JOB26366 10/17/2014 17:38
+ZCAD540N ZCAD540N JOB23720 10/16/2014 07:25
+ZCAD540N ZCAD540N JOB42403 10/15/2014 07:26
+ZCAD540N ZCAD540N JOB60237 10/14/2014 07:22
+
+Barinsky, Lev [CCC-OT] 9:49 AM
+ok, sent RCR samples. I need to take break, 2-3 hours probably.
+Somarouthu, Kameswararao [CCC-OT NE] 9:49 AM
+sure Lev.. thanks
+Please
+Somarouthu, Kameswararao [CCC-OT NE] 1:49 PM
+Lev
+They identified the issue and generatign the corrrect feed for 10/28
+Barinsky, Lev [CCC-OT] 1:53 PM
+I am not sure we want to rerun, but we definitely want to look at the data
+Somarouthu, Kameswararao [CCC-OT NE] 1:53 PM
+Ok
+Barinsky, Lev [CCC-OT] 1:54 PM
+rerunnig would involve 3 reports and a cusip list - all of which have been looked at by the user on Monday
+Somarouthu, Kameswararao [CCC-OT NE] 1:55 PM
+Ok.. pls let me know if required. 
+Barinsky, Lev [CCC-OT] 1:56 PM
+let's see what it looks like
+need to be careful about extra triggers - I hope they will not send the trigger
+Somarouthu, Kameswararao [CCC-OT NE] 1:56 PM
+Yes Lev..
+Yesterday I asked not to send the trigge
+since they sent the trigger for 10/27 twice
+yesterday I pulled the file when they wre ready
+And I told them clearly
+Also we put HOLD on our jobs
+Today I will put HOLD on 11/03 jobs as well
+Barinsky, Lev [CCC-OT] 1:58 PM
+ok
+Somarouthu, Kameswararao [CCC-OT NE] 2:01 PM
+I dont know when are we going to be on BAU :)
+We have 4 days batch catch up which is yet to be done
+All of a sudden they ask some files to be resent during night 
+which is very headache
+Barinsky, Lev [CCC-OT] 2:41 PM
+Are we expecting to hear more feedback on BR MSD Xref? - we discussed last week, mainly the timing change from 20:00 to 4-5am next day. I understand that this cant be their priority right now, but do we have a confirmation that this file is not critical - if so, we willlet MSD retire their  old file, start using the new file, but will not change timing until CDW is ready
+I think Mukul was going to respond by email?
+Somarouthu, Kameswararao [CCC-OT NE] 2:44 PM
+yes Lev I agree. He said that he will respond 
+But I did not see any reply from him
+i will check with him on this
+But as you said pls let MSD retire 
+We should let them wait for longer time
+If their job fails then they will fix it immediately :)
+*we should not
+Barinsky, Lev [CCC-OT] 2:56 PM
+but I need some sort of confirmation or something I can use to justify my signoff to MSD
+we received their response previously, on the two fields which will be blank - fine, seems they are not concened muc. but now we are talking about sending them the file from prior day, at least for some time, and then we will change shcedule to run at 4-5 am.
+Somarouthu, Kameswararao [CCC-OT NE] 3:30 PM
+Sorry Lev I had been to lunch and came back
+I will check with them and update you on this
+Somarouthu, Kameswararao [CCC-OT NE] 9:13 PM
+Good morning Lev
+is there any action item pending on Restriction file from my end?
+Somarouthu, Kameswararao [CCC-OT NE] 11:57 PM
+Did we hear anything from users on 10/28 Fillrcr data?
+Do we need to rerun them
+?
+11/5/2014
+Barinsky, Lev [CCC-OT] 12:15 AM
+do we have the file?
+new file?
+Somarouthu, Kameswararao [CCC-OT NE] 12:18 AM
+They said that they have placed the file 
+but yet to verify
+I mean we did nt pul the file
+Barinsky, Lev [CCC-OT] 12:19 AM
+how?
+Somarouthu, Kameswararao [CCC-OT NE] 12:19 AM
+They did some changes when I asked abt root cause then I did not get response
+Barinsky, Lev [CCC-OT] 12:20 AM
+can you pull the  file? maybe to ECNS
+but if it is prod it;s ok too
+Somarouthu, Kameswararao [CCC-OT NE] 12:24 AM
+Ok
+Barinsky, Lev [CCC-OT] 12:25 AM
+do they also have 10/29?
+Somarouthu, Kameswararao [CCC-OT NE] 12:25 AM
+No not yet
+I will only run ZWSD86AN now
+Barinsky, Lev [CCC-OT] 12:25 AM
+ok, that's what we want
+i will need to compare to the original run and decide if reports need to be rerun
+Somarouthu, Kameswararao [CCC-OT NE] 12:27 AM
+Ok.. If rerun is required then shall I do it tomorrow?:P
+Barinsky, Lev [CCC-OT] 12:27 AM
+dont worry about it
+Somarouthu, Kameswararao [CCC-OT NE] 12:28 AM
+ok
+Barinsky, Lev [CCC-OT] 12:28 AM
+when do you plan to be back?
+I mean you will logoff in a little while, then - when you plan to be back tonoight (tomorrow)
+Somarouthu, Kameswararao [CCC-OT NE] 12:29 AM
+I will login at 9PM of your time
+Barinsky, Lev [CCC-OT] 12:29 AM
+ok, then you should plan to logoiff soon:)
+Somarouthu, Kameswararao [CCC-OT NE] 12:29 AM
+Once I pull it then I will update and logoff
+Barinsky, Lev [CCC-OT] 12:29 AM
+when will Sarma be back?
+Somarouthu, Kameswararao [CCC-OT NE] 12:29 AM
+but not sure if they call me and ask something in between
+Monday
+Barinsky, Lev [CCC-OT] 12:32 AM
+you have run whatever backup jobs needed for CURR and ASOF, right
+Somarouthu, Kameswararao [CCC-OT NE] 12:32 AM
+Lev I wanted to update you on this
+I ran the job yesterday when I could see 2 versions
+But it was abended due to space issue it seems
+Barinsky, Lev [CCC-OT] 12:33 AM
+space on tape?
+Somarouthu, Kameswararao [CCC-OT NE] 12:33 AM
+which i noticed today and when tryign to submit those datasets, they are not avialble
+SB37
+Barinsky, Lev [CCC-OT] 12:34 AM
+I need to see - do you have the jcl
+output
+Somarouthu, Kameswararao [CCC-OT NE] 12:34 AM
+All files are backed up except Ocean Equiry
+ZCCR002N
+PROD.FTPIN.CGSRESTR.EXTR
+
+I just used FASTCOPY
+Restr file has been pulled
+Since 2 version are available yesterday I though I will try today as well but they are gone this morning
+Barinsky, Lev [CCC-OT] 12:37 AM
+all these files seem to be DISK, you had no UNIT
+Somarouthu, Kameswararao [CCC-OT NE] 12:38 AM
+Yes.. they are copied to disk only
+But we have received all triggers yesterday excpet ZWSDIWDS
+which is the Big file
+Barinsky, Lev [CCC-OT] 12:39 AM
+I see the gen# in the job is 9, so that means it had about 8 days of data from Oct 1
+8 or 9
+Somarouthu, Kameswararao [CCC-OT NE] 12:40 AM
+Yes Lev
+Barinsky, Lev [CCC-OT] 12:40 AM
+but we will still have to pull all of September, right?
+Somarouthu, Kameswararao [CCC-OT NE] 12:40 AM
+Yes correct
+We are missing bothe September and October data
+We received Sep29th data which is backed up in Tape
+but not yet processed
+Barinsky, Lev [CCC-OT] 12:42 AM
+ok, seems these Oct tapes are gone. I ram a tape listing, and they are not even showing up
+Somarouthu, Kameswararao [CCC-OT NE] 12:43 AM
+when I ran the copy, I could see 2 versions 8 and 9 but this morning they are gone
+Barinsky, Lev [CCC-OT] 12:44 AM
+maybe they were "overdue" to be scratched, I mean they were past exp date ( my guess)
+Somarouthu, Kameswararao [CCC-OT NE] 12:44 AM
+Ok.. 
+1 day file is avaialble in backups
+SHS.NCA.FTPIN.OCEAN.EQ*.BKUP.*
+
+Somarouthu, Kameswararao [CCC-OT NE] 12:47 AM
+On a different note, can you copy the below to SSYG.*
+PROD.NCC.PCCDP79N.PTC317.#5DAY.G0999V00
+PROD.NCC.PCCDP79N.PTC317.#5DAY.G1000V00
+PROD.NCC.PCCDP79N.PTC317.#5DAY.G1001V00
+PROD.NCC.PCCDP79N.PTC317.#5DAY.G1002V00
+
+You have already copied till 998
+Tomorrow I will call up to storage management and check if there is a way to recover these tapes:P
+One in Sep version and the latest October version
+Barinsky, Lev [CCC-OT] 12:49 AM
+ok, copied
+Somarouthu, Kameswararao [CCC-OT NE] 12:50 AM
+Thank you
+Barinsky, Lev [CCC-OT] 12:50 AM
+ok, so you are ready to logoff?
+I will look into RCR data, compare to prod file
+Somarouthu, Kameswararao [CCC-OT NE] 12:51 AM
+Ok.. please ping or mail me for further steps
+I will take care of them with fresh brain
+:)
+Barinsky, Lev [CCC-OT] 12:51 AM
+I dont want to rerun, hopefully we will not have to
+good night!
+Somarouthu, Kameswararao [CCC-OT NE] 12:51 AM
+Thanks. Bye
+Somarouthu, Kameswararao [CCC-OT NE] 8:25 AM
+I am back Lev
+Did you get a change to look at 10/28 data and do we need to rerun by any chance?
+Somarouthu, Kameswararao [CCC-OT NE] 8:37 AM
+We just received the 10/29 trigger
+Shall I pull the file and put HOLD on ZCCD860N?
+Somarouthu, Kameswararao [CCC-OT NE] 10:12 AM
+Do you have any test JCL to run the job - ZCCD860N for data integrity?
+Barinsky, Lev [CCC-OT] 10:20 AM
+yes, I ran something for 10/28, but not guaranteed to work for you
+you should definitely pull the file
+Somarouthu, Kameswararao [CCC-OT NE] 10:20 AM
+i pulled the file Lev
+Barinsky, Lev [CCC-OT] 10:22 AM
+ok, let me run it. I am running a couple of copy jobs first, but shoul dbe done in 5 min
+what is the file name
+prod?
+Somarouthu, Kameswararao [CCC-OT NE] 10:22 AM
+yes
+1 sec
+PROD.FTPIN.CGSRESTR.EXTR
+
+I put HOLD on ZCCD860N
+I will release it after data verification
+Barinsky, Lev [CCC-OT] 10:24 AM
+I need to step away for a couple of hours
+Somarouthu, Kameswararao [CCC-OT NE] 10:24 AM
+this is for 10/29 batch
+Barinsky, Lev [CCC-OT] 10:24 AM
+would you rather wait until I get back?
+Somarouthu, Kameswararao [CCC-OT NE] 10:25 AM
+Ok Lev 
+I will also get ready and go to office in 2 hrs
+Now logged in from home
+Barinsky, Lev [CCC-OT] 10:25 AM
+you can prepare the overrides in the meantime
+
+Somarouthu, Kameswararao [CCC-OT NE] 10:25 AM
+I have made them ready :)
+Barinsky, Lev [CCC-OT] 10:26 AM
+i copied the file to SSYG.FTPIN.ZWSD86AN.CGSRSRCH.RESTR.G0275X 
+
+Somarouthu, Kameswararao [CCC-OT NE] 10:26 AM
+Once your job is run then pls give me the JCL also I will keep it for reference if required in future
+Ok. Thanks
+Barinsky, Lev [CCC-OT] 10:29 AM
+SSYG.USER.CGSRESTR.JCL(ZTST860X)
+running now
+Somarouthu, Kameswararao [CCC-OT NE] 10:29 AM
+Oh.. great
+Barinsky, Lev [CCC-OT] 10:29 AM
+outputs will be under ecns.nc5 and wrkt.nc5
+Somarouthu, Kameswararao [CCC-OT NE] 10:30 AM
+Ok
+Barinsky, Lev [CCC-OT] 10:30 AM
+but I need to step away now, I don;t want to ruch with this, we have time, right?
+Somarouthu, Kameswararao [CCC-OT NE] 10:30 AM
+I have decided to raise request for prod and ssyg access :)
+will do it today
+Yes.. we do have time
+please carry on
+I will ping you later
+no hurry at all
+Thank you
+Barinsky, Lev [CCC-OT] 10:31 AM
+job done
+Somarouthu, Kameswararao [CCC-OT NE] 10:31 AM
+Ok
+I will check the outputs
+You pls carry on 
+Barinsky, Lev [CCC-OT] 10:32 AM
+I will be back:)
+Somarouthu, Kameswararao [CCC-OT NE] 10:33 AM
+Ok
+Data looks good.. All cusip with 28th & 29th effective date
+Somarouthu, Kameswararao [CCC-OT NE] 10:38 AM
+But I will wait for your go ahead on this
+Barinsky, Lev [CCC-OT] 12:40 PM
+I have been looking at the data for some time
+for the most part it is good
+something bothers me just a little...
+on this file WRKT.NC5.PCCD860N.RESTSEC.FMT.EXP
+
+the first 918 records look like some "garbage". they are from 2011or 2012, and dont have cusips
+ BROWSE WRKT.NC5.PCCD860N.RESTSEC.FMT.EXP Line 00000001 Col 001 080 
+  Command ===> Scroll ===> PAGE 
+----+----1----+----2----+----3----+----4----+----5----+----6----+----7----+----8
+PUT PNR 2011 NOV 
+CALL GWW 2011 NOV 
+PUT PRE 2011 NOV 
+CALL XL 2011 NOV 
+P CRC 11/11 4.00 
+PUT LCAPA 2012 JUL 
+P CRC 12/11 7.00 
+
+since they dont have cusips, they will hae no impact on further processing, they will get dropped
+but...it makes me wonder if the rest of the data can be trusted
+Barinsky, Lev [CCC-OT] 12:50 PM
+ok, I found some similar securities in prior day file. I think this may be due to a change we implemented today - Yedla made some enhancements to ZCCD860N, and I think as the result, records with blank cusips are written out, but before the change they were not
+Somarouthu, Kameswararao [CCC-OT NE] 12:56 PM
+Ok
+Shall I ask them to verify?
+They will take time to do this for sure
+Or shall we proceed?
+What do you suggest Lev?
+Barinsky, Lev [CCC-OT] 1:03 PM
+no, all is good. I lloked at other files and it seems these records got dropped, as expected
+like I said, I think this is due to our change, but no impact on the reports 
+so let;s consider the data good
+Somarouthu, Kameswararao [CCC-OT NE] 1:04 PM
+Ok. Thanks
+i will proceed with rest of the batch with date override
+Barinsky, Lev [CCC-OT] 1:08 PM
+ok
+Somarouthu, Kameswararao [CCC-OT NE] 1:23 PM
+ZCCD860N is running and waiting for resources 
+contention with ZSMD940N OWNS EXCL on 
+needs SHR SYSDSN CICSPRDV.NSM.DTPERXRF
+
+Barinsky, Lev [CCC-OT] 1:25 PM
+those msd jobs can run for some time
+Somarouthu, Kameswararao [CCC-OT NE] 1:26 PM
+It's done now
+:)
+Somarouthu, Kameswararao [CCC-OT NE] 1:28 PM
+ZCCD860N is running
+Somarouthu, Kameswararao [CCC-OT NE] 1:31 PM
+ZCADM7CN report looks good
+ZCCDP7CN as well
+ZGCD407N went fine
+All reports look good
+Now I will pull the Pb files for 10/30
+after checking with Satya
+Barinsky, Lev [CCC-OT] 1:39 PM
+remind him that besides date overrides, he proably needs to override GDG's fro Pershing and MSSB inputs
+Somarouthu, Kameswararao [CCC-OT NE] 1:39 PM
+Ok
+You need to override GDG's fro Pershing and MSSB inputs apart from Date overrides
+Are you doing it in your jobs?
+Sorry Lev
+wrong ping
+Barinsky, Lev [CCC-OT] 1:40 PM
+:)
+Somarouthu, Kameswararao [CCC-OT NE] 1:41 PM
+Lev, I am not seeing Mukul now a days in office
+He comes late night and leaving ealry morning
+Shall we send a mail to Appala statign that our changes will be deployed on 11/14 and we will delvier the file at 04:30 AM from 11.14
+What do you say?
+It's a small change Lev.. they can do it
+Barinsky, Lev [CCC-OT] 1:43 PM
+ok, just make it clear that 11/14 file will arrive after 4:40am - first time
+mention that we were able to extend the date by a week to 11/14...since we mentiond 11/7 in the past, and we should take some credit too (i.e. we did this for CDW;s benefit so they have more time - dont say this)
+Somarouthu, Kameswararao [CCC-OT NE] 1:46 PM
+Ok
+Barinsky, Lev [CCC-OT] 1:47 PM
+but in the worst case, we can continue sending the file at 20:00, although the data will be from prior day and may be missing a few cusips. If this file is not critical for them, it should not be a problem. Current file is also missing a few cusips - the main reason MSD is moving to a different source
+Somarouthu, Kameswararao [CCC-OT NE] 1:48 PM
+Ok.. but who can confirm us the importance of the file
+i am sure these poeple won't turn up until 2 weeks till catch ups are complete
+Dev team should respond on this but I doubt Appala has ever raised this topic with them
+Barinsky, Lev [CCC-OT] 1:49 PM
+I thought you mentioned from prior Mukul's feedback that this is not a critical file
+Mukul is new, right? I dont recall hearing his name in the past
+Somarouthu, Kameswararao [CCC-OT NE] 1:50 PM
+No Lev He was with dev team for 2 years
+But he is a Mantas resource
+Now he is looking after CDW as well after joining with GPA
+He quit HCL and directly joined here
+Barinsky, Lev [CCC-OT] 1:50 PM
+ok
+Somarouthu, Kameswararao [CCC-OT NE] 1:50 PM
+:)
+Somarouthu, Kameswararao [CCC-OT NE] 1:54 PM
+I have been assigned with COB activities by Rajanikanth
+It's on Dec5th
+Am I right?
+Barinsky, Lev [CCC-OT] 1:55 PM
+by me, and I also added Rajini as 2nd contact
+Somarouthu, Kameswararao [CCC-OT NE] 1:55 PM
+Ok..
+5th PM EST?
+Barinsky, Lev [CCC-OT] 1:56 PM
+i tried to give him one of the roles down at the applciation testing sectiion, but he couldn't see much with that. so I had to assign him as the secondary contact
+not sure of the times...this is still so far away
+Somarouthu, Kameswararao [CCC-OT NE] 1:57 PM
+Ok..
+Barinsky, Lev [CCC-OT] 1:57 PM
+i guess it will be the usual - probably on Sat they will start running about 12pm (I dont remmeber:))
+Somarouthu, Kameswararao [CCC-OT NE] 1:59 PM
+yes.. I remember.. last it happened on Dec7th - Saturday afternoon
+started in the afternnon
+Somarouthu, Kameswararao [CCC-OT NE] 2:08 PM
+I am stepping away for lunch for 20 mins and will be back 
+Please ipng me for anything
+Thanks
+Barinsky, Lev [CCC-OT] 2:09 PM
+I will probably be here when you come back. Or maybe not:)
+Somarouthu, Kameswararao [CCC-OT NE] 2:10 PM
+Ok Lev  no probs..
+11/6/2014
+Barinsky, Lev [CCC-OT] 12:50 PM
+hello
+just curious if sftp issues are progressing at all
+Somarouthu, Kameswararao [CCC-OT NE] 1:00 PM
+sorry Lev
+i was getting ready
+could not find time since mrng
+yes they are working
+I will restart them after they move out 
+I could not even have my breakfast due to continuos failures/follow up
+:)
+Barinsky, Lev [CCC-OT] 1:01 PM
+some jobs actgually ran ok?
+Somarouthu, Kameswararao [CCC-OT NE] 1:01 PM
+Yes
+i told them
+Barinsky, Lev [CCC-OT] 1:01 PM
+good news
+Somarouthu, Kameswararao [CCC-OT NE] 1:02 PM
+to see the time and date
+Barinsky, Lev [CCC-OT] 1:02 PM
+:)
+Somarouthu, Kameswararao [CCC-OT NE] 1:02 PM
+One more thngs
+I put HOLD on PB jobs yesterday but they ran at 08:00 sharp for 11/04
+i will delete the latest gens after confirmign with you
+Till what time you are planning to be around?
+Barinsky, Lev [CCC-OT] 1:03 PM
+probably 2 hours or so (maybve longer
+Somarouthu, Kameswararao [CCC-OT NE] 1:05 PM
+Ok
+I will send you in an hr time
+after reaching to office
+i will start another 10 min and will reach in 45 min max
+Barinsky, Lev [CCC-OT] 1:06 PM
+ok
+Somarouthu, Kameswararao [CCC-OT NE] 2:09 PM
+I am preparign the job
+Somarouthu, Kameswararao [CCC-OT NE] 2:16 PM
+Lev, Can you pls have a qucik look 
+WRKT.USER.KAMESH(ZCCR003N)
+
+I will send a mail
+Barinsky, Lev [CCC-OT] 2:20 PM
+how did you select gen's to be deleted
+Somarouthu, Kameswararao [CCC-OT NE] 2:21 PM
+Which were created as part of 11/04 batch
+Barinsky, Lev [CCC-OT] 2:22 PM
+did you get them from SAR?
+Somarouthu, Kameswararao [CCC-OT NE] 2:22 PM
+Yes Lev
+Lev,
+
+We have received  Preferred Broker trigger -  ZWSDIWPB for 11/04 business date at 11/05 08:00 EST as BAU due to which our successor jobs ran using 11/04 files. Since we are processing back dated preferred broker feeds and yet to catch up from 10/31 onwards, we need to clear few datasets which were created as part of yesterday’s run. We will process 11/04 feed files again
+
+Through out of schedule once we are done with 11/03 feed files.
+
+  Please provide your approval to run the below JCL.  Thanks for your help.
+
+IOCS00S.PB.TURN.JCLLIB(ZCCR002N)
+
+This is the mail which I am going to send
+:)
+Barinsky, Lev [CCC-OT] 2:23 PM
+PROD.NGC.PGCD400N.PBPSTN.BKUP.G0113V00 
+PROD.NGC.PGCD400N.PBPSTN.BKUP.G0114V00 
+PROD.NGC.PGCD400N.PBPSTN.BKUP.G0115V00 
+PROD.NGC.PGCD400N.PBPSTN.FB.BKUP.G0110V00 
+PROD.NGC.PGCD400N.PBPSTN.FB.BKUP.G0111V00 
+PROD.NGC.PGCD400N.PBPSTN.FB.BKUP.G0112V00 
+PROD.NGC.PGCD400N.PBPSTN.FB.BKUP.G0113V00 
+PROD.NGC.PGCD400N.PBPSTN.FB.BKUP.G0114V00 
+
+//DD05 DD DSN=PROD.NGC.PGCD400N.PBPSTN.BKUP.G0114V00, 
+// DISP=(MOD,DELETE,DELETE) 
+//DD06 DD DSN=PROD.NGC.PGCD400N.PBPSTN.FB.BKUP.G0114V00,
+
+Somarouthu, Kameswararao [CCC-OT NE] 2:25 PM
+Sorry.yes it should be 
+PROD.NGC.PGCD400N.PBPSTN.BKUP.G0115V00
+
+I am checking now
+i will verify one more time
+before I ran the job
+Barinsky, Lev [CCC-OT] 2:27 PM
+ok, so after these are deleted, what will you run ?
+Somarouthu, Kameswararao [CCC-OT NE] 2:27 PM
+I will initiate 10/31 batch after we receive Fillrcr for 10/30
+Barinsky, Lev [CCC-OT] 2:28 PM
+do we have ETA on that?
+Somarouthu, Kameswararao [CCC-OT NE] 2:29 PM
+We received the FillRCR for 10/30
+Barinsky, Lev [CCC-OT] 2:31 PM
+ok, so 10/30 will run now (or soon), then we will run 10/31, 11/3, 11/4, 11/5 after we get rcr files for those dates, right?
+and 11/4 will run again at some point
+Somarouthu, Kameswararao [CCC-OT NE] 2:31 PM
+yes Lev correct
+Barinsky, Lev [CCC-OT] 2:32 PM
+doe anything need to run out of schedule? since we "wasted" one trigger
+Somarouthu, Kameswararao [CCC-OT NE] 2:33 PM
+Yes.. we need to run the jobs thru out of schedule for 11/04 since we already received it
+I checked the latest gens now and it look fine now
+IOCS00S.PB.TURN.JCLLIB(ZCCR002N)
+
+Barinsky, Lev [CCC-OT] 2:34 PM
+ok, I think it doesn matter which date is run out of schedule - maybe after we are BAU, we will request to reinstate jobs for one day.  we can worry about it later
+Somarouthu, Kameswararao [CCC-OT NE] 2:35 PM
+Yes Lev. correct
+Barinsky, Lev [CCC-OT] 2:35 PM
+have any of Satya's jobs run for 11/4 or whatever date
+Somarouthu, Kameswararao [CCC-OT NE] 2:35 PM
+yes they ran 
+I told him
+Barinsky, Lev [CCC-OT] 2:35 PM
+anyway - you can talk to him about it
+and one more question
+Somarouthu, Kameswararao [CCC-OT NE] 2:36 PM
+Pls tell me Lev
+Barinsky, Lev [CCC-OT] 2:36 PM
+are any CURR or ASOF files/gens in danger of disappearing
+how do oyu track that?
+Somarouthu, Kameswararao [CCC-OT NE] 2:37 PM
+Only Equity dataware fils are not there as informed
+Other files - yes. we do have
+They are sendign FI data
+Barinsky, Lev [CCC-OT] 2:37 PM
+ASOF is most critical because there is no way to go back
+Somarouthu, Kameswararao [CCC-OT NE] 2:37 PM
+and Equity data
+Ok
+Barinsky, Lev [CCC-OT] 2:38 PM
+ok, keep an eye on this. also when Sarma gets back, make sure you explain to him for the future.
+Somarouthu, Kameswararao [CCC-OT NE] 2:38 PM
+We started receiving all other triggers except Ocean trigger - big files - ZWSDIWDS
+Barinsky, Lev [CCC-OT] 2:38 PM
+and maybe we need to extend RETPD on all the tapes that we care about
+Somarouthu, Kameswararao [CCC-OT NE] 2:38 PM
+For which, damage is already done 
+Yes Lev
+i will check with Storage management today on this
+Barinsky, Lev [CCC-OT] 2:39 PM
+thius is done by SN, we did sometihng like this a few months back
+Somarouthu, Kameswararao [CCC-OT NE] 2:39 PM
+Oh ok
+then I will surely try to prevent this not to happen in future
+As you said I will keep an eye for sure. on this 
+Barinsky, Lev [CCC-OT] 2:40 PM
+x
+Somarouthu, Kameswararao [CCC-OT NE] 2:40 PM
+don't want to take any chance to miss any more:(
+Barinsky, Lev [CCC-OT] 2:40 PM
+I will try to find the SN INC or CHG
+Somarouthu, Kameswararao [CCC-OT NE] 2:40 PM
+ok
+Barinsky, Lev [CCC-OT] 2:41 PM
+not now, but remind me in a day or two
+Somarouthu, Kameswararao [CCC-OT NE] 2:41 PM
+CHG0000189386I 
+I do have it Lev
+Barinsky, Lev [CCC-OT] 2:41 PM
+ok
+Somarouthu, Kameswararao [CCC-OT NE] 2:41 PM
+save this for reference: CHG0000189386 - we used this to extend retention; there are also 2 Infoman items in it (change+activity)
+You only gave me :)
+Barinsky, Lev [CCC-OT] 2:41 PM
+I dont remember things...:)
+Somarouthu, Kameswararao [CCC-OT NE] 2:41 PM
+that is your msg ot me
+Barinsky, Lev [CCC-OT] 2:42 PM
+ok, this is not so bad. but if I offer it to you aain tomorrow - that will mean I am in trouble:)
+Somarouthu, Kameswararao [CCC-OT NE] 2:43 PM
+Sorry LevI did not get you..
+you mean that if you send  again
+Barinsky, Lev [CCC-OT] 2:45 PM
+I meant...I forgot I gave this to you. That is not so good, but ok. But if I offer it again tomorrow, then I need some medical attention
+Somarouthu, Kameswararao [CCC-OT NE] 2:46 PM
+Not like that.. you have so many things thru various channels but we have only one Lev
+So i can remember
+It is difficult for you to remember
+Barinsky, Lev [CCC-OT] 2:46 PM
+it is good I can count on you:)
+Somarouthu, Kameswararao [CCC-OT NE] 2:46 PM
+:)
+Lev I will step away for 10 minutes to have my breakfast cum Lunch and then will proceed with all batch issues
+Do you have anythign to pass it to me for now?
+Barinsky, Lev [CCC-OT] 2:48 PM
+cant think of anything - maybe just the Mukul and BR xref response
+Somarouthu, Kameswararao [CCC-OT NE] 2:48 PM
+Ok.. will check with them today and update you at your morning EST
+Thank you so much Lev for your time
+Barinsky, Lev [CCC-OT] 2:49 PM
+thank you:)
+Somarouthu, Kameswararao [CCC-OT NE] 2:49 PM
+Just Fyi. I will provide an update about 10/30 reports
+after thry run
+Somarouthu, Kameswararao [CCC-OT NE] 6:04 PM
+Fyi.. PB reports were created for 10/30 and they appear good
+Somarouthu, Kameswararao [CCC-OT NE] 9:00 PM
+Lev, when I checked with Mukul on this, he told me that he has already informed to Appala on this so Appala should get back on this it seems. 
+As we decided, we will notify them through email stating that we are implementing on 11/14
+I will ask Yedla to do this for us
+after your go ahead
+Barinsky, Lev [CCC-OT] 9:39 PM
+what exactly are going to as Yedla to do?
+Somarouthu, Kameswararao [CCC-OT NE] 9:40 PM
+Just replying to your mail
+Since they are the ones who are implemting the changes
+Barinsky, Lev [CCC-OT] 9:41 PM
+you will ask Yedla to reply to my email?
+Somarouthu, Kameswararao [CCC-OT NE] 9:42 PM
+Yes.. He will mentioned about implementation date and time of feed delivery
+Is this not a good idea?
+Barinsky, Lev [CCC-OT] 9:43 PM
+te new date should come from me, I think
+Somarouthu, Kameswararao [CCC-OT NE] 9:44 PM
+Ok.. you can mention new date in your reply
+Yedla may send the implementation details in a day or 2 
+Does this sound good?
+Barinsky, Lev [CCC-OT] 9:46 PM
+ok, sounds good. they will need another reiminder, I am sure.
+Somarouthu, Kameswararao [CCC-OT NE] 9:46 PM
+Yes Lev. I strongly feel
+Barinsky, Lev [CCC-OT] 9:46 PM
+so I will send something this morning
+Somarouthu, Kameswararao [CCC-OT NE] 9:46 PM
+otherwise they don't bother
+I could get hold of one person from Tape management. - Violanti, Vincent1 [CCC-OT]
+Barinsky, Lev [CCC-OT] 9:47 PM
+in the worst case, their job will fail and they will handlee it manually untril they change the date
+Somarouthu, Kameswararao [CCC-OT NE] 9:47 PM
+I am checking with him for any possibilities to restore the missign tapes
+Yes.. correct
+I will provide an update if I hear any good news. :P
+Somarouthu, Kameswararao [CCC-OT NE] 11:16 PM
+Violanti, Vincent1 [CCC-OT] 9:56 PM
+I'm Back with good news and bad news, I was able to put everything back except DSN=SHS.NCA.PCAD784N.EQTOPORD.CURR.G0009V00,VOLS=X17314,V57839,X17584. They have already been written over
+they were written over on Tuesday
+Somarouthu, Kameswararao [CCC-OT NE] 11:48 PM
+Lev is there anyway that we can the volume names for the old ASOF
+*we can get the
+Barinsky, Lev [CCC-OT] 11:54 PM
+you mean get = recover data?
+Somarouthu, Kameswararao [CCC-OT NE] 11:55 PM
+When I checked with Tape recovery team, he is asking about Volume numbers to check whether it can be recoverable or not
+I can not find old job in SAR
+Barinsky, Lev [CCC-OT] 11:56 PM
+what dataset 
+Somarouthu, Kameswararao [CCC-OT NE] 11:56 PM
+SHS.NCA.PCAD785N.EQEXEHST.CURR.SHS.NCA.PCAD785N.EQEXEHST.ASOF.G0009V00
+SHS.NCA.PCAD783N.EQTORDHT.CURR.G0009V00
+SHS.NCA.PCAD784N.EQTOPORD.CURR.G0009V00
+SHS.NCA.PCAD785N.EQEXEHST.CURR..
+SHS.NCA.PCAD785N.EQEXEHST.
+ASOF
+SHS.NCA.PCAD783N.EQTORDHT.CURR 
+SHS.NCA.PCAD784N.EQTOPORD.CURR   
+Gen number is 215
+becoz I have the details for one file - 
+SHS.NCA.PCAD783N.EQTORDHT.CURR.G0215V00
+VOLUME=SER=(R04265,S20614,R62159,R75035,S36262,R20647,R09190, 
+R21905,S41414,R23369,S41458,R23589,S93086,R24507,S93786,R24645,
+R27073,R30061)
+This was way back in September tapes
+They could recover latest tapes except - SHS.NCA.PCAD784N.EQTOPORD.CURR.G0009V00  Latest tape
+Violanti, Vincent1 [CCC-OT] 9:56 PM
+I'm Back with good news and bad news, I was able to put everything back except DSN=SHS.NCA.PCAD784N.EQTOPORD.CURR.G0009V00,VOLS=X17314,V57839,X17584. They have already been written over
+they were written over on Tuesday
+11/7/2014
+Barinsky, Lev [CCC-OT] 12:02 AM
+SHS.NCA.PCAD785N.EQEXEHST.ASOF.G0206V00 R08457
+
+that's all I got
+Somarouthu, Kameswararao [CCC-OT NE] 12:03 AM
+Ok.. thanks
+Somarouthu, Kameswararao [CCC-OT NE] 12:15 AM
+Can u try submitting this jcl?
+WRKT.USER.KAMESH(RESRTAPE)
+
+If any issues, I will ask AGCC to run
+Pls wait
+Barinsky, Lev [CCC-OT] 12:19 AM
+would not be able to catalog prod tapes using my tsoid
+but also JCLPLUS displaying some strange errors
+I am not sure I am looking at the latest version of your jcl, you have it in edit
+Somarouthu, Kameswararao [CCC-OT NE] 12:20 AM
+Oh.
+Now pls try
+Somarouthu, Kameswararao [CCC-OT NE] 12:23 AM
+Pls submit Lev
+STMT NO. MESSAGE 
+       4 IEFC641I IMPROPER SUBPARAMETER LIST IN THE DSN FIELD 
+       6 IEFC641I IMPROPER SUBPARAMETER LIST IN THE DSN FIELD 
+       8 IEFC641I IMPROPER SUBPARAMETER LIST IN THE DSN FIELD 
+      10 IEFC641I IMPROPER SUBPARAMETER LIST IN THE DSN FIELD 
+      12 IEFC641I IMPROPER SUBPARAMETER LIST IN THE DSN FIELD 
+
+Barinsky, Lev [CCC-OT] 12:25 AM
+ACCESS INTENT(ALTER ) ACCESS ALLOWED(READ ) 
+
+try it through gcc, but it may not work?
+Somarouthu, Kameswararao [CCC-OT NE] 12:25 AM
+Ok.. will try.. Thanks
+Somarouthu, Kameswararao [CCC-OT NE] 12:31 AM
+Hurray 
+Success
+SHS.NCA.PCAD783N.EQTORDHT.CURR 
+SHS.NCA.PCAD783N.EQTORDHT.CURR.G0009V00
+SHS.NCA.PCAD783N.EQTORDHT.CURR.G0215V00
+SHS.NCA.PCAD783N.EQTORDHT.CURR.G9 
+SHS.NCA.PCAD784N.EQTOPORD.CURR 
+SHS.NCA.PCAD785N.EQEXEHST.ASOF 
+SHS.NCA.PCAD785N.EQEXEHST.ASOF.G0009V00
+SHS.NCA.PCAD785N.EQEXEHST.ASOF.G0206V00
+SHS.NCA.PCAD785N.EQEXEHST.CURR 
+SHS.NCA.PCAD785N.EQEXEHST.CURR.G0009V00
+
+These will be available till 11/30
+Are you there Lev?
+Barinsky, Lev [CCC-OT] 12:35 AM
+yes
+ok - good:)
+Somarouthu, Kameswararao [CCC-OT NE] 12:36 AM
+If we know the volume numbers then we can retrieve other 2 datasets for September data
+Barinsky, Lev [CCC-OT] 12:38 AM
+do you have any jcls that you may have run at that time woth volumes in them?
+that;s where I found that one dataset
+Somarouthu, Kameswararao [CCC-OT NE] 12:38 AM
+I only tried with first one
+SHS.NCA.PCAD783N.EQTORDHT.CURR.G0215V00
+
+so i hv those volumes
+Barinsky, Lev [CCC-OT] 12:39 AM
+if these volumes exist anywhere, we should be able to get a full ist of them
+Somarouthu, Kameswararao [CCC-OT NE] 12:40 AM
+SHS.NCA.PCAD785N.EQEXEHST.CURR.G0215V00
+SHS.NCA.PCAD784N.EQTOPORD.CURR.G0215V00
+Barinsky, Lev [CCC-OT] 12:41 AM
+I mean a standard listing with ames and volumes
+Somarouthu, Kameswararao [CCC-OT NE] 12:41 AM
+How do we get them?
+do u remember that you provided a dataset long back?
+Do we have anything similar to that?:P
+Barinsky, Lev [CCC-OT] 12:43 AM
+SSYG.USER.JCL(TMC1)
+
+did I share this in the past ? 
+:)
+i submitted this now. when I ran this last week, nothing came up
+Somarouthu, Kameswararao [CCC-OT NE] 12:44 AM
+No.not shared till now
+Ok
+Barinsky, Lev [CCC-OT] 12:44 AM
+but now showing the volumes you cataloged
+let me copy the output to a file
+Somarouthu, Kameswararao [CCC-OT NE] 12:45 AM
+Ok..
+Barinsky, Lev [CCC-OT] 12:46 AM
+ecns.ncatape.out1
+
+report is in the middle
+I really have to go
+Somarouthu, Kameswararao [CCC-OT NE] 12:47 AM
+Ok.. pls carry on
+Thanks
+bye
+Somarouthu, Kameswararao [CCC-OT NE] 4:38 AM
+Lev, I need a small help
+I could see that retrieval requests are pending 
+Barinsky, Lev [CCC-OT] 4:38 AM
+did you get any rest?
+Somarouthu, Kameswararao [CCC-OT NE] 4:39 AM
+I slept around 2 hrs back but they called me to check on retrieval request as Micheal raised a question
+Barinsky, Lev [CCC-OT] 4:39 AM
+oh-oh
+Somarouthu, Kameswararao [CCC-OT NE] 4:40 AM
+ZCAR699N - there is a DB2 check
+Barinsky, Lev [CCC-OT] 4:41 AM
+Mike Lyons?
+Somarouthu, Kameswararao [CCC-OT NE] 4:42 AM
+Yes - he riased the question to Appala
+which inturn gone to Sandeep then to me
+Barinsky, Lev [CCC-OT] 4:42 AM
+ok, what is it
+Somarouthu, Kameswararao [CCC-OT NE] 4:42 AM
+just checking our process
+just forwarded the mail to you
+how do they process pending requests
+Barinsky, Lev [CCC-OT] 4:44 AM
+"our process - how do they process":)
+they probably have files-watcher which kicks off some batch script when we deliver the files
+Somarouthu, Kameswararao [CCC-OT NE] 4:45 AM
+But I dont see any load files being sent to them
+Barinsky, Lev [CCC-OT] 4:45 AM
+they load the files and send LoadResponse to us and we update status
+Somarouthu, Kameswararao [CCC-OT NE] 4:46 AM
+just waiting for their process since the DB2 was down
+ZCAR699N is the last job that ran from our end
+Barinsky, Lev [CCC-OT] 4:46 AM
+I sdont have the job names, I think there is also zcar799n
+db2 was down?
+Somarouthu, Kameswararao [CCC-OT NE] 4:47 AM
+Not now..last week
+Barinsky, Lev [CCC-OT] 4:47 AM
+you actually mean DB2 (not CDW or Sybase)?
+Somarouthu, Kameswararao [CCC-OT NE] 4:47 AM
+Sorry CDW database
+ZCAR699N JOB18119 11/06/2014 15:23
+ZCAR699N JOB44632 11/04/2014 12:11
+ZCAR699N JOB11005 11/03/2014 20:40
+ZCAR699N JOB07237 11/03/2014 19:44
+ZCAR699N JOB03967 11/03/2014 18:04
+ZCAR699N JOB03271 11/03/2014 17:40
+ZCAR699N JOB64603 11/03/2014 14:39
+ZCAR699N JOB63550 11/03/2014 13:47
+ZCAR699N JOB54731 10/31/2014 08:56
+ZCAR699N JOB17741 10/30/2014 18:22
+ZCAR699N JOB16581 10/30/2014 17:26
+ZCAR699N JOB14272 10/30/2014 16:10
+ZCAR699N JOB11762 10/30/2014 14:40
+ZCAR699N JOB10369 10/30/2014 13:31
+ZCAR699N JOB09889 10/30/2014 13:11
+ZCAR699N JOB08725 10/30/2014 12:35
+
+I sent one more mail with retrieval flow
+ZCAR799N JOB44007 10/28/2014 14:18
+ZCAR799N JOB41163 10/28/2014 12:03
+ZCAR799N JOB37674 10/28/2014 09:05
+ZCAR799N JOB01082 10/27/2014 16:48
+ZCAR799N JOB58688 10/27/2014 09:18
+
+Barinsky, Lev [CCC-OT] 4:49 AM
+ok, that makes sense now...to a certain point
+what I dont see, why are they asking us? they should run their process. maybe force it manually if they have to
+Somarouthu, Kameswararao [CCC-OT NE] 4:51 AM
+they are not sure I guess what to do so he is checking with me
+since they dont see the load files
+Barinsky, Lev [CCC-OT] 4:51 AM
+ok, so they lost some files?
+Somarouthu, Kameswararao [CCC-OT NE] 4:53 AM
+I think our sftp jobs which sends the load files are not run due to their database issue
+I may be wrong
+ZCAR699N
+  DESCRIPTION: *
+CREATE TRAILER FILE AND UPDATE REQUEST CONTROL TABLE 
+THIS JOB IS THE LAST JOB IN THE RECALL PROCESS. AT THIS POINT 
+ALL RECALLED DATA SHOULD BE STORED ON THE TAPES AND READY TO FTP
+
+ZWSR7* jobs are not yet run
+ZWSR701N JOB45595 10/28/2014 15:36
+ZWSR701N JOB43740 10/28/2014 14:09
+ZWSR701N JOB40679 10/28/2014 11:49
+ZWSR701N JOB37554 10/28/2014 09:02
+
+Barinsky, Lev [CCC-OT] 4:58 AM
+I dont see them - what screen are you loking at
+Somarouthu, Kameswararao [CCC-OT NE] 4:59 AM
+I sent one mail which has jpg files
+retrieval flow
+Barinsky, Lev [CCC-OT] 5:00 AM
+these jobs zwsr701n have run, I now found them in SAR
+I thought they were still waiting
+the last opne that ran:
+Changing mode on /export/cdwapp1/opt/cdwftp/DataRetrieval/StifTb.2014102805 
+
+for 10/28
+Somarouthu, Kameswararao [CCC-OT NE] 5:03 AM
+Yes.
+How our jobs will get triggered?
+For what they are waiting for?
+Barinsky, Lev [CCC-OT] 5:05 AM
+I believe CICS checks for requests in queue and starts zcar530n
+form there it is all automatic
+Somarouthu, Kameswararao [CCC-OT NE] 5:06 AM
+But our sftp jobs which place the retrieval load files are yet to be run
+They must be waiting some process at CDW end
+Am I right?
+Can u copy this into WRKT - PROD.NCA.ZCAR699N.MAINTRL.R4110401?
+
+Barinsky, Lev [CCC-OT] 5:08 AM
+our batch will run from zcar530n until the end and will send the files; then will start over for the next request, and so on
+ECNS.NCA.ZCAR699N.MAINTRL.R4110401
+
+wrkt is not a good idea at this time. they get scratched between 5-6 pm
+Somarouthu, Kameswararao [CCC-OT NE] 5:10 AM
+Ok..
+if it is automated then our sftp job also should run for eg. ZWSR701N but which did not run after 10/28
+Our process must be waiting some response from CDW - I guess?
+SHS.NCA.CAW05.MAINSTIF.R4110305
+SHS.NCA.CAW05.MAINSTIF.R4110306
+SHS.NCA.CAW05.MAINSTIF.R4110401
+SHS.NCA.CAW05.MAINSTIF.R4110601
+
+These files are yet to be run 
+I mean which are not yet used in the sftp jobs
+Sorry for any confusion
+Barinsky, Lev [CCC-OT] 5:15 AM
+ZCAR560N pred to all sftp jobs
+
+Somarouthu, Kameswararao [CCC-OT NE] 5:17 AM
+Yes. which is also not run after 10/28
+Barinsky, Lev [CCC-OT] 5:18 AM
+I cant find preds to zcar560n
+Somarouthu, Kameswararao [CCC-OT NE] 5:19 AM
+THIS JOB IS INVOKED BY CICS TRAN NCAC WHEN INITIAL LOAD
+TO THE SERVER SHOULD START 
+PARM=15 - INITIAL LOAD 
+PARM=14 - RELOAD 
+
+Desctiption for ZCAR560N
+Potential problem has been detected by the on-line control program NCAC505. 
+Please check on-line log file: CICSPRDV.NCA.NCACLOG 
+We are getting these emails
+Barinsky, Lev [CCC-OT] 5:21 AM
+but not me:)
+Somarouthu, Kameswararao [CCC-OT NE] 5:21 AM
+I thought that this could be due to CDW database issue
+since there are no retrieval job failures
+Barinsky, Lev [CCC-OT] 5:23 AM
+I can see the log - can you?
+Somarouthu, Kameswararao [CCC-OT NE] 5:23 AM
+No access :)
+Barinsky, Lev [CCC-OT] 5:24 AM
+I see LONG RUN mainly - apparently wating for CDW confirmation
+ File-AID - Browse - CICSPRDV.NCA.NCACLOG ------------------ LINE 0039 COL 1 79
+ COMMAND ===> SCROLL ===> PAGE 
+----+----1 ----+----2----+----3----+----4----+----5----+----6----+----7----+----
+r b NCAC505 2014103005STATUS18+3333LONG RUN2014-10-30-16.10.05.420100 LOG
+r b < NCAC505 2014102806STATUS18+3333LONG RUN2014-10-28-15.51.11.814322 LOG
+r b < NCAC505 2014102805ZCAR560N+3333LONG RUN2014-10-28-15.35.42.847461 LOG
+r b NCAC505 2014102807STATUS18+3333LONG RUN2014-10-28-16.58.18.814225 LOG
+r b NCAC505 2014103001STATUS18+3333LONG RUN2014-10-30-12.35.27.729318 LOG
+r b % NCAC505 2014102009ZCAR599N+3333LONG RUN2014-10-30-19.00.13.210484 LOG
+r b @ NCAC505 2014102808STATUS18+3333LONG RUN2014-10-28-17.51.02.339299 LOG
+r b NCAC505 2014103003STATUS18+3333LONG RUN2014-10-30-13.31.08.606125 LOG
+r b < NCAC505 2014103002STATUS18+3333LONG RUN2014-10-30-13.11.42.010447 LOG
+r b * NCAC505 2014102101ZCAR599N+3333LONG RUN2014-10-31-19.00.14.718377 LOG
+r b NCAC505 2014103004STATUS18+3333LONG RUN2014-10-30-14.40.05.324237 LOG
+r b NCAC505 2014110601ZCAR530N+0000 LOG
+r e @ COMM ID=2014110601,SYST ID=SPRG,SQL= 0,RQST ID=2014110601,STAT=07,M
+r ` < NCAC505 ZCAR996N+0000 LOG
+r ` NCAC505 2014110306STATUS18+3333LONG RUN2014-11-03-20.40.08.196057 LOG
+r ` NCAC505 2014110401STATUS18+3333LONG RUN2014-11-04-12.11.22.527922 LOG
+r ` NCAC505 2014100703ZCAR599N+3333LONG RUN2014-10-30-19.00.13.202456 LOG
+r ` NCAC505 2014110304STATUS18+3333LONG RUN2014-11-03-18.04.00.663435 LOG
+r ` NCAC505 2014110305STATUS18+3333LONG RUN2014-11-03-19.44.23.042630 LOG
+r ` @ NCAC505 2014110302STATUS18+3333LONG RUN2014-11-03-14.39.49.699881 LOG
+
+Somarouthu, Kameswararao [CCC-OT NE] 5:25 AM
+Ok
+What is the remedy in this case?
+Barinsky, Lev [CCC-OT] 5:26 AM
+do you know what program is updating the log?
+Somarouthu, Kameswararao [CCC-OT NE] 5:27 AM
+ZCICSSP NCACLOG UPDATE
+
+Not sure
+I searched in N;S;2
+Barinsky, Lev [CCC-OT] 5:28 AM
+maybe CHGMAN.CMN.BDS.SRCLIB(NCAC505)
+
+or 507
+Somarouthu, Kameswararao [CCC-OT NE] 5:29 AM
+Ok
+Barinsky, Lev [CCC-OT] 5:34 AM
+20141028 05 is the request with status 18
+Somarouthu, Kameswararao [CCC-OT NE] 5:35 AM
+the last successful retrieval
+ZWSRILDR
+
+Barinsky, Lev [CCC-OT] 5:37 AM
+where do yoiu find these status codes?
+what they mean that is
+Somarouthu, Kameswararao [CCC-OT NE] 5:42 AM
+Not su
+Not sure
+will probably check 
+Barinsky, Lev [CCC-OT] 5:43 AM
+either it just changed, or I was looking in a wrong place
+that request has status 15 (prior status 18)
+and all subsequent requests have status 18
+Somarouthu, Kameswararao [CCC-OT NE] 5:45 AM
+Ok
+What do we tell them Lev? Did you get any idea? :)
+Barinsky, Lev [CCC-OT] 5:46 AM
+I think we need to take action or tell them what we expect
+Somarouthu, Kameswararao [CCC-OT NE] 5:46 AM
+I am in call with them
+What shuld I suggest to trigger at CDW end
+Barinsky, Lev [CCC-OT] 5:47 AM
+we can;t expect a miracle, i mean something needs to happen for the process to start working again
+I dont have the answer, I but i will try to look into this
+Somarouthu, Kameswararao [CCC-OT NE] 5:47 AM
+35111_RetrievalLoadXmitTrig - ZWSRILDR
+35111_RetrievalDeleteXmitTrig - ZWSRI52N
+Ok..ok sorry. no probs
+I will also take a look
+Barinsky, Lev [CCC-OT] 5:47 AM
+you may want to take some rest "we are looking into this"
+Somarouthu, Kameswararao [CCC-OT NE] 5:48 AM
+Appala was asking me the status in the call 
+I said we are looking
+Barinsky, Lev [CCC-OT] 5:48 AM
+aand that has not changed
+Somarouthu, Kameswararao [CCC-OT NE] 5:50 AM
+hmm :)
+Barinsky, Lev [CCC-OT] 5:55 AM
+status codes in this program ncac505, at line 80 approx
+Somarouthu, Kameswararao [CCC-OT NE] 5:56 AM
+Ok
+Barinsky, Lev [CCC-OT] 5:56 AM
+so it looks like that request I mention is "loading"
+Somarouthu, Kameswararao [CCC-OT NE] 5:58 AM
+18Pend Load
+
+Barinsky, Lev [CCC-OT] 5:58 AM
+job zwsr799n receives this file
+ BROWSE PROD.NCA.LOADRESP.R4102804 
+ Command ===> 
+********************************* Top of Data *
+00 2014102804 
+******************************** Bottom of Data
+
+last one loaded
+ZWSR799N	Get	/export/cdwapp1/opt/cdwftp/DataRetrieval/LoadResponse	/u/users/CDFTPGC/LoadResponse	
+Somarouthu, Kameswararao [CCC-OT NE] 6:01 AM
+Which is before load or after load
+Barinsky, Lev [CCC-OT] 6:01 AM
+ok - so I would tell them we need ZWSRILDR
+for request 20141028 05
+this is their response that the request was loaded and apaprently we are waiting for that before sending the next one
+but it is important that the correct request# is sent
+that is how I see it
+Somarouthu, Kameswararao [CCC-OT NE] 6:03 AM
+Ok..sure .. will communicate
+Barinsky, Lev [CCC-OT] 6:04 AM
+i need to step away for 10 min
+Somarouthu, Kameswararao [CCC-OT NE] 6:04 AM
+Ok Lev
+Please go ahead
+i will update you
+Barinsky, Lev [CCC-OT] 6:04 AM
+in case you signing off - talk to you later:)
+Somarouthu, Kameswararao [CCC-OT NE] 6:05 AM
+Ok
+Somarouthu, Kameswararao [CCC-OT NE] 6:37 AM
+I have asked them to send the Load response
+They sent it
+Barinsky, Lev [CCC-OT] 6:43 AM
+yes, i saw it. the staus is now 09
+which is not listed in the pgm
+Somarouthu, Kameswararao [CCC-OT NE] 6:44 AM
+But I dont see that our sftp load job running - ZCAR560N
+Oh.
+Barinsky, Lev [CCC-OT] 6:45 AM
+BROWSE CHGMAN.CMN.BDS.SRCLIB(NCAC505) - 04.06 Line 00000843 
+Command ===> Scrol
+           IF WS-SPACE-NEEDED-CHECK > WS-SPACE-AVAILABLE 
+               EVALUATE REQ-STATUS 
+                 WHEN 18 
+                MOVE WS-ZSUBP-SEND-MSG-JOB 
+                                 TO WS-JOB 
+                PERFORM 8000-START-BATCH THRU 8000-EXIT 
+                    EXEC SQL 
+                     UPDATE REQUEST_CNTL 
+                      SET REQ_STATUS = '09', 
+                          PRIOR_STATUS = '18', 
+
+have you just received an email?
+about 15 minutes ago
+Somarouthu, Kameswararao [CCC-OT NE] 6:46 AM
+Yes.. I did
+cics potential issue
+just forwarded
+What does it mean?
+Issues with our end
+Barinsky, Lev [CCC-OT] 6:49 AM
+nothing interesting in the log, i copied 5000 records:
+ECNS.NCA.NCACLOG
+
+Somarouthu, Kameswararao [CCC-OT NE] 6:51 AM
+Ok
+Would CICS person can provide any details?
+Barinsky, Lev [CCC-OT] 6:59 AM
+? what person
+Somarouthu, Kameswararao [CCC-OT NE] 6:59 AM
+CICS support person
+Barinsky, Lev [CCC-OT] 7:00 AM
+i think noone has looked into this for a few years at least; and those who did are probably no longer working here
+this is application "issue"
+CICS support people cant know our applciation
+unless I am missing something?
+Somarouthu, Kameswararao [CCC-OT NE] 7:02 AM
+Ok
+Barinsky, Lev [CCC-OT] 7:05 AM
+looks like space condition is the only thing that can cause 09 status code; but I cant find the underlying cause
+Somarouthu, Kameswararao [CCC-OT NE] 7:06 AM
+space at our end
+Barinsky, Lev [CCC-OT] 7:07 AM
+it means nothing; but the logic is there
+Somarouthu, Kameswararao [CCC-OT NE] 7:07 AM
+ok
+Somarouthu, Kameswararao [CCC-OT NE] 7:20 AM
+I dont have clue on how to proceed on this?
+Can you put me in some direction Lev?
+:S
+Barinsky, Lev [CCC-OT] 7:22 AM
+I am looking at the code in NCAC505
+and trying to make sense of status 09
+Somarouthu, Kameswararao [CCC-OT NE] 7:22 AM
+Ok
+Barinsky, Lev [CCC-OT] 7:22 AM
+and I can;t so far
+Barinsky, Lev [CCC-OT] 7:24 AM
+I need to step away for 15 minutes - I am not sure why oyu are up still
+Somarouthu, Kameswararao [CCC-OT NE] 7:25 AM
+Sandeep is asking me the update 
+Appala was also asking about the ETA
+All of a sudden they came up and raised this in the night
+Barinsky, Lev [CCC-OT] 7:27 AM
+you can tell them that I am looking into it; and get some rest for now
+I dont see a point in you staying up. tehre will bemany batch jobs requiring your attention
+if you are too tired you will make mistakes
+Somarouthu, Kameswararao [CCC-OT NE] 7:27 AM
+Yes Lev..I agree
+Barinsky, Lev [CCC-OT] 7:28 AM
+go get rest now, I need to step away
+Somarouthu, Kameswararao [CCC-OT NE] 7:28 AM
+Ok..we got the Fillrcr trigger
+I will run then for 10/31 and then take rest
+Barinsky, Lev [CCC-OT] 7:28 AM
+ok, now you got someting to do
+Somarouthu, Kameswararao [CCC-OT NE] 7:28 AM
+jobs are ready
+I made them ready ysterday itself
+hmm yes and couple of archival job fails as well
+Thank you Lev
+Somarouthu, Kameswararao [CCC-OT NE] 7:34 AM
+PB report jobs ran fine for 10/31 and reports look good
+Barinsky, Lev [CCC-OT] 7:57 AM
+yes, reports look good
+Somarouthu, Kameswararao [CCC-OT NE] 7:58 AM
+Will there be any issues with this table - SPACE_CNTL?
+ FROM SPACE_CNTL 
+ WHERE SERVER_NBR = '01'
+
+Barinsky, Lev [CCC-OT] 8:00 AM
+SELECT SERVER_NBR, 
+       TOTAL_SPACE 
+  FROM ncadb2p.SPACE_CNTL 
+  WHERE SERVER_NBR = '01' 
+ SERVER_NBR TOTAL_SPACE 
+ ------------- -------------- 
+ 01 54,000,000,000 
+dont see any issues
+Somarouthu, Kameswararao [CCC-OT NE] 8:00 AM
+Ok
+I am frequently gettting those emails
+NCAC505
+So far I got 4 mails from last 2 hrs
+Barinsky, Lev [CCC-OT] 8:03 AM
+because theose requests are pending load "LONG RUN"
+Somarouthu, Kameswararao [CCC-OT NE] 8:04 AM
+Ok
+I seriously supect that this could have caused due to their database issues and their jobs on HOLD
+Barinsky, Lev [CCC-OT] 8:05 AM
+are you signing off?
+Somarouthu, Kameswararao [CCC-OT NE] 8:05 AM
+I dont know Lev
+i wish
+Please tell me Lev
+Barinsky, Lev [CCC-OT] 8:06 AM
+if you are notsigning off - then you work on it
+I think you should get some rest
+but if you re still on - go ahead and work on it
+then I will work on othe rthings
+you have to choose
+Somarouthu, Kameswararao [CCC-OT NE] 8:07 AM
+I will take rest for few hours and log in
+is that ok?
+Barinsky, Lev [CCC-OT] 8:07 AM
+yes, that is what I am trying to tell you
+Somarouthu, Kameswararao [CCC-OT NE] 8:07 AM
+Ok Lev. Thank you
+I will ping you later
+Barinsky, Lev [CCC-OT] 8:08 AM
+ok
+Somarouthu, Kameswararao [CCC-OT NE] 12:22 PM
+Hi Lev
+Barinsky, Lev [CCC-OT] 12:22 PM
+hello
+Somarouthu, Kameswararao [CCC-OT NE] 12:24 PM
+Is there anything that I can help you on retrieval
+Barinsky, Lev [CCC-OT] 12:24 PM
+I am a littel stuck, although I see many things now:)
+Somarouthu, Kameswararao [CCC-OT NE] 12:24 PM
+They woke me up due to job failure
+Barinsky, Lev [CCC-OT] 12:24 PM
+do you have any documentatiuon on this stuff :(
+the latest: there are 4 request with atatus 11 "purging"
+Somarouthu, Kameswararao [CCC-OT NE] 12:25 PM
+Retreival - except flow diagrams no documentation available wiht me
+Oh
+Barinsky, Lev [CCC-OT] 12:26 PM
+it seems that this program will not start ftps until it receives purge requests back
+I am thinking of changing these 4 requests, but I am not sure how 
+I know how - ut change to what
+Somarouthu, Kameswararao [CCC-OT NE] 12:28 PM
+Does CDW send these purge requests to us?
+what is the program?
+Barinsky, Lev [CCC-OT] 12:28 PM
+NCAC505
+Somarouthu, Kameswararao [CCC-OT NE] 12:28 PM
+Ok
+Barinsky, Lev [CCC-OT] 12:29 PM
+ZCAR599N, ZWSR599N <- very hard to trace but they exist
+ZWSR522N; ZCAD520N
+pgm NCAB721
+too many things to figure out without a good document
+I am also noticing that many requests still pending, have purge date in the past
+not sure if system will handle that
+for example 
+entered on 10/30, purge date 11/02
+I think since we have to do something.....
+I will set up an update job for all these requests, and we will giove it a try
+Somarouthu, Kameswararao [CCC-OT NE] 12:33 PM
+Ok
+Barinsky, Lev [CCC-OT] 12:33 PM
+1. change the 4 request to "normal" status  2. change purge dates on pending requests to 11/14 or something
+Somarouthu, Kameswararao [CCC-OT NE] 12:33 PM
+otherwise shall we do one request first then if is successful then the remaining
+Barinsky, Lev [CCC-OT] 12:34 PM
+I dont think we can
+unless you know better
+Somarouthu, Kameswararao [CCC-OT NE] 12:34 PM
+I mean through one-off jobs by AGCC
+Barinsky, Lev [CCC-OT] 12:34 PM
+this system ius too smart and if we try to full it, it may break
+Somarouthu, Kameswararao [CCC-OT NE] 12:35 PM
+ok
+Barinsky, Lev [CCC-OT] 12:35 PM
+no, I think it is dangerous to even try
+i need a 10 min break and I will start on it
+Somarouthu, Kameswararao [CCC-OT NE] 12:36 PM
+Ok Lev.. lot of new things to learn :)
+pls carry on
+There is a need to document this
+Somarouthu, Kameswararao [CCC-OT NE] 12:38 PM
+I will do it afer we resolve this issue
+Barinsky, Lev [CCC-OT] 12:44 PM
+this is going to be diffcult to document:)
+because I dont have a full picture
+Somarouthu, Kameswararao [CCC-OT NE] 12:45 PM
+Ok
+Barinsky, Lev [CCC-OT] 1:15 PM
+IOCS00S.PB.TURN.JCLLIB(ZCAR7RQN)
+
+I think I am ready - pls take alook
+Somarouthu, Kameswararao [CCC-OT NE] 1:15 PM
+Ok sure
+2014-11-14
+
+Barinsky, Lev [CCC-OT] 1:16 PM
+have you worked with this guy: Murugesan Pachaiyappan
+is Muru the right way to addres him
+or her:)
+Somarouthu, Kameswararao [CCC-OT NE] 1:17 PM
+Yes
+He only
+Muthu s are always Male
+I will ask him to run it fo rus
+what is the INC?
+Barinsky, Lev [CCC-OT] 1:17 PM
+he ran these jobs already, I will reasiign back to him
+you wnat me to assign to you?
+Somarouthu, Kameswararao [CCC-OT NE] 1:18 PM
+No need to assign him
+We jsut need to update the INC
+Barinsky, Lev [CCC-OT] 1:19 PM
+ok, will do. we need to run the same jobs again 1.spufi update 2.zca#699n (which is the same as zca#799n)
+Somarouthu, Kameswararao [CCC-OT NE] 1:20 PM
+Pls assign the INC to me
+i will take care of INC updates
+Barinsky, Lev [CCC-OT] 1:20 PM
+ok, I will put in my comments
+Somarouthu, Kameswararao [CCC-OT NE] 1:20 PM
+which I have been used to for all these days :)
+Somarouthu, Kameswararao [CCC-OT NE] 1:23 PM
+Once this job runs then I will ask him to run these jobs from TURN library
+ZCA#699N
+ZCA#799N
+
+Barinsky, Lev [CCC-OT] 1:24 PM
+no
+both jobs are in the INC
+These two jobs need to run again as more issues with data have been discovered which need to be corrected:
+1. please run one-time job ZCAR7RQN from IOCS00S.PB.TURN.JCLLIB(ZCAR7RQN)
+2. if successful please run job ZCA#699N from IOCS00S.PB.TURN.JCLLIB(ZCA#699N)
+
+Somarouthu, Kameswararao [CCC-OT NE] 1:24 PM
+Ok
+Barinsky, Lev [CCC-OT] 1:25 PM
+assigned to you - check it, see if you need to comment and reassign to Muru
+Somarouthu, Kameswararao [CCC-OT NE] 1:25 PM
+Ok. I will take care
+Barinsky, Lev [CCC-OT] 1:25 PM
+one good question....will this work?
+:)
+Somarouthu, Kameswararao [CCC-OT NE] 1:27 PM
+ZCA#699N  - What is the significance of this job?
+Barinsky, Lev [CCC-OT] 1:28 PM
+same as #799 - both start transaction NCAC - pgm NCAC505
+NCAC505 decides what to run next
+"sort of"
+Somarouthu, Kameswararao [CCC-OT NE] 1:29 PM
+Ok
+Somarouthu, Kameswararao [CCC-OT NE] 1:32 PM
+Failed in step10
+looking
+first job
+PRIOR_STATUS = '11' ;
+
+Need to remove ;
+Somarouthu, Kameswararao [CCC-OT NE] 1:37 PM
+I changed it
+Somarouthu, Kameswararao [CCC-OT NE] 1:40 PM
+It's my mistake I hsould have find it when you asked me to take a look
+Barinsky, Lev [CCC-OT] 1:43 PM
+wait let me see
+Somarouthu, Kameswararao [CCC-OT NE] 1:45 PM
+Ok
+Barinsky, Lev [CCC-OT] 1:45 PM
+i think there may be some bad characters as I pasted from excel
+Somarouthu, Kameswararao [CCC-OT NE] 1:46 PM
+ok
+REQ-STATUS
+
+Barinsky, Lev [CCC-OT] 1:48 PM
+yes
+ok, you can have it. I changed the -
+Somarouthu, Kameswararao [CCC-OT NE] 1:49 PM
+Ok. I will ask him to rerun 
+Barinsky, Lev [CCC-OT] 1:49 PM
+ok
+Barinsky, Lev [CCC-OT] 1:52 PM
+he did not refresh
+Somarouthu, Kameswararao [CCC-OT NE] 1:52 PM
+He is doing it with latest copy
+Barinsky, Lev [CCC-OT] 1:53 PM
+DSNT502I ERROR IN DSNTIAUL SQL INPUT: 
+          UPDATE DB2PRD03.NCADB2P.REQUEST_CNTL 
+             SET REQ_STATUS = '03', 
+                 PRIOR_STATUS = '11' 
+           WHERE REQ-STATUS = '11' 
+
+did not refresh
+Somarouthu, Kameswararao [CCC-OT NE] 1:54 PM
+Yes Lev. He will be running now again
+Barinsky, Lev [CCC-OT] 1:55 PM
+ok. I am sure the update wll work....the question is - will ftps start running:)
+Somarouthu, Kameswararao [CCC-OT NE] 1:55 PM
+failed again Lev
+QL WARNING DURING EXECUTE IMMEDIATE 
+NT404I SQLCODE = 100, NOT FOUND: ROW NOT FOUND FOR FETCH, UPDATE, OR DELETE
+
+Barinsky, Lev [CCC-OT] 1:58 PM
+bad... we have a problem that needs to be fixed
+Somarouthu, Kameswararao [CCC-OT NE] 1:59 PM
+STATUS is '3' for all requests
+5 mins..i will be back
+Somarouthu, Kameswararao [CCC-OT NE] 2:23 PM
+shall we run second and third sql
+Barinsky, Lev [CCC-OT] 2:24 PM
+that ; messed everything up
+i need some more time to put a fix together, may nto be 100%, but have to try
+Somarouthu, Kameswararao [CCC-OT NE] 2:25 PM
+ok
+you mean our query updated all 
+Barinsky, Lev [CCC-OT] 2:28 PM
+yes, the first one without the where
+Somarouthu, Kameswararao [CCC-OT NE] 2:28 PM
+Oh.
+shall we update the status before the entries with 20141028 05
+?
+to old values
+If you are in the middle pls carry on
+I dont wnat to interrupt you
+Barinsky, Lev [CCC-OT] 2:35 PM
+I think I can get it pretty close
+Somarouthu, Kameswararao [CCC-OT NE] 2:36 PM
+Is it available in TURN Library?
+Barinsky, Lev [CCC-OT] 2:36 PM
+not yet
+Somarouthu, Kameswararao [CCC-OT NE] 2:36 PM
+Ok
+Somarouthu, Kameswararao [CCC-OT NE] 2:53 PM
+are you working on the Sql?
+Barinsky, Lev [CCC-OT] 2:54 PM
+almost done, I also ran select with the same "where" as will run in the update
+I will send you a spreadsheet with many tabs
+Somarouthu, Kameswararao [CCC-OT NE] 2:55 PM
+Ok
+Barinsky, Lev [CCC-OT] 2:58 PM
+I think I need to explain what the tabs are
+The last one is the SQL to fix the situation, I am still reviewing
+The first one is the original list, but only includes status > 09
+second is the SQL we ran, with errors
+third is the select * after the bad run
+next 4 table are select results using WHERE from the Update SQL in the last tab
+they dont add up to the total, because 14 (or 13) requests will remain as status 03 / purged
+confusing enough?
+Somarouthu, Kameswararao [CCC-OT NE] 3:02 PM
+No Lev
+Barinsky, Lev [CCC-OT] 3:02 PM
+1st update is for No Data
+2nd foir pending load
+3rd and 4th for "avaialble'
+I wnat to take a 5 minute break then will take another look and will update the TURN job
+Somarouthu, Kameswararao [CCC-OT NE] 3:03 PM
+Ok. 
+Need to veriy the results once all 4 updates are done as per your spread sheet
+Am I right?
+Barinsky, Lev [CCC-OT] 3:03 PM
+this time we want to run the update job onloy, then look at the results - and only then run ZCA#699n
+yes, exactly
+I will be back in 5, and will have naother look. but  please check it too
+Somarouthu, Kameswararao [CCC-OT NE] 3:04 PM
+Ok
+what about this sql's in the initial job?
+UPDATE DB2PRD03.NCADB2P.REQUEST_CNTL 
+   SET PROJ_PURGE_DT = '2014-11-14', 
+       ACT_PURGE_DT = '2014-11-14' 
+ WHERE REQ_STATUS = '18' AND PROJ_PURGE_DT < '2014-11-12';
+UPDATE DB2PRD03.NCADB2P.REQUEST_CNTL 
+   SET LAST_MOD_TIMESTMP = '2014-10-28 15:20:11.814322' 
+ WHERE KEY_BASE = '20141028' AND SEQ_NBR = '05'; 
+
+Should I add these 2 in the JCL at the end?
+Barinsky, Lev [CCC-OT] 3:11 PM
+Yes, I was going to do that. main focus on the fix....
+they would go at the end
+Barinsky, Lev [CCC-OT] 3:14 PM
+i dont see any issues
+I think it may work this time
+:(
+Somarouthu, Kameswararao [CCC-OT NE] 3:15 PM
+Yes.
+Barinsky, Lev [CCC-OT] 3:15 PM
+ok, let me update the jcl?
+Somarouthu, Kameswararao [CCC-OT NE] 3:15 PM
+prior status is 1 in the original records
+are we not changeing that?
+Barinsky, Lev [CCC-OT] 3:16 PM
+only on those with status 11 - we want them as 03 prior 11, just like they are now
+Somarouthu, Kameswararao [CCC-OT NE] 3:16 PM
+Ok
+Barinsky, Lev [CCC-OT] 3:20 PM
+I saved the jcl - take alook
+Somarouthu, Kameswararao [CCC-OT NE] 3:20 PM
+Ok
+Yes Lev.. this time.. there will be no issues
+I will get it run 
+Barinsky, Lev [CCC-OT] 3:23 PM
+just one job, then we will look at the requests, then will run zca#699n
+Somarouthu, Kameswararao [CCC-OT NE] 3:23 PM
+Ok sure
+Somarouthu, Kameswararao [CCC-OT NE] 3:30 PM
+Lev completed
+Barinsky, Lev [CCC-OT] 3:31 PM
+let me see
+Somarouthu, Kameswararao [CCC-OT NE] 3:31 PM
+Ok
+Somarouthu, Kameswararao [CCC-OT NE] 3:35 PM
+I just had a look..it looks ok but you are the correct person to judge it
+Barinsky, Lev [CCC-OT] 3:36 PM
+yes looks ok to me
+Somarouthu, Kameswararao [CCC-OT NE] 3:36 PM
+I will ask to run the second job
+Barinsky, Lev [CCC-OT] 3:37 PM
+ok, I hope this produces desired results
+otherwise all this was a waste of time:(
+and I wouldnt know what to try next
+Somarouthu, Kameswararao [CCC-OT NE] 3:37 PM
+you are stretching for long time
+Sorry Lev
+Barinsky, Lev [CCC-OT] 3:39 PM
+This job runs at 7:00 every day ZCAD520N - it may do something with purge requests; just keep it in mind. I hope nothing bad will happen
+Somarouthu, Kameswararao [CCC-OT NE] 3:39 PM
+Ok
+Somarouthu, Kameswararao [CCC-OT NE] 3:43 PM
+second job ran fine
+Great
+ZCAR560N ran fine
+ZWSR701N failed
+Barinsky, Lev [CCC-OT] 3:45 PM
+I think it is the same issue with tapes that expire too soon
+Somarouthu, Kameswararao [CCC-OT NE] 3:47 PM
+I saw them this moring Lev
+But they are gone now
+Barinsky, Lev [CCC-OT] 3:47 PM
+I submitted the job
+Somarouthu, Kameswararao [CCC-OT NE] 3:47 PM
+which job?
+Barinsky, Lev [CCC-OT] 3:48 PM
+tape listing
+Somarouthu, Kameswararao [CCC-OT NE] 3:48 PM
+Ok
+Barinsky, Lev [CCC-OT] 3:48 PM
+but I will run again, to cover more files. I only submitted for stif
+Somarouthu, Kameswararao [CCC-OT NE] 3:48 PM
+available from SHS.NCA.CAW05.MAINSTIF.R4103001
+
+Barinsky, Lev [CCC-OT] 3:50 PM
+yes, the tape list produces the same as the catalog
+do you think it is worth looking in SAR for vol ser's ?
+Somarouthu, Kameswararao [CCC-OT NE] 3:51 PM
+Mike lyons is alos not asking the old data Lev
+he is asking abt the latest
+so shall we start running from 10/30?
+What do you say?
+If required we can request the users to rerequest them since they are 10 days back requests unless you disagree with me
+Barinsky, Lev [CCC-OT] 3:52 PM
+in the meantime, we have a slight mess
+and we should backup the tape which are there today
+as they may be gone any minute:)
+Somarouthu, Kameswararao [CCC-OT NE] 3:53 PM
+Ok.. I will request thsi evening 
+throu an excel
+by taking from SAR
+Ok.. got it
+exisint tapes
+yes
+Barinsky, Lev [CCC-OT] 3:54 PM
+ok, we are missing 4 requests for 10/28 # 5,6,7,8
+Somarouthu, Kameswararao [CCC-OT NE] 3:56 PM
+I wil make a note of them and park it
+I think we need to update the table so taht it picks up from 10/30
+Am I right Lev?
+Barinsky, Lev [CCC-OT] 3:57 PM
+ok, what status to we assign to these so they start extracting again?
+Somarouthu, Kameswararao [CCC-OT NE] 3:57 PM
+will give 18 for now
+we will change later
+Barinsky, Lev [CCC-OT] 3:58 PM
+I think 13 pending recall
+Somarouthu, Kameswararao [CCC-OT NE] 3:58 PM
+Oh..sorry
+Ok
+Barinsky, Lev [CCC-OT] 3:58 PM
+no, 18 means ogm will try to send them to cdw
+in turn
+Somarouthu, Kameswararao [CCC-OT NE] 3:58 PM
+Ok..ok
+Barinsky, Lev [CCC-OT] 3:59 PM
+we need to cancel 560 and whatever follows in the app - right?
+I mean zwsr701n
+Somarouthu, Kameswararao [CCC-OT NE] 4:00 PM
+Yes..
+Barinsky, Lev [CCC-OT] 4:00 PM
+it may be the last one and nothing else after it
+Somarouthu, Kameswararao [CCC-OT NE] 4:01 PM
+I am checking with AGCC
+ZWSR700N
+is successor
+I checkit in JOBDOC link
+All jobs failed withJCL error
+I sent you an email
+Somarouthu, Kameswararao [CCC-OT NE] 4:05 PM
+Lev I will instruct them to mark complete failed once
+Barinsky, Lev [CCC-OT] 4:06 PM
+yes
+Somarouthu, Kameswararao [CCC-OT NE] 4:08 PM
+Can u run this - WRKT.USER.KAMESH(TAPECOPY)
+
+tape backup to ECNS with RETPD - 30 days
+Lev, pls prepare sql for updation if possibel and take rest
+I will manage the rest
+Barinsky, Lev [CCC-OT] 4:14 PM
+I updated the jcl, please take look
+make sure they refresh the jcl
+Somarouthu, Kameswararao [CCC-OT NE] 4:14 PM
+Sure..will do
+Barinsky, Lev [CCC-OT] 4:14 PM
+I think we also want to check the table before runnig ZCA#699N
+Somarouthu, Kameswararao [CCC-OT NE] 4:15 PM
+Ok
+Barinsky, Lev [CCC-OT] 4:15 PM
+I think what may happen, it will start retrieval requests again 
+wait, I think need to change something
+Somarouthu, Kameswararao [CCC-OT NE] 4:16 PM
+Ok
+Barinsky, Lev [CCC-OT] 4:16 PM
+no, never mind
+all 4 had data. I though one did not, but al of them do
+Somarouthu, Kameswararao [CCC-OT NE] 4:18 PM
+Shall I get thsi run?
+Barinsky, Lev [CCC-OT] 4:19 PM
+yes
+Somarouthu, Kameswararao [CCC-OT NE] 4:19 PM
+OK
+Barinsky, Lev [CCC-OT] 4:19 PM
+I will take 5
+Somarouthu, Kameswararao [CCC-OT NE] 4:20 PM
+Ok thank you
+Barinsky, Lev [CCC-OT] 4:27 PM
+i tihnk we may wnat to update something, if not too late?
+Somarouthu, Kameswararao [CCC-OT NE] 4:27 PM
+job completed
+Barinsky, Lev [CCC-OT] 4:27 PM
+ok, 
+Somarouthu, Kameswararao [CCC-OT NE] 4:27 PM
+What is that Lev?
+Barinsky, Lev [CCC-OT] 4:27 PM
+which request was Mike asking about?
+he had one specific request in mind
+2 of these 10./28 requests are pretty long (2years of stif), they may run for a while
+Somarouthu, Kameswararao [CCC-OT NE] 4:28 PM
+11/04/14 requested by ALAN SHAPIRO
+2014-EQ238 STIF2
+Barinsky, Lev [CCC-OT] 4:28 PM
+I am thinking, maybe by updating timestamps, we can puch the loads/ftps first
+no, never mind
+first cursor is
+ORDER BY REQ_STATUS, 
+         ENTRY_TIMESTMP, 
+         LAST_MOD_TIMESTMP 
+
+so the retrievals will run first anyway
+Somarouthu, Kameswararao [CCC-OT NE] 4:31 PM
+Ok
+Barinsky, Lev [CCC-OT] 4:31 PM
+i think 699 ran
+and 530 probably too?
+Somarouthu, Kameswararao [CCC-OT NE] 4:32 PM
+Not yet
+Shall I ask him to run
+ZCA#699N
+Barinsky, Lev [CCC-OT] 4:32 PM
+wait then
+Somarouthu, Kameswararao [CCC-OT NE] 4:32 PM
+Ok
+Barinsky, Lev [CCC-OT] 4:32 PM
+one sec
+it is running:)
+i saw status change to 12 prior 13, request #5
+that's fine
+I think
+no need to ask him
+Somarouthu, Kameswararao [CCC-OT NE] 4:34 PM
+hmm Ok
+now the retrieval jobs are running
+Barinsky, Lev [CCC-OT] 4:38 PM
+ok, so hopefully all wil run by itself.
+Somarouthu, Kameswararao [CCC-OT NE] 4:38 PM
+it's great news finally for us
+Barinsky, Lev [CCC-OT] 4:38 PM
+the only thing - if after the last of these 4 requests is loaded - if all stops, then we may need to run ZCA#699N
+I am not really sure any more
+Somarouthu, Kameswararao [CCC-OT NE] 4:39 PM
+Ok..sure will check the table and proceed
+it's already late for u
+please take rest
+Barinsky, Lev [CCC-OT] 4:40 PM
+ok, now that all is running, you have time to document everything:)
+Somarouthu, Kameswararao [CCC-OT NE] 4:40 PM
+Do you have access to work by any chance?
+sure will do 
+Lev, I will have a look into your message adn will check with some time next week when you have time
+i mean in this weekend
+Barinsky, Lev [CCC-OT] 4:40 PM
+access to work?
+Somarouthu, Kameswararao [CCC-OT NE] 4:40 PM
+and prepare the document
+work datasets
+WORK.NGC.PGCD284N.MRGPOS
+WORK.NGC.PGCD284N.WTCHQSP.SAL
+
+Barinsky, Lev [CCC-OT] 4:40 PM
+some probably
+Somarouthu, Kameswararao [CCC-OT NE] 4:40 PM
+Pls try and ocpy
+If not I will prepare a job
+There are failures
+wich I am addressing parallely
+Barinsky, Lev [CCC-OT] 4:42 PM
+no, not work.ngc - dont have them
+Somarouthu, Kameswararao [CCC-OT NE] 4:42 PM
+Ok no probs
+I will monitor the retrieval batch 
+if any issues I will get the 699n run
+Please go to bed
+Thank you so much 
+I would not have proceeded much with out your help today
+I will have my breakfastcum Lunchcum supper now parallely
+:)
+Barinsky, Lev [CCC-OT] 4:44 PM
+next time this will be easier, I hope:)
+I havte this type of work, what it is like guesswork
+and little typos dont help at all
+what about PB jobs - will they kick off at 8:00am again ?
+Somarouthu, Kameswararao [CCC-OT NE] 4:46 PM
+Yes.. main issue is request are forced to mvoe to Purge status due to their database issue
+Correct lev?
+I put them on HOLD
+as of now 11/03 went fine
+I will take care
+they are very simple to me now :)
+by seeing all these failures
+Barinsky, Lev [CCC-OT] 4:47 PM
+just 4 requests may be hanging; the rest seem to have been purged already
+maybe someday you can ask CDW to run a list of all requests still loaded
+Somarouthu, Kameswararao [CCC-OT NE] 4:48 PM
+What is the main reason for this?
+Barinsky, Lev [CCC-OT] 4:48 PM
+to see what we may have as 'purged' but it is still loaded
+so we can reconcile, and maybe ask them to purge manually
+this can be done later-later maybe in 2-3 weeks or so...to be sure that noone is using these requests
+Somarouthu, Kameswararao [CCC-OT NE] 4:50 PM
+Ok..
+In other words our requests are in hang state due to cdw databas outage
+Shall I put in this way for expalnation?
+Barinsky, Lev [CCC-OT] 4:52 PM
+not exactly "hang", because they maybe laoded and online; but they may stay like that forever
+Somarouthu, Kameswararao [CCC-OT NE] 4:52 PM
+Ok
+Thank you so much Lev
+pls go to bed
+Have a good sleep
+Barinsky, Lev [CCC-OT] 4:55 PM
+I had a lot of other work which did not get done:(   but weekend is coming
+Somarouthu, Kameswararao [CCC-OT NE] 5:01 PM
+Oh. retrieval issue eaten all of your time
+Sorry and thank you
+Barinsky, Lev [CCC-OT] 5:01 PM
+that had to be done
+users would not be happy at all
+and bythe way...we are not "home safe" yet
+do they have baseball in Singapore ?
+Somarouthu, Kameswararao [CCC-OT NE] 5:02 PM
+No..
+:)
+Barinsky, Lev [CCC-OT] 5:02 PM
+do you know what home and safe mean
+Somarouthu, Kameswararao [CCC-OT NE] 5:03 PM
+Not exactly Lev
+What is that?
+If it is 100% resolved then we can use this 
+Barinsky, Lev [CCC-OT] 5:03 PM
+I am not a baseball fan, but I used to watch about 28 years ago
+basically, home plate is where the batter stands and tries to hit the ball
+Somarouthu, Kameswararao [CCC-OT NE] 5:04 PM
+Ok
+Barinsky, Lev [CCC-OT] 5:04 PM
+when he hits the ball and runs around the 3 bases and comes to home plate - he scores
+Somarouthu, Kameswararao [CCC-OT NE] 5:05 PM
+ok so we are not yet completd 3 bases :)
+only 1 is done
+Barinsky, Lev [CCC-OT] 5:05 PM
+"safe" means safe at base or safe at home (base) ; safe as opposed as tagged out by the opposing team player
+anyway... it's a long way...
+Somarouthu, Kameswararao [CCC-OT NE] 5:06 PM
+ZWSR701N ran 4 times till now
+Barinsky, Lev [CCC-OT] 5:06 PM
+oh - good news
+so it does run concurrently
+that program is difficult to navigate
+even though built from performs - very over-done with that
+but  it works - thats what counts
+Somarouthu, Kameswararao [CCC-OT NE] 5:07 PM
+but still i am gettign these emails
+Potential problem has been detected by the on-line control program NCAC505. 
+Please check on-line log file: CICSPRDV.NCA.NCACLOG 
+Barinsky, Lev [CCC-OT] 5:07 PM
+and that also means we received loadresponse 3 or 4 times
+Somarouthu, Kameswararao [CCC-OT NE] 5:08 PM
+Oh..if we receive more nuber of time sthen also we will get this message
+Barinsky, Lev [CCC-OT] 5:10 PM
+once these jobs complete, it will go away
+Somarouthu, Kameswararao [CCC-OT NE] 5:11 PM
+Ok
+Barinsky, Lev [CCC-OT] 5:11 PM
+all requests taht is
+Somarouthu, Kameswararao [CCC-OT NE] 5:11 PM
+Ok
+lot of other falues
+and need to folow the process
+not sure how to mange with in SLA:)
+It has been very hectic all this week
+I need power which you get everyday :)
+Barinsky, Lev [CCC-OT] 5:16 PM
+what power?
+Somarouthu, Kameswararao [CCC-OT NE] 5:17 PM
+to work for longer time :)
+Barinsky, Lev [CCC-OT] 5:17 PM
+no, I dont have that:)
+I am going to signoff now
+Somarouthu, Kameswararao [CCC-OT NE] 5:18 PM
+Ok.. Lev
+Please
+Thank you so much
+Barinsky, Lev [CCC-OT] 5:18 PM
+just to warn you - I may sleep longer than usual today:)
+Somarouthu, Kameswararao [CCC-OT NE] 5:18 PM
+Sure.. Have good sleep 
+:)
+Barinsky, Lev [CCC-OT] 5:18 PM
+need to catch up
+like cdw catch up
+probably be back by 9 or maybe later
+Somarouthu, Kameswararao [CCC-OT NE] 5:19 PM
+Ok.. pls take proper rest
+Thank you
+Good night and morning :)
