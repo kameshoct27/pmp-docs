@@ -1,0 +1,1163 @@
+000001       ***------------------------------------------------------------***
+000002       **            DATAWAREHOUSE DATA RETRIEVAL                      **
+000003       ***------------------------------------------------------------***
+000004       ***------------------------------------------------------------***
+000005       **                                                              **
+000006       **                                                              **
+000007       **  PROGRAM NARRATIVE :                                         **
+000008       **     MAIN DISPATCH PROGRAM - CONTROLS PROCESSING FLOW         **
+000009       **     MUST START AFTER EVERY UPDATE OF THE REQUEST OR SPACE    **
+000010       **     CONTROL TABLES                                           **
+000011       ***------------------------------------------------------------***
+000012       ***                   MODIFICATION LOG                          **
+000013       ***------------------------------------------------------------***
+000014       **                                                              **
+000015       ***   PGMR      DATE            DESCRIPTION                     **
+000016       *** ~~~~~~~~~~ ~~~~~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   **
+000017       **   O.PUSTELNIK 04/15/2003   INITIAL IMPLEMENTATION            **
+000018       **   O.PUSTELNIK 08/23/2003   prevent possible loop in the      **
+000019       **                            errror routine                    **
+000020       **   C.SMITH     09/17/2004   Recompile for cobol3 conversion.  **
+000021       **   V.LEYFER    03/08/2007   Restart NCAC transaction if       **
+000022       **                            EIBTRMID = 'CARD' - this statement**
+000023       **                            will prevent contention of        **
+000024       **                            resources while CICS region if    **
+000025       **                            brought up                        **
+000026       ***------------------------------------------------------------***
+000027        IDENTIFICATION DIVISION.                                         
+000028        PROGRAM-ID.    NCAC505.                                          
+000029        AUTHOR.        OLGA PUSTELNIK.                                   
+000030        DATE-WRITTEN.  APRIL 2003.                                       
+000031       *                                                                 
+000032        ENVIRONMENT DIVISION.                                            
+000033        DATA DIVISION.                                                   
+000034       *                                                                 
+000035        WORKING-STORAGE SECTION.                                         
+000036       ***------------------------------------------------------------***
+000037       *       WORKING STORAGE                                          *
+000038       ***------------------------------------------------------------***
+000039        01  WS-MISC-WORK-AREAS.                                          
+000040            05  SEARCH-SW               PIC X(01) VALUE 'N'.             
+000041                   88 END-OF-SEARCH    VALUE 'Y'.                        
+000042            05  EOF-SW                  PIC X(01) VALUE 'N'.             
+000043                   88 EOF-CHECK        VALUE 'Y'.                        
+000044            05  LONG-RUN-SW             PIC X(01) VALUE 'N'.             
+000045                   88 LONG-RUN         VALUE 'Y'.                        
+000046            05  ERROR-SW                PIC X(01) VALUE 'N'.             
+000047                   88 LOGFILE-ERR      VALUE 'Y'.                        
+000048                   88 NOT-LOGERR       VALUE 'N'.                        
+000049            05  RESPONSE-CODE           PIC S9(8) COMP.                  
+000050            05  WORK-SUBS               PIC 9(02) VALUE 0.               
+000051            05  WORK-ABSTIME            PIC X(15).                       
+000052            05  W-DATE                  PIC X(8).                        
+000053            05  W-TIME                  PIC X(8).                        
+000054            05  WORK-DATE               PIC S9(15) COMP-3 VALUE ZERO.    
+000055            05  WORK-RQST-KEY.                                           
+000056                10  WORK-RQST-KEY-DATE  PIC X(8).                        
+000057                10  WORK-RQST-KEY-SEQN  PIC X(2).                        
+000058            05  WORK-BRWS-KEY.                                           
+000059                10  WORK-BRWS-DATE      PIC X(8).                        
+000060                10  WORK-BRWS-SEQN      PIC X(2).                        
+000061            05  WORK-TIME               PIC 9(7).                        
+000062            05  FILLER REDEFINES WORK-TIME.                              
+000063                10  FILLER              PIC X(01).                       
+000064                10  WORK-TIME-HH        PIC X(02).                       
+000065                10  WORK-TIME-MM        PIC X(02).                       
+000066                10  WORK-TIME-SS        PIC X(02).                       
+000067            05  WORK-TIME-FRMT.                                          
+000068                10  WORK-TIME-FRMT-HH   PIC X(02).                       
+000069                10  FILLER              PIC X(01) VALUE ':'.             
+000070                10  WORK-TIME-FRMT-MM   PIC X(02).                       
+000071                10  FILLER              PIC X(01) VALUE ':'.             
+000072                10  WORK-TIME-FRMT-SS   PIC X(02).                       
+000073            05  WORK-ITEM-NMBR     COMP PIC S9(4) VALUE 1.               
+000074            05  WORK-PRCT.                                               
+000075                10 WORK-PRCT-NMBR       PIC 9(03) VALUE 0.               
+000076                10 FILLER               PIC X(01) VALUE '%'.             
+000077            05  WORK-TEMP-PRCT-NMBR     PIC 9(03) VALUE 0.               
+000078            05  WORK-RELOD-DESC.                                         
+000079                10 FILLER               PIC X(08) VALUE 'Loading '.      
+000080                10 WORK-RELOD-NMBR      PIC ZZ    VALUE '00'.            
+000081            05  WORK-STAT-TABL.                                          
+000082                10  FILLER              PIC X(13) VALUE '00Hold       '. 
+000083                10  FILLER              PIC X(13) VALUE '01Available  '. 
+000084                10  FILLER              PIC X(13) VALUE '02Parth Avail'. 
+000085                10  FILLER              PIC X(13) VALUE '03Purged     '. 
+000086                10  FILLER              PIC X(13) VALUE '04No Data    '. 
+000087                10  FILLER              PIC X(13) VALUE '05Modifying  '. 
+000088                10  FILLER              PIC X(13) VALUE '06Pend Purge '. 
+000089                10  FILLER              PIC X(13) VALUE '07Pend Recall'. 
+000090                10  FILLER              PIC X(13) VALUE '08Pend Recall'. 
+000091                10  FILLER              PIC X(13) VALUE '10Purging    '. 
+000092                10  FILLER              PIC X(13) VALUE '10Purging    '. 
+000093                10  FILLER              PIC X(13) VALUE '12Recalling  '. 
+000094                10  FILLER              PIC X(13) VALUE '13Pend Recall'. 
+000095                10  FILLER              PIC X(13) VALUE '14Loading    '. 
+000096                10  FILLER              PIC X(13) VALUE '15Loading    '. 
+000097                10  FILLER              PIC X(13) VALUE '16Part Load  '. 
+000098                10  FILLER              PIC X(13) VALUE '17No Space   '. 
+000099                10  FILLER              PIC X(13) VALUE '18Pend Load  '. 
+000100            05  FILLER  REDEFINES WORK-STAT-TABL.                        
+000101                10  WORK-STAT-ETRY OCCURS 18                             
+000102                    ASCENDING KEY IS WORK-STAT-CODE                      
+000103                    INDEXED BY WORK-STAT-INDX.                           
+000104                15  WORK-STAT-CODE           PIC  X(02).                 
+000105                15  WORK-STAT-DESC           PIC  X(11).                 
+000106       *                                                                 
+000107        COPY NCAI505.                                                    
+000108                                                                         
+000109        01 W-ABSTIME                         PIC S9(15) COMP-3.          
+000110        01 TIME-99                           PIC S9(15) COMP-3           
+000111               VALUE +999999999999999.                                   
+000112        01 WS-LOCK-SW                        PIC X.                      
+000113        01 WS-REQ-STATUS                     PIC X(2).                   
+000114        01 WS-PRIOR-STATUS-LOAD              PIC X(2).                   
+000115        01 WS-SPACE-AVAILABLE                PIC S9(12)V USAGE COMP-3    
+000116                           VALUE ZERO.                                   
+000117        01 WS-SPACE-NEEDED                   PIC S9(12)V USAGE COMP-3    
+000118                           VALUE ZERO.                                   
+000119        01 WS-SPACE-NEEDED-CHECK             PIC S9(12)V USAGE COMP-3    
+000120                           VALUE ZERO.                                   
+000121        01 WS-SPACE-LOADED                   PIC S9(12)V USAGE COMP-3    
+000122                           VALUE ZERO.                                   
+000123        01 WS-SPACE-TAKEN                    PIC S9(12)V USAGE COMP-3    
+000124                           VALUE ZERO.                                   
+000125        01 WS-KEY-BASE-RECALL                PIC X(8).                   
+000126        01 WS-SEQ-NBR-RECALL                 PIC X(2).                   
+000127        01 WS-KEY-BASE-LOAD                  PIC X(8).                   
+000128        01 WS-SEQ-NBR-LOAD                   PIC X(2).                   
+000129        01 WS-RELOAD-NBR                     PIC X(2).                   
+000130        01 WS-RELOAD-NUM  REDEFINES  WS-RELOAD-NBR PIC 9(2).             
+000131        01 WS-JOB-LOAD              PIC X(8).                            
+000132        01 WS-JOB                   PIC X(8).                            
+000133        01 WS-REQUEST               PIC X(10).                           
+000134        01 WS-TEMP                  PIC X(8).                            
+000135        01 WS-TEMP-NULL             PIC s9(4) comp.                      
+000136                                                                         
+000138           88 START-DELETE        VALUE 'Y'.                             
+000139        01 LOAD-SW                  PIC X VALUE 'N'.                     
+000140           88 START-FTP           VALUE 'Y'.                             
+000141        01 RECALL-SW                PIC X VALUE 'N'.                     
+000142           88 START-RECALL        VALUE 'Y'.                             
+000143        01 WS-TEXT                PIC X(10) VALUE '1234567890'.          
+000144        01 WS-LOGFILE-DSNAME      PIC X(8)   VALUE 'NCACLOG'.            
+000145 027100                                                                  
+000146 027200 01  WS-ZSUBP-DELETE-JOB           PIC X(8)    VALUE 'ZCAR599N'.  
+000147 027300 01  WS-ZSUBP-LOAD-JOB             PIC X(8)    VALUE 'ZCAR560N'.  
+000148 027300 01  WS-ZSUBP-RELOAD-JOB          PIC X(8)     VALUE 'ZCAR561N'.  
+000149 027400 01  WS-ZSUBP-RECALL-JOB           PIC X(8)    VALUE 'ZCAR530N'.  
+000150 027400 01  WS-ZSUBP-SEND-MSG-JOB        PIC X(8)     VALUE 'ZCAR996N'.  
+000151 027500 01  WS-ZSUBP-COMMAREA             PIC X(8)    VALUE SPACES.      
+000152 027600 01  WS-ZSUBP-LENGTH               PIC S9(4) COMP VALUE +8.       
+000153 027700 01  WS-ZSUBP-PROGRAM              PIC X(8)    VALUE 'ZSUBP   '.  
+000154 027800                                                                  
+000155       ***------------------------------------------------------------***
+000156       **     I N C L U D E  A N D  C O P Y B O O K                    **
+000157       ***------------------------------------------------------------***
+000158             EXEC SQL INCLUDE SQLERRWS END-EXEC.                         
+000159             EXEC SQL INCLUDE SQLCA END-EXEC.                            
+000160                                                                         
+000161             EXEC SQL INCLUDE SPCCNTL END-EXEC.                          
+000162             EXEC SQL INCLUDE REQCNTL END-EXEC.                          
+000163                                                                         
+000164                                                                         
+000165            EXEC SQL DECLARE REQ-CNTL CURSOR FOR                         
+000166               SELECT KEY_BASE,                                          
+000167                   SEQ_NBR,                                              
+000168                   ENTRY_TIMESTMP,                                       
+000169                   LAST_MOD_TIMESTMP,                                    
+000170                   REQ_STATUS,                                           
+000171                   PRIOR_STATUS,                                         
+000172                   REQ_BY_ID,                                            
+000173                   REQ_DESCR,                                            
+000174                   PROJ_PURGE_DT,                                        
+000175                   ACT_PURGE_DT,                                         
+000176                   ACT_PURGE_TIME,                                       
+000177                   PURGED_BY_ID,                                         
+000178                   RELOAD_NBR,                                           
+000179                   LAST_PART_DT,                                         
+000180                   SPACE_TOTAL,                                          
+000181                   SPACE_LOADED,                                         
+000182                   SPACE_NEEDED,                                         
+000183                   LAST_SERVER_RESP,                                     
+000184                   IN_USE_NBR                                            
+000185            FROM   REQUEST_CNTL                                          
+000186            WHERE REQ_STATUS > '09'                                      
+000187            ORDER BY REQ_STATUS,                                         
+000188                     ENTRY_TIMESTMP,                                     
+000189                     LAST_MOD_TIMESTMP                                   
+000190            END-EXEC                                                     
+000191                                                                         
+000192            EXEC SQL DECLARE REQ-CNTL2 CURSOR FOR                        
+000193               SELECT KEY_BASE,                                          
+000194                   SEQ_NBR,                                              
+000195                   ENTRY_TIMESTMP,                                       
+000196                   LAST_MOD_TIMESTMP,                                    
+000197                   REQ_STATUS,                                           
+000198                   PRIOR_STATUS,                                         
+000199                   REQ_BY_ID,                                            
+000200                   REQ_DESCR,                                            
+000201                   PROJ_PURGE_DT,                                        
+000202                   ACT_PURGE_DT,                                         
+000203                   ACT_PURGE_TIME,                                       
+000204                   PURGED_BY_ID,                                         
+000205                   RELOAD_NBR,                                           
+000206                   LAST_PART_DT,                                       
+000207                   SPACE_TOTAL,                                        
+000208                   SPACE_LOADED,                                       
+000209                   SPACE_NEEDED,                                       
+000210                   LAST_SERVER_RESP,                                   
+000211                   IN_USE_NBR                                          
+000212            FROM   REQUEST_CNTL                                        
+000213            WHERE REQ_STATUS > '15'                                    
+000214            ORDER BY LAST_MOD_TIMESTMP,                                
+000215                     ENTRY_TIMESTMP,                                   
+000216                     REQ_STATUS                                        
+000217            END-EXEC                                                   
+000218                                                                       
+000219                                                                       
+000220            EXEC SQL DECLARE REQ-CHECK CURSOR FOR                      
+000221               SELECT KEY_BASE,                                        
+000222                   SEQ_NBR,                                            
+000223                   LAST_MOD_TIMESTMP,                                    
+000224                   REQ_STATUS                                            
+000225            FROM   REQUEST_CNTL                                          
+000226            WHERE (REQ_STATUS IN ('12','14','15','18','19') AND          
+000227             (CURRENT TIMESTAMP - LAST_MOD_TIMESTMP) > 40000) OR         
+000228                  (REQ_STATUS IN ('10','11') AND                         
+000229             (CURRENT TIMESTAMP - LAST_MOD_TIMESTMP) > 10000)            
+000230            END-EXEC                                                     
+000231                                                                         
+000232                                                                         
+000233                                                                         
+000234                                                                         
+000235        COPY DFHAID.                                                     
+000236        COPY DFHBMSCA.                                                   
+000237        COPY BMSATTR.                                                    
+000238                                                                         
+000239       ***------------------------------------------------------------***
+000240       **     L I N K A G E  S E C T I O N                             **
+000241       ***------------------------------------------------------------***
+000242        LINKAGE SECTION.                                                 
+000243        01  DFHCOMMAREA.                                                 
+000244            05  LS-COMM-FROM-PROG            PIC  X(8).                  
+000245            05  LS-COMM-TO-PROG              PIC  X(8).                  
+000246                                                                         
+000247       ***------------------------------------------------------------***
+000248       **                                                              **
+000249       **     P R O C E D U R E  D I V I S I O N                       **
+000250       **                                                              **
+000251       ***------------------------------------------------------------***
+000252        PROCEDURE DIVISION.                                              
+000253                                                                         
+000254        0000-MAINLINE.                                                   
+000255                                                                         
+000256               PERFORM 1000-INIT        THRU 1000-EXIT                   
+000257                                                                         
+000258               PERFORM 2000-PRCS        THRU 2000-EXIT                   
+000259                                                                         
+000260               PERFORM 9000-FINAL       THRU 9000-EXIT                   
+000261                                                                         
+000262                                                                         
+000263                                                                         
+000264            GOBACK                                                       
+000265            .                                                            
+000266        0000-EXIT.                                                       
+000267            EXIT.                                                        
+000268       *                                                                 
+000269        1000-INIT.                                                       
+000270                                                                         
+000271            MOVE ZERO TO LOG-NBR.                                        
+000272             EXEC CICS                                                   
+000273                 HANDLE ABEND                                            
+000274                 LABEL(9999-EROR-RTRN)                                   
+000275              END-EXEC                                                   
+000276       * vl 03/2007 start                                                
+000277            IF EIBTRMID = 'CARD'                                         
+000278       *       EXEC CICS SEND TEXT                                       
+000279       *          FROM (WS-TEXT)                                         
+000280       *          ERASE                                                  
+000281       *       END-EXEC                                                  
+000282               EXEC CICS START                                           
+000283                  TRANSID  ('NCAC')                                      
+000284                  INTERVAL (001500)                                      
+000285               END-EXEC                                                  
+000286               EXEC CICS                                                 
+000287                    RETURN                                               
+000288               END-EXEC                                                  
+000289            END-IF                                                       
+000290       * vl 03/2007 end                                                  
+000291              EXEC SQL                                                   
+000292                 SELECT SERVER_NBR,                                      
+000293                        LOCK_SW                                          
+000294                 INTO :SERVER-NBR,                                       
+000295                      :WS-LOCK-SW                                        
+000296                 FROM SPACE_CNTL                                         
+000297                 WHERE SERVER_NBR = '01' AND                             
+000298                          LOCK_SW = '0'                                  
+000299              END-EXEC                                                   
+000300                                                                         
+000301            EVALUATE SQLCODE                                             
+000302             WHEN  ZERO                                                  
+000303              PERFORM 2900-LOCK-TABLE THRU 2900-EXIT                     
+000304            WHEN 100                                                     
+000305                 PERFORM 9100-WAIT THRU 9100-EXIT                        
+000306            WHEN -923                                                    
+000307            WHEN -913                                                    
+000308                 PERFORM 9100-WAIT THRU 9100-EXIT                    
+000309               MOVE SQLCODE                   TO EROR-STAT           
+000310               MOVE 'NOT AVAIL'               TO EROR-FUNC           
+000311               MOVE 'SPACE_CNTL'              TO EROR-FILE           
+000312               MOVE SPACE                     TO REQUEST             
+000313               MOVE '1001'                    TO EROR-CODE           
+000314               GO TO  9999-EROR-RTRN                                 
+000315            WHEN OTHER                                               
+000316               MOVE SQLCODE                   TO EROR-STAT           
+000317               MOVE 'SELECT'                  TO EROR-FUNC           
+000318               MOVE 'SPACE_CNTL'              TO EROR-FILE           
+000319               MOVE SPACE                     TO REQUEST             
+000320               MOVE '1000'                    TO EROR-CODE           
+000321               GO TO  9999-EROR-RTRN                                 
+000322            END-EVALUATE.                                            
+000323                                                                     
+000324                                                                     
+000325       *                                                               
+000326        1000-EXIT.                                                     
+000327             EXIT.                                                     
+000328       *                                                               
+000329        2000-PRCS.                                                     
+000330                                                                       
+000331            EXEC SQL OPEN REQ-CNTL END-EXEC                            
+000332                                                                       
+000333            IF SQLCODE NOT = 000                                       
+000334               MOVE SQLCODE                   TO EROR-STAT             
+000335               MOVE 'OPENING REQ-CNTL'        TO EROR-FUNC             
+000336               MOVE 'REQUEST_CNTL'            TO EROR-FILE             
+000337               MOVE SPACE                     TO REQUEST               
+000338               MOVE '2000'                    TO EROR-CODE             
+000339               GO TO  9999-EROR-RTRN                                   
+000340            ELSE                                                       
+000341              PERFORM 2100-CHECK THRU 2100-EXIT                        
+000342                   UNTIL END-OF-SEARCH                                  
+000343            END-IF.                                                     
+000344                                                                        
+000345             IF   START-DELETE                                          
+000346              PERFORM 5000-DELETE THRU 5000-EXIT                        
+000347             END-IF                                                     
+000348                                                                        
+000349             IF   START-RECALL                                          
+000350              PERFORM 5100-RECALL THRU 5100-EXIT                        
+000351             END-IF                                                     
+000352                                                                        
+000353             IF   START-FTP                                             
+000354              PERFORM 5200-LOAD THRU 5200-EXIT                          
+000355             END-IF                                                     
+000356            .                                                           
+000357        2000-EXIT.                                                      
+000358             EXIT.                                                      
+000359                                                                        
+000360        2100-CHECK.                                                     
+000361                                                                        
+000362              PERFORM 3000-FETCH THRU 3000-EXIT                         
+000363              PERFORM 4000-EVALUATE THRU 4000-EXIT.                     
+000364                                                                        
+000365        2100-EXIT.                                                      
+000366             EXIT.                                                      
+000367                                                                        
+000368        2900-LOCK-TABLE.                                                
+000369                                                                        
+000370               EXEC SQL                                                 
+000371                  UPDATE SPACE_CNTL                                     
+000372                  SET LOCK_SW = '1',                                    
+000373                  LAST_UPDATE = CURRENT TIMESTAMP                       
+000374                  WHERE SERVER_NBR = '01'                               
+000375               END-EXEC                                                 
+000376       *                                                                 
+000377               IF SQLCODE = 0                                            
+000378                   EXEC CICS                                             
+000379                     SYNCPOINT ROLLBACK                                  
+000380                   END-EXEC                                              
+000381               ELSE                                                      
+000382                  MOVE SQLCODE                TO EROR-STAT               
+000383                  MOVE 'UPDATE LOCKSW'        TO EROR-FUNC               
+000384                  MOVE 'SPACE_CNTL'           TO EROR-FILE               
+000385                  MOVE SPACE                  TO REQUEST                 
+000386               MOVE '2900'                    TO EROR-CODE               
+000387                  GO TO 9999-EROR-RTRN                                   
+000388               END-IF.                                                   
+000389                                                                         
+000390       *       EXEC SQL                                                  
+000391       *            LOCK TABLE SPACE_CNTL                                
+000392       *            IN EXCLUSIVE MODE                                    
+000393       *       END-EXEC.                                                 
+000394                                                                         
+000395                                                                         
+000396        2900-EXIT.                                                       
+000397             EXIT.                                                       
+000398                                                                         
+000399        3000-FETCH.                                                      
+000400                                                                         
+000401            EXEC SQL FETCH REQ-CNTL                                      
+000402             INTO :KEY-BASE,                                             
+000403                  :SEQ-NBR,                                              
+000404                  :ENTRY-TIMESTMP,                                       
+000405                  :LAST-MOD-TIMESTMP,                                    
+000406                  :REQ-STATUS,                                           
+000407                  :PRIOR-STATUS,                                         
+000408                  :REQ-BY-ID,                                            
+000409                  :REQ-DESCR,                                            
+000410                  :PROJ-PURGE-DT,                                        
+000411                  :ACT-PURGE-DT,                                         
+000412                  :ACT-PURGE-TIME,                                       
+000413                  :PURGED-BY-ID,                                         
+000414                  :RELOAD-NBR,                                           
+000415                  :LAST-PART-DT,                                         
+000416                  :SPACE-TOTAL,                                          
+000417                  :SPACE-LOADED,                                         
+000418                  :SPACE-NEEDED,                                         
+000419                  :LAST-SERVER-RESP,                                     
+000420                  :IN-USE-NBR                                            
+000421            END-EXEC                                                     
+000422                                                                         
+000423            EVALUATE SQLCODE                                             
+000424              WHEN 000                                                   
+000425                MOVE RELOAD-NBR TO WS-RELOAD-NBR                         
+000426              WHEN +100                                                  
+000427                SET END-OF-SEARCH                TO TRUE                
+000428                GO TO 2100-EXIT                                         
+000429              WHEN OTHER                                                
+000430                MOVE SQLCODE                   TO EROR-STAT             
+000431                MOVE 'FTCH REQ-CNTL'           TO EROR-FUNC             
+000432                MOVE 'REQUEST_CNTL'            TO EROR-FILE             
+000433                MOVE SPACE                     TO REQUEST               
+000434               MOVE '3000'                    TO EROR-CODE              
+000435                GO TO  9999-EROR-RTRN                                   
+000436            END-EVALUATE                                                
+000437            .                                                           
+000438                                                                        
+000439        3000-EXIT.                                                      
+000440             EXIT.                                                      
+000441                                                                        
+000442        3001-FETCH.                                                     
+000443                                                                        
+000444            EXEC SQL FETCH REQ-CNTL2                                
+000445             INTO :KEY-BASE,                                        
+000446                  :SEQ-NBR,                                         
+000447                  :ENTRY-TIMESTMP,                                  
+000448                  :LAST-MOD-TIMESTMP,                               
+000449                  :REQ-STATUS,                                      
+000450                  :PRIOR-STATUS,                                    
+000451                  :REQ-BY-ID,                                       
+000452                  :REQ-DESCR,                                       
+000453                  :PROJ-PURGE-DT,                                   
+000454                  :ACT-PURGE-DT,                                    
+000455                  :ACT-PURGE-TIME,                                  
+000456                  :PURGED-BY-ID,                                    
+000457                  :RELOAD-NBR,                                      
+000458                  :LAST-PART-DT,                                    
+000459                  :SPACE-TOTAL,                                     
+000460                  :SPACE-LOADED,                                    
+000461                  :SPACE-NEEDED,                                       
+000462                  :LAST-SERVER-RESP,                                   
+000463                  :IN-USE-NBR                                          
+000464            END-EXEC                                                   
+000465                                                                       
+000466            EVALUATE SQLCODE                                           
+000467              WHEN 000                                                 
+000468                MOVE RELOAD-NBR TO WS-RELOAD-NBR                       
+000469              WHEN +100                                                
+000470                SET END-OF-SEARCH                TO TRUE               
+000471                GO TO 2100-EXIT                                        
+000472              WHEN OTHER                                               
+000473                MOVE SQLCODE                   TO EROR-STAT            
+000474                MOVE 'FTCH CRSR2-IN'            TO EROR-FUNC           
+000475                MOVE 'REQUEST_CNTL'            TO EROR-FILE            
+000476                MOVE SPACE                     TO REQUEST              
+000477               MOVE '3001'                    TO EROR-CODE             
+000478                GO TO  9999-EROR-RTRN                                  
+000479            END-EVALUATE                                               
+000480            .                                                          
+000481                                                                       
+000482        3001-EXIT.                                                     
+000483             EXIT.                                                     
+000484       *                                                               
+000485        3011-FETCH.                                                    
+000486                                                                       
+000487            PERFORM 3000-FETCH THRU 3000-EXIT                          
+000488              EVALUATE REQ-STATUS                                      
+000489                 WHEN 10                                               
+000490                 ADD SPACE-LOADED TO WS-SPACE-LOADED                   
+000491                 ADD SPACE-NEEDED TO WS-SPACE-NEEDED                   
+000492                 WHEN 11                                               
+000493                  CONTINUE                                             
+000494                 WHEN 13                                               
+000495                   MOVE  KEY-BASE TO WS-KEY-BASE-RECALL                  
+000496                   MOVE SEQ-NBR TO WS-SEQ-NBR-RECALL                     
+000497                   SET START-RECALL TO TRUE                              
+000498                   SET END-OF-SEARCH TO TRUE                             
+000499                 WHEN 12                                                 
+000500                 WHEN 14                                                 
+000501                 WHEN 15                                                 
+000502                 WHEN 16                                                 
+000503                 WHEN 17                                                 
+000504                 WHEN 18                                                 
+000505                 WHEN 19                                                 
+000506                   SET END-OF-SEARCH TO TRUE                             
+000507                 WHEN OTHER                                              
+000508                   EVALUATE TRUE                                         
+000509                    WHEN REQ-STATUS < 10                                 
+000510                       SET END-OF-SEARCH TO TRUE                         
+000512                       MOVE 4000                  TO EROR-STAT           
+000513                       MOVE 'ERROR STATUS'        TO EROR-FUNC           
+000514                       MOVE 'REQUEST_CNTL'        TO EROR-FILE           
+000515                       MOVE '4000'                                       
+000516                                               TO EROR-CODE              
+000517                       GO TO 9999-EROR-RTRN                              
+000518                   END-EVALUATE                                          
+000519               END-EVALUATE.                                             
+000520                                                                         
+000521        3011-EXIT.                                                       
+000522             EXIT.                                                       
+000523                                                                         
+000524       *                                                                 
+000525        3012-FETCH.                                                      
+000526                                                                         
+000527            PERFORM 3000-FETCH THRU 3000-EXIT                            
+000528              EVALUATE REQ-STATUS                                        
+000529                 WHEN 13                                             
+000530                   CONTINUE                                          
+000531                 WHEN 14                                             
+000532                 WHEN 15                                             
+000533                   SET END-OF-SEARCH TO TRUE                         
+000534                 WHEN 16                                             
+000535                 WHEN 17                                             
+000536                 WHEN 18                                             
+000537                 WHEN 19                                             
+000538                    PERFORM 4016-EVALUATE THRU 4016-EXIT             
+000539                 WHEN OTHER                                          
+000540                    MOVE 3012                  TO EROR-STAT          
+000541                    MOVE 'ERROR STATUS'        TO EROR-FUNC          
+000542                    MOVE 'REQUEST_CNTL'        TO EROR-FILE          
+000543                    MOVE KEY-BASE              TO REQUEST-BASE       
+000544                    MOVE SEQ-NBR               TO REQUEST-SEQNO      
+000545                    MOVE '3012'                TO EROR-CODE          
+000546               END-EVALUATE.                                          
+000547                                                                      
+000548        3012-EXIT.                                                    
+000549             EXIT.                                                    
+000550                                                                      
+000551        3016-OPEN.                                                    
+000552                                                                      
+000553            EXEC SQL OPEN REQ-CNTL2 END-EXEC                          
+000554                                                                      
+000555            IF SQLCODE NOT = 000                                      
+000556               MOVE SQLCODE                   TO EROR-STAT            
+000557               MOVE 'OPENING  CURSOR2'   TO   EROR-FUNC               
+000558               MOVE 'REQUEST_CNTL2'           TO EROR-FILE            
+000559               MOVE '3016'                    TO EROR-CODE            
+000560               GO TO  9999-EROR-RTRN.                                 
+000561                                                                      
+000562        3016-EXIT.                                                    
+000563             EXIT.                                                       
+000564                                                                         
+000565       *                                                                 
+000566        3017-FETCH.                                                      
+000567                                                                         
+000568            PERFORM 3001-FETCH THRU 3001-EXIT                            
+000569              EVALUATE REQ-STATUS                                        
+000570                 WHEN 16                                                 
+000571                    MOVE WS-ZSUBP-RELOAD-JOB                             
+000572                                  TO WS-JOB-LOAD                         
+000573                    MOVE SPACE-NEEDED TO WS-SPACE-NEEDED-CHECK           
+000574                    PERFORM 6000-CHECK-SPACE THRU 6000-EXIT              
+000575                    SET END-OF-SEARCH TO TRUE                            
+000576                 WHEN 17                                                 
+000577                    MOVE WS-ZSUBP-RELOAD-JOB                             
+000578                                  TO WS-JOB-LOAD                         
+000579                    MOVE SPACE-LOADED TO WS-SPACE-NEEDED-CHECK           
+000580                    PERFORM 6000-CHECK-SPACE THRU 6000-EXIT              
+000581                    SET END-OF-SEARCH TO TRUE                            
+000582                 WHEN 18                                                 
+000583                    MOVE WS-ZSUBP-LOAD-JOB                               
+000584                                   TO WS-JOB-LOAD                        
+000585                    MOVE SPACE-LOADED TO WS-SPACE-NEEDED-CHECK           
+000586                    PERFORM 6000-CHECK-SPACE THRU 6000-EXIT              
+000587                    SET END-OF-SEARCH TO TRUE                            
+000588                 WHEN 19                                                 
+000589                    MOVE WS-ZSUBP-LOAD-JOB                               
+000590                                   TO WS-JOB-LOAD                        
+000591                    MOVE SPACE-LOADED TO WS-SPACE-NEEDED-CHECK           
+000592                    PERFORM 6000-CHECK-SPACE THRU 6000-EXIT              
+000593                    SET END-OF-SEARCH TO TRUE                            
+000594                 WHEN OTHER                                              
+000595                    MOVE 4000                  TO EROR-STAT              
+000596                    MOVE 'ERROR STATUS'        TO EROR-FUNC              
+000597                    MOVE 'REQUEST_CNTL'        TO EROR-FILE           
+000598                    MOVE '4001'                                       
+000599                                               TO EROR-CODE           
+000600                    GO TO 9999-EROR-RTRN                              
+000601               END-EVALUATE.                                          
+000602                                                                      
+000603        3017-EXIT.                                                    
+000604             EXIT.                                                    
+000605                                                                      
+000606        4000-EVALUATE.                                                
+000607                                                                      
+000608             EVALUATE REQ-STATUS                                      
+000609                WHEN 9                                                
+000610                  MOVE WS-ZSUBP-SEND-MSG-JOB                          
+000611                                   TO WS-JOB                          
+000612                  SET END-OF-SEARCH TO TRUE                           
+000613                  PERFORM 8000-START-BATCH THRU 8000-EXIT             
+000614                WHEN 10                                              
+000615                  SET START-DELETE TO TRUE                           
+000616                  MOVE KEY-BASE TO WS-REQUEST(1:8)                   
+000617                  MOVE SEQ-NBR  TO WS-REQUEST(9:2)                   
+000618                  ADD SPACE-LOADED TO WS-SPACE-LOADED                
+000619                  ADD SPACE-NEEDED TO WS-SPACE-NEEDED                
+000620                 PERFORM 3011-FETCH THRU 3011-EXIT                   
+000621                   UNTIL END-OF-SEARCH                               
+000622                WHEN 11                                              
+000623                 PERFORM 3011-FETCH THRU 3011-EXIT                   
+000624                   UNTIL END-OF-SEARCH                               
+000625                WHEN 12                                              
+000626                 PERFORM 3012-FETCH THRU 3012-EXIT                   
+000627                   UNTIL END-OF-SEARCH                               
+000628                WHEN 13                                              
+000629                  MOVE  KEY-BASE TO WS-KEY-BASE-RECALL               
+000630                  MOVE SEQ-NBR TO WS-SEQ-NBR-RECALL                  
+000631                  SET START-RECALL TO TRUE                               
+000632                  PERFORM 3012-FETCH THRU 3012-EXIT                      
+000633                    UNTIL END-OF-SEARCH                                  
+000634                 WHEN 14                                                 
+000635                 WHEN 15                                                 
+000636                    SET END-OF-SEARCH TO TRUE                            
+000637                 WHEN 16                                                 
+000638                 WHEN 17                                                 
+000639                 WHEN 18                                                 
+000640                 WHEN 19                                                 
+000641                    PERFORM 4016-EVALUATE THRU 4016-EXIT                 
+000642                 WHEN OTHER                                              
+000643                    MOVE 4000                  TO EROR-STAT              
+000644                    MOVE 'ERROR STATUS'        TO EROR-FUNC              
+000645                    MOVE 'REQUEST_CNTL'        TO EROR-FILE              
+000646                    MOVE '4002'                                          
+000647                                               TO EROR-CODE              
+000648                    GO TO 9999-EROR-RTRN                                 
+000649               END-EVALUATE.                                             
+000650                                                                         
+000651        4000-EXIT.                                                       
+000652             EXIT.                                                       
+000653                                                                         
+000654        4016-EVALUATE.                                                   
+000655                                                                         
+000656              PERFORM 3016-OPEN THRU 3016-EXIT                           
+000657              PERFORM 3017-FETCH THRU  3017-EXIT                         
+000658               UNTIL END-OF-SEARCH.                                      
+000659                                                                         
+000660        4016-EXIT.                                                       
+000661             EXIT.                                                       
+000662                                                                         
+000663                                                                         
+000664                                                                         
+000665                                                                        
+000666        5000-DELETE.                                                    
+000667                                                                        
+000668                                                                        
+000669            EXEC SQL UPDATE REQUEST_CNTL                                
+000670               SET REQ_STATUS = '11',                                   
+000671               LAST_MOD_TIMESTMP = CURRENT TIMESTAMP                    
+000672              WHERE REQ_STATUS = '10' AND                               
+000673                 PRIOR_STATUS = '16'                                    
+000674            END-EXEC                                                    
+000675                                                                        
+000676            EVALUATE SQLCODE                                            
+000677              WHEN 000                                                  
+000678              WHEN +100                                                 
+000679               CONTINUE                                                 
+000680              WHEN OTHER                                                
+000681               MOVE SQLCODE                   TO EROR-STAT              
+000682               MOVE 'UPDATE FOR DEL'          TO EROR-FUNC             
+000683               MOVE 'REQUEST_CNTL'            TO EROR-FILE             
+000684               MOVE '5000'                    TO EROR-CODE             
+000685               GO TO  9999-EROR-RTRN                                   
+000686            END-EVALUATE                                               
+000687                                                                       
+000688                                                                       
+000689            EXEC SQL UPDATE REQUEST_CNTL                               
+000690               SET REQ_STATUS = '11',                                  
+000691                   PRIOR_STATUS = '10',                                
+000692                   LAST_MOD_TIMESTMP = CURRENT TIMESTAMP               
+000693              WHERE REQ_STATUS = '10'                                  
+000694            END-EXEC                                                   
+000695                                                                       
+000696            EVALUATE SQLCODE                                           
+000697              WHEN 000                                                 
+000698              WHEN +100                                                
+000699               CONTINUE                                                 
+000700              WHEN OTHER                                                
+000701               MOVE SQLCODE                   TO EROR-STAT              
+000702               MOVE 'UPDATE FOR DEL'          TO EROR-FUNC              
+000703               MOVE 'REQUEST_CNTL'            TO EROR-FILE              
+000704               MOVE '5000'                    TO EROR-CODE              
+000705               GO TO  9999-EROR-RTRN                                    
+000706            END-EVALUATE                                                
+000707                                                                        
+000708            MOVE WS-ZSUBP-DELETE-JOB                                    
+000709                             TO WS-JOB                                  
+000710            MOVE WS-REQUEST TO REQUEST                                  
+000711            PERFORM 8000-START-BATCH THRU 8000-EXIT.                    
+000712                                                                        
+000713        5000-EXIT.                                                      
+000714             EXIT.                                                      
+000715                                                                        
+000716        5100-RECALL.                                                    
+000717                                                                        
+000718              EXEC SQL                                                  
+000719                UPDATE REQUEST_CNTL                                     
+000720                SET REQ_STATUS = '12',                                  
+000721                    PRIOR_STATUS = '13',                                
+000722                   LAST_MOD_TIMESTMP = CURRENT TIMESTAMP                
+000723                WHERE KEY_BASE = :WS-KEY-BASE-RECALL AND                
+000724                      SEQ_NBR = :WS-SEQ-NBR-RECALL                      
+000725              END-EXEC                                                  
+000726                                                                        
+000727            IF SQLCODE NOT = 000                                        
+000728               MOVE SQLCODE                   TO EROR-STAT              
+000729               MOVE '5100 PROBLEM'            TO EROR-FUNC              
+000730               MOVE 'REQUEST_CNTL'            TO EROR-FILE              
+000731               MOVE '5100'                    TO EROR-CODE              
+000732               GO TO  9999-EROR-RTRN                                    
+000733            END-IF                                                       
+000734                                                                         
+000735            MOVE WS-ZSUBP-RECALL-JOB                                     
+000736                           TO WS-JOB                                     
+000737            MOVE WS-KEY-BASE-RECALL TO WS-REQUEST(1:8)                   
+000738            MOVE WS-SEQ-NBR-RECALL TO WS-REQUEST(9:2)                    
+000739                                                                         
+000740            PERFORM 8000-START-BATCH THRU 8000-EXIT.                     
+000741                                                                         
+000742                                                                         
+000743        5100-EXIT.                                                       
+000744             EXIT.                                                       
+000745                                                                         
+000746        5200-LOAD.                                                       
+000747                                                                         
+000748              EXEC SQL                                                   
+000749                UPDATE REQUEST_CNTL                                      
+000750                SET REQ_STATUS = :WS-REQ-STATUS,                     
+000751                    PRIOR_STATUS = :WS-PRIOR-STATUS-LOAD,            
+000752                    RELOAD_NBR = :WS-RELOAD-NBR,                     
+000753                    LAST_MOD_TIMESTMP = CURRENT TIMESTAMP            
+000754                WHERE KEY_BASE = :WS-KEY-BASE-LOAD AND               
+000755                      SEQ_NBR = :WS-SEQ-NBR-LOAD                     
+000756              END-EXEC                                               
+000757                                                                     
+000758            IF SQLCODE NOT = 000                                     
+000759               MOVE SQLCODE                   TO EROR-STAT           
+000760               MOVE '5100 PROBLEM'            TO EROR-FUNC           
+000761               MOVE 'REQUEST_CNTL'            TO EROR-FILE           
+000762               MOVE '5200'                    TO EROR-CODE           
+000763               GO TO  9999-EROR-RTRN                                 
+000764            END-IF                                                   
+000765                                                                     
+000766            MOVE WS-KEY-BASE-LOAD TO WS-REQUEST(1:8)                 
+000767            MOVE WS-SEQ-NBR-LOAD TO WS-REQUEST(9:2)                  
+000768                                                                     
+000769            MOVE WS-JOB-LOAD  TO WS-JOB                              
+000770            PERFORM 8000-START-BATCH THRU 8000-EXIT.                 
+000771                                                                     
+000772                                                                     
+000773                                                                     
+000774        5200-EXIT.                                                   
+000775             EXIT.                                                   
+000776                                                                     
+000777                                                                     
+000778                                                                     
+000779                                                                     
+000780        6000-CHECK-SPACE.                                            
+000781                                                                     
+000782              EXEC SQL                                               
+000783                 SELECT MAX(KEY_BASE)                                
+000784                   INTO :WS-TEMP:WS-TEMP-NULL                            
+000785                 FROM REQUEST_CNTL                                       
+000786                   WHERE REQ_STATUS IN ('01','02','16')                  
+000787              END-EXEC                                                   
+000788                                                                         
+000789              EVALUATE SQLCODE                                           
+000790                WHEN +100                                                
+000791                 MOVE ZERO TO WS-SPACE-TAKEN                             
+000792               WHEN ZERO                                                 
+000793                 IF WS-TEMP-NULL < 0                                     
+000794                   MOVE ZERO TO WS-SPACE-TAKEN                           
+000795                 ELSE                                                    
+000796                   EXEC SQL                                              
+000797                      SELECT SUM(SPACE_LOADED)                           
+000798                        INTO :WS-SPACE-TAKEN                             
+000799                      FROM REQUEST_CNTL                                  
+000800                        WHERE REQ_STATUS IN ('01','02','16')             
+000801                   END-EXEC                                            
+000802                                                                       
+000803                   EVALUATE SQLCODE                                    
+000804                     WHEN +100                                         
+000805                      MOVE ZERO TO WS-SPACE-TAKEN                      
+000806                    WHEN ZERO                                          
+000807                      CONTINUE                                         
+000808                    WHEN OTHER                                         
+000809                     MOVE SQLCODE            TO EROR-STAT              
+000810                     MOVE 'CHECK SPACE'      TO EROR-FUNC              
+000811                     MOVE 'REQUEST_CNTL'     TO EROR-FILE              
+000812                     MOVE '6003'             TO EROR-CODE              
+000813                     GO TO 9999-EROR-RTRN                              
+000814                    END-EVALUATE                                       
+000815                 END-IF                                                
+000816               WHEN OTHER                                              
+000817               MOVE SQLCODE                 TO EROR-STAT               
+000818               MOVE 'CHECK SPACE'           TO EROR-FUNC              
+000819               MOVE 'REQUEST_CNTL'          TO EROR-FILE              
+000820               MOVE '6001'                  TO EROR-CODE              
+000821               GO TO  9999-EROR-RTRN                                  
+000822               END-EVALUATE                                           
+000823                                                                      
+000824                                                                      
+000825                                                                      
+000826              EXEC SQL                                                
+000827                 SELECT SERVER_NBR,                                   
+000828                        TOTAL_SPACE  - :WS-SPACE-TAKEN                
+000829                   INTO :SERVER-NBR,                                  
+000830                        :WS-SPACE-AVAILABLE                           
+000831                   FROM SPACE_CNTL                                    
+000832                   WHERE SERVER_NBR = '01'                            
+000833              END-EXEC                                                
+000834                                                                      
+000835            IF SQLCODE NOT = 000                                       
+000836               MOVE SQLCODE                 TO EROR-STAT               
+000837               MOVE 'CHECK SPACE'           TO EROR-FUNC               
+000838               MOVE 'SPACE_CNTL'            TO EROR-FILE               
+000839               MOVE '6000'                  TO EROR-CODE               
+000840               GO TO  9999-EROR-RTRN                                   
+000841            END-IF                                                     
+000842                                                                       
+000843             IF WS-SPACE-NEEDED-CHECK > WS-SPACE-AVAILABLE             
+000844                 EVALUATE REQ-STATUS                                   
+000845                   WHEN 18                                             
+000846                  MOVE WS-ZSUBP-SEND-MSG-JOB                           
+000847                                   TO WS-JOB                           
+000848                  PERFORM 8000-START-BATCH THRU 8000-EXIT              
+000849                      EXEC SQL                                         
+000850                       UPDATE REQUEST_CNTL                             
+000851                        SET REQ_STATUS = '09',                         
+000852                            PRIOR_STATUS = '18',                         
+000853                   LAST_MOD_TIMESTMP = CURRENT TIMESTAMP                 
+000854                        WHERE KEY_BASE = :KEY-BASE AND                   
+000855                              SEQ_NBR = :SEQ-NBR                         
+000856                       END-EXEC                                          
+000857                    IF SQLCODE NOT = 000                                 
+000858                      MOVE SQLCODE              TO EROR-STAT             
+000859                      MOVE 'SPACE CALC ERROR'  TO EROR-FUNC              
+000860                      MOVE 'SPACE_CNTL'       TO EROR-FILE               
+000861                      MOVE '6002'               TO EROR-CODE             
+000862                      GO TO 9999-EROR-RTRN                               
+000863                    END-IF                                               
+000864                  WHEN OTHER                                             
+000865                      SET END-OF-SEARCH TO TRUE                          
+000866                      GO TO  2100-EXIT                                   
+000867                   END-EVALUATE                                          
+000868                 ELSE                                                    
+000869                   SET START-FTP TO TRUE                               
+000870                   MOVE KEY-BASE TO WS-KEY-BASE-LOAD                   
+000871                   MOVE SEQ-NBR TO WS-SEQ-NBR-LOAD                     
+000872                   MOVE REQ-STATUS TO WS-PRIOR-STATUS-LOAD             
+000873                   IF REQ-STATUS = 16 OR                               
+000874                      REQ-STATUS = 17                                  
+000875                    MOVE 14 TO WS-REQ-STATUS                           
+000876                    ADD  1  TO WS-RELOAD-NUM                           
+000877                   ELSE                                                
+000878                    MOVE 15 TO WS-REQ-STATUS                           
+000879                    MOVE 0 TO WS-RELOAD-NUM                            
+000880                   END-IF                                              
+000881                 END-IF.                                               
+000882               SET END-OF-SEARCH TO TRUE.                              
+000883                                                                       
+000884        6000-EXIT.                                                     
+000885             EXIT.                                                     
+000886                                                                         
+000887                                                                         
+000888        6100-UPDATE-SPACE-CNTL.                                          
+000889                                                                         
+000890                                                                         
+000891                 EXEC SQL                                                
+000892                   UPDATE SPACE_CNTL                                     
+000893                   SET TOTAL_LOADED = TOTAL_LOADED - :WS-SPACE-LOADED,   
+000894                       TOTAL_NEEDED = TOTAL_NEEDED - :WS-SPACE-NEEDED,   
+000895                       LAST_UPDATE = CURRENT TIMESTAMP                   
+000896                  END-EXEC                                               
+000897                                                                         
+000898                                                                         
+000899            IF SQLCODE NOT = 000                                         
+000900               MOVE SQLCODE                   TO EROR-STAT               
+000901               MOVE '6100 PROBLEM'            TO EROR-FUNC               
+000902               MOVE 'SPACE_CNTL'              TO EROR-FILE               
+000903               MOVE '6100'                    TO EROR-CODE            
+000904               GO TO  9999-EROR-RTRN                                  
+000905             ELSE                                                     
+000906              EXEC CICS                                               
+000907               SYNCPOINT                                              
+000908              END-EXEC                                                
+000909            END-IF.                                                   
+000910                                                                      
+000911        6100-EXIT.                                                    
+000912             EXIT.                                                    
+000913                                                                      
+000914        8000-START-BATCH.                                             
+000915                                                                      
+000916            PERFORM 9050-ASK-TIME THRU 9050-EXIT                      
+000917                                                                      
+000918               MOVE WS-JOB TO WS-ZSUBP-COMMAREA,                      
+000919                              JOB-STARTED                             
+000920 268900        EXEC CICS LINK                                            
+000921 269000                  PROGRAM (WS-ZSUBP-PROGRAM)                      
+000922 269100                  COMMAREA (WS-ZSUBP-COMMAREA)                    
+000923 269200                  LENGTH  (WS-ZSUBP-LENGTH)                       
+000924                         RESP      (RESPONSE-CODE)                       
+000925 232400     END-EXEC.                                                    
+000926                                                                         
+000927            IF RESPONSE-CODE   NOT = DFHRESP(NORMAL)                     
+000928               MOVE 8000                      TO EROR-STAT               
+000929               MOVE 'ZSUB'                    TO EROR-FUNC               
+000930               MOVE WS-JOB                    TO EROR-FILE               
+000931               MOVE '8000'                    TO EROR-CODE               
+000932                PERFORM 8100-WRITE-LOG THRU 8100-EXIT                    
+000933 269300        EXEC CICS                                                 
+000934 269300         RETURN                                                   
+000935               END-EXEC                                                  
+000936             END-IF                                                      
+000937                                                                     
+000938              IF LOGFILE-ERR                                         
+000939              GO TO 8000-EXIT.                                       
+000940                                                                     
+000941            MOVE WS-REQUEST TO REQUEST                               
+000942            MOVE SPACES TO EROR-PART                                 
+000943            MOVE ZERO TO EROR-STAT                                   
+000944            PERFORM 8100-WRITE-LOG THRU 8100-EXIT.                   
+000945                                                                     
+000946        8000-EXIT.                                                   
+000947             EXIT.                                                   
+000948                                                                     
+000949                                                                     
+000950        8100-WRITE-LOG.                                              
+000951                                                                     
+000952            PERFORM 9050-ASK-TIME THRU 9050-EXIT                     
+000953            ADD 1 TO LOG-NBR                                         
+000954                                                                      
+000955 231900     EXEC CICS WRITE                                           
+000956 232000               DATASET   ('NCACLOG')                           
+000957 232100               RIDFLD    (DATE-TIME-KEY)                       
+000958 232200               FROM      (WS-LOG-REC)                          
+000959                      RESP      (RESPONSE-CODE)                       
+000960 232400     END-EXEC.                                                 
+000961                                                                      
+000962            IF RESPONSE-CODE   NOT = DFHRESP(NORMAL)                  
+000963               SET LOGFILE-ERR TO TRUE                                
+000964               MOVE 8100                      TO EROR-STAT            
+000965               MOVE RESPONSE-CODE             TO EROR-FUNC            
+000966               MOVE 'LOG-FILE  '              TO EROR-FILE            
+000967               MOVE '8100'                    TO EROR-CODE            
+000968 231900       EXEC CICS WRITE                                         
+000969 232000               DATASET   ('NCACLOG')                           
+000970 232100               RIDFLD    (DATE-TIME-KEY)                       
+000971 232200               FROM      (WS-LOG-REC)                            
+000972                      RESP      (RESPONSE-CODE)                         
+000973 232400       END-EXEC                                                  
+000974               GO TO  9999-EROR-RTRN                                    
+000975             END-IF.                                                    
+000976                                                                        
+000977        8100-EXIT.                                                      
+000978             EXIT.                                                      
+000979                                                                        
+000980        9000-FINAL.                                                     
+000981                                                                        
+000982              PERFORM 6100-UPDATE-SPACE-CNTL THRU  6100-EXIT            
+000983                                                                        
+000984            EXEC SQL OPEN REQ-CHECK END-EXEC                            
+000985                                                                        
+000986            IF SQLCODE NOT = 000                                        
+000987               MOVE SQLCODE                   TO EROR-STAT              
+000988               MOVE 'OPENING CHECK-CURSOR' TO EROR-FUNC                
+000989               MOVE 'REQUEST_CNTL'           TO EROR-FILE              
+000990               MOVE '9000'                    TO EROR-CODE             
+000991               GO TO  9999-EROR-RTRN.                                  
+000992                                                                       
+000993               PERFORM 9001-FETCH-CHECK THRU 9001-EXIT                 
+000994                 UNTIL EOF-CHECK                                       
+000995                                                                       
+000996               IF LONG-RUN                                             
+000997                  MOVE WS-ZSUBP-SEND-MSG-JOB                           
+000998                                   TO WS-JOB                           
+000999                 PERFORM 8000-START-BATCH THRU 8000-EXIT               
+001000               END-IF.                                                 
+001001                                                                       
+001002            EXEC CICS                                                  
+001003                 RETURN                                                
+001004            END-EXEC                                                   
+001005            .                                                     
+001006        9000-EXIT.                                                
+001007            EXIT.                                                 
+001008       *                                                          
+001009        9001-FETCH-CHECK.                                         
+001010                                                                  
+001011                                                                  
+001012            EXEC SQL FETCH REQ-CHECK                              
+001013             INTO :KEY-BASE,                                      
+001014                  :SEQ-NBR,                                       
+001015                  :LAST-MOD-TIMESTMP,                             
+001016                  :REQ-STATUS                                     
+001017            END-EXEC                                              
+001018                                                                  
+001019            EVALUATE SQLCODE                                      
+001020              WHEN 000                                            
+001021                 SET LONG-RUN TO TRUE                             
+001022                MOVE  3333                    TO EROR-STAT               
+001023                MOVE KEY-BASE                 TO REQUEST-BASE            
+001024                MOVE SEQ-NBR                  TO REQUEST-SEQNO           
+001025                MOVE 'LONG RUN'               TO WARNG-FUNC              
+001026                MOVE LAST-MOD-TIMESTMP        TO WARNG-TIMESTMP          
+001027               EVALUATE REQ-STATUS                                       
+001028                  WHEN '11'                                              
+001029                    MOVE WS-ZSUBP-DELETE-JOB                             
+001030                              TO JOB-STARTED                             
+001031                  WHEN '10'                                              
+001032                      MOVE 'STATUS10' TO JOB-STARTED                     
+001033                  WHEN '12'                                              
+001034                      MOVE  WS-ZSUBP-RECALL-JOB                          
+001035                                      TO JOB-STARTED                     
+001036                  WHEN '14'                                              
+001037                      MOVE WS-ZSUBP-RELOAD-JOB                           
+001038                                      TO JOB-STARTED                     
+001039                  WHEN '15'                                           
+001040                      MOVE WS-ZSUBP-LOAD-JOB                          
+001041                                      TO JOB-STARTED                  
+001042                  WHEN '18'                                           
+001043                      MOVE 'STATUS18' TO JOB-STARTED                  
+001044                  WHEN '19'                                           
+001045                      MOVE 'STATUS18' TO JOB-STARTED                  
+001046                  WHEN OTHER                                          
+001047                      MOVE 'UNKNOWN ' TO JOB-STARTED                  
+001048                  END-EVALUATE                                        
+001049                     PERFORM 8100-WRITE-LOG THRU 8100-EXIT            
+001050              WHEN +100                                               
+001051                SET EOF-CHECK                    TO TRUE              
+001052                GO TO 9001-EXIT                                       
+001053              WHEN OTHER                                              
+001054                MOVE SQLCODE                   TO EROR-STAT           
+001055                MOVE 'FTCH CHECKCRS'            TO EROR-FUNC          
+001056                MOVE 'REQUEST_CNTL'            TO EROR-FILE         
+001057                MOVE 'CHECK STAT'              TO REQUEST           
+001058               MOVE '9002'                    TO EROR-CODE          
+001059                GO TO  9999-EROR-RTRN                               
+001060            END-EVALUATE                                            
+001061            .                                                       
+001062                                                                    
+001063        9001-EXIT.                                                  
+001064             EXIT.                                                  
+001065                                                                    
+001066        9050-ASK-TIME.                                              
+001067                                                                    
+001068 299800          EXEC CICS ASKTIME                                  
+001069 299900                    ABSTIME (W-ABSTIME)                      
+001070 300000          END-EXEC                                           
+001071 300000                                                             
+001072 300000          EXEC CICS FORMATTIME                               
+001073 300000                  ABSTIME (W-ABSTIME)                       
+001074 300000                  YYMMDD (W-DATE)                           
+001075                         DATESEP                                   
+001076 300000                  TIME   (W-TIME)                           
+001077                         TIMESEP                                   
+001078 300000          END-EXEC                                          
+001079                 COMPUTE WORK-DATE = TIME-99 - W-ABSTIME           
+001080                 MOVE WORK-DATE TO DATE-TIME-KEY                   
+001081                                                                   
+001082                 MOVE W-DATE TO DATE-FRMT                          
+001083                 MOVE W-TIME TO TIME-FRMT.                         
+001084                                                                   
+001085        9050-EXIT.                                                 
+001086             EXIT.                                                 
+001087                                                                   
+001088        9100-WAIT.                                                 
+001089                                                                   
+001090 084000        EXEC CICS START                                          
+001091 084100             TRANSID  ('NCAC')                                   
+001092 084200             INTERVAL (000100)                                   
+001093 084500        END-EXEC                                                 
+001094                                                                        
+001095                                                                        
+001096            MOVE 'DELAY'   TO REQUEST                                   
+001097            MOVE SPACES TO EROR-PART                                    
+001098                           JOB-STARTED                                  
+001099            MOVE ZERO TO EROR-STAT                                      
+001100            PERFORM 8100-WRITE-LOG THRU 8100-EXIT                       
+001101                                                                        
+001102 084600        EXEC CICS RETURN                                         
+001103 084700        END-EXEC                                                 
+001104 084800        GOBACK.                                                  
+001105                                                                        
+001106        9100-EXIT.                                                      
+001107            EXIT.                                                        
+001108       *                                                                 
+001109        9999-EROR-RTRN.                                                  
+001110       *>>>>>>>>> UPDATE LOCK-SW                                         
+001111                 EXEC SQL                                                
+001112                   UPDATE SPACE_CNTL                                     
+001113                   SET LOCK_SW = '0',                                    
+001114                   LAST_UPDATE = CURRENT TIMESTAMP                       
+001115                  END-EXEC                                               
+001116                                                                         
+001117              IF NOT-LOGERR                                              
+001118                PERFORM 9050-ASK-TIME THRU 9050-EXIT                     
+001119                MOVE WS-REQUEST TO REQUEST                               
+001120                MOVE SPACES TO JOB-STARTED                               
+001121                PERFORM 8100-WRITE-LOG THRU 8100-EXIT                    
+001122              END-IF                                                     
+001123                                                                         
+001124               IF WS-JOB NOT = WS-ZSUBP-SEND-MSG-JOB                     
+001125                    MOVE WS-ZSUBP-SEND-MSG-JOB                           
+001126                                     TO WS-JOB                           
+001127                   PERFORM 8000-START-BATCH THRU 8000-EXIT               
+001128               END-IF                                                    
+001129       *                                                                 
+001130            EXEC CICS                                                    
+001131                 RETURN                                                  
+001132            END-EXEC                                                     
+001133            .                                                            
+001134               GOBACK.                                                   
+001135        9999-EXIT.                                                       
+001136            EXIT.                                                        
+001137       *                                                                 
+001138       ***------------------------------------------------------------***
+001139       **                                                              **
+001140       **              E N D  O F  N C A C 5 0 1                       **
+001141       **                                                              **
+001142       ***------------------------------------------------------------***
+001143                                                                         
+001144                                                                         
+****** **************************** Bottom of Data ****************************
+
+000137        01 DELETE-SW                PIC X VALUE 'N'.                     
+000138           88 START-DELETE        VALUE 'Y'.                             
+000139        01 LOAD-SW                  PIC X VALUE 'N'.                     
+000140           88 START-FTP           VALUE 'Y'.                             
+000141        01 RECALL-SW                PIC X VALUE 'N'.                     
+000142           88 START-RECALL        VALUE 'Y'.                             
+000143        01 WS-TEXT                PIC X(10) VALUE '1234567890'.          
+000144        01 WS-LOGFILE-DSNAME      PIC X(8)   VALUE 'NCACLOG'.            
+000145 027100                                                                  
+000146 027200 01  WS-ZSUBP-DELETE-JOB           PIC X(8)    VALUE 'ZCAR599N'.  
+000147 027300 01  WS-ZSUBP-LOAD-JOB             PIC X(8)    VALUE 'ZCAR560N'.  
+000148 027300 01  WS-ZSUBP-RELOAD-JOB          PIC X(8)     VALUE 'ZCAR561N'.  
+000149 027400 01  WS-ZSUBP-RECALL-JOB           PIC X(8)    VALUE 'ZCAR530N'.  
+000150 027400 01  WS-ZSUBP-SEND-MSG-JOB        PIC X(8)     VALUE 'ZCAR996N'.  
+000151 027500 01  WS-ZSUBP-COMMAREA             PIC X(8)    VALUE SPACES.      
+000152 027600 01  WS-ZSUBP-LENGTH               PIC S9(4) COMP VALUE +8.       
+000153 027700 01  WS-ZSUBP-PROGRAM              PIC X(8)    VALUE 'ZSUBP   '.  
+000154 027800                                                                  
+000155       ***------------------------------------------------------------***
