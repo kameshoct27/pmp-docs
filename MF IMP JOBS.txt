@@ -1,0 +1,386 @@
+ VIEW       X471.USER.ADHOC.IMPJOBS(DEALLOC) - 01.03 Columns 00001 00072 
+ Command ===>                                                  Scroll ===> CSR  
+ ****** ***************************** Top of Data ******************************
+ 000001 //* DEALLOC AND ALLOC THE CICS DATASET WHEN CONTENTION OCCURS           
+ 000002 //*DEALLOC EXEC PRODBIF,ID='REGION',OPTION='D FOR DEALLOC,              
+ 000003 //* A FOR ALLOC',TYPE=F,NAME=DDNAME                                     
+ 000004 //*                                                                     
+ 000005 //DEALLC01 EXEC PRODBIF,ID=SP,OPTION=D,TYPE=F,NAME=SECRTG2X             
+ 000006 //DEALLC01 EXEC PRODBIF,ID=SP,OPTION=D,TYPE=F,NAME=SECRTG2X             
+ 000007 //*                                                                     
+ 000008 //* NAME IS CICSPRDV.PCADE65N.PERSH.SSN                                 
+ 000009 //* SSNXPR IS THE SHORTNAM WHICH CAN BE FOUND IN JCLLOG                 
+ 000010 //STEP001 EXEC PCCD050N                                                 
+ 000011 //*                                                                     
+ 000012 //ALLOC1 EXEC PRODBIF,ID=SP,OPTION=A,TYPE=F,NAME=SECRTG2X               
+ 000013 //*                                                                     
+ ****** **************************** Bottom of Data ****************************
+
+
+
+
+ VIEW       X471.USER.ADHOC.IMPJOBS(RESRTAPE) - 01.1 Columns 00001 00072 
+ Command ===>                                                  Scroll ===> CSR  
+ ****** ***************************** Top of Data ******************************
+ 000100 //ZCCR001N JOB (TEST),'CATLG PBTAPES',CLASS=C,MSGCLASS=A,               
+ 000200 //   NOTIFY=X115                                                        
+ 000300 //*                                                                     
+ 000310 //STEP01  EXEC PGM=IEFBR14                                              
+ 000320 //DD001   DD DSN=SHS.NCA.CMW00.PCAD689N.ACTIVT.G0348V00,                
+ 000330 //    DISP=(OLD,CATLG),DCB=(LRECL=670,RECFM=FB),UNIT=(SILO,,DEFER),     
+ 000340 //    VOLUME=SER=K33988                                                 
+ 000350 //STEP02  EXEC PGM=IEFBR14                                              
+ 000360 //DD001   DD DSN=SHS.NCA.CMW00.PCAD689N.TOPACT.G0346V00,                
+ 000370 //    DISP=(OLD,CATLG),DCB=(LRECL=1494,RECFM=FB),UNIT=(SILO,,DEFER),    
+ 000380 //    VOLUME=SER=L61323                                                 
+ 000390 //STEP03  EXEC PGM=IEFBR14                                              
+ 000400 //DD001   DD DSN=SHS.NCA.CMW00.PCAD689N.TOPGRP.G0348V00,                
+ 000500 //    DISP=(OLD,CATLG),DCB=(LRECL=224,RECFM=FB),UNIT=(SILO,,DEFER),     
+ 000600 //    VOLUME=SER=L63985                                                 
+ 005900 //STEP17  EXEC PGM=IEFBR14                                              
+ 006000 //DD001   DD DSN=SHS.NCA.CMW00.PCAD689N.SPREAD.ASOF.G2395V00,           
+ 006100 //    DISP=(OLD,CATLG),DCB=(LRECL=323,RECFM=FB),UNIT=(SILO,,DEFER),     
+ 006200 //    VOLUME=SER=O02999                                                 
+ ****** **************************** Bottom of Data ****************************
+
+ VIEW       X471.USER.ADHOC.IMPJOBS(RUN137P) - 01.01 Columns 00001 00072 
+ Command ===>                                                  Scroll ===> CSR  
+ ****** ***************************** Top of Data ******************************
+ 000001 //ZCCR001N JOB (DEV),'TEST RPT',CLASS=C,MSGCLASS=A,MSGLEVEL=(1,1),      
+ 000002 //         NOTIFY=X115                                                  
+ 000003 //*---------------------------------------------------------------------
+ 000004 //STEP30  EXEC PGM=SORT,REGION=0K,COND=(0,LT)                           
+ 000005 //SORTLIB  DD DSN=SYS1.SORTLIB,DISP=SHR                                 
+ 000006 //SORTJNF1 DD DISP=SHR,DSN=PROD$IAM.CPI.CPIMAST                         
+ 000007 //SORTJNF2 DD DISP=SHR,DSN=ECNS.CPI.MISSING.ACCOUNTS                    
+ 000008 //JNF1CNTL DD *                                                         
+ 000009   INCLUDE COND=(21,2,CH,EQ,C'01',                                       
+ 000010              OR,21,2,CH,EQ,C'05',                                       
+ 000011              OR,21,2,CH,EQ,C'10',AND,23,2,CH,EQ,C'01')                  
+ 000012   INREC FIELDS=(1,1015)                                                 
+ 000013 //*                                                                     
+ 000014 //OUTFILE1 DD DSN=ECNS.NCA.ACCTCPI.DATA,                                
+ 000015 //            DISP=(,CATLG,DELETE),SPACE=(CYL,(500,300),RLSE),          
+ 000016 //            DCB=(LRECL=1300,RECFM=FB)                                 
+ 000017 //OUTFILE2 DD DSN=ECNS.NCA.ACCTCPI.NOTFOUND,                            
+ 000018 //            DISP=(,CATLG,DELETE),SPACE=(TRK,(5,30),RLSE),            
+ 000019 //            DCB=(LRECL=16,RECFM=FB)                                  
+ 000020 //*                                                                    
+ 000021 //SYSIN    DD *                                                        
+ 000022   OPTION COPY                                                          
+ 000023   JOINKEYS FILES=F1,FIELDS=(9,8,A),SORTED                              
+ 000024   JOINKEYS FILES=F2,FIELDS=(3,8,A),SORTED                              
+ 000025   REFORMAT FIELDS=(F1:1,1015,F2:3,8,14,8,?)                            
+ 000026   JOIN UNPAIRED,F2                                                     
+ 000027   OUTFIL FNAMES=OUTFILE2,INCLUDE=(1032,1,CH,EQ,C'2'),                  
+ 000028   OUTREC=(1016,16)                                                     
+ 000029   OUTFIL FNAMES=OUTFILE1,INCLUDE=(1032,1,CH,EQ,C'B'),                  
+ 000030   IFTHEN=(WHEN=(21,2,CH,EQ,C'01'),                                     
+ 000031    BUILD=(1,22,2X,C'150210222222',C'A',C'QCQC649',                     
+ 000032      25,991,209X,56X)),                                                
+ 000033   IFTHEN=(WHEN=(21,2,CH,EQ,C'10'),                                     
+ 000034    BUILD=(1,22,C'01',C'150210222222',C'A',C'QCQC649',                  
+ 000035      25,991,209X,56X)),                                                
+ 000036   IFTHEN=(WHEN=NONE,         ** TYPE 05                                
+ 000037    BUILD=(1,22,2X,C'150210222222',C'A',C'QCQC649',                     
+ 000038      25,326,874X,56X))                                                 
+ 000039 *                                                                      
+ 000040 //SYSOUT   DD SYSOUT=*                                                 
+ 000041 //SYSPRINT DD SYSOUT=*                                                 
+ 000042 //*--------------------------------------------------------------------
+ 000043 //*--------------------------------------------------------------------
+ 000044 //STEP020  EXEC PGM=NCAB137                                            
+ 000045 //STEPLIB  DD DSN=PROD.ALPHABR.LINKLIB,DISP=SHR                        
+ 000046 //         DD DSN=SLR1.LINKLIB,DISP=SHR                                
+ 000047 //         DD DSN=PROD.ADP.DATELIB.XANY24,DISP=SHR                     
+ 000048 //         DD DSN=PROD.ADP.LOADLIB,DISP=SHR                            
+ 000049 //         DD DSN=SYS1.SCEERUN,DISP=SHR                                
+ 000050 //*        DD DSN=SYS1.VSCOBOL.COB2LIB,DISP=SHR                        
+ 000051 //HOLIFILE DD DSN=PROD.SSS.HOLIFILE,DISP=SHR                           
+000052 //*                                                                     
+000053 //ICA137A  DD DISP=SHR,DSN=ECNS.NCA.ACCTCPI.DATA                        
+000054 //*                                                                     
+000055 //ICA137B  DD DISP=SHR,DSN=PROD$IAM.CPI.CPIMAST                         
+000056 //VSAMSLR2 DD DSN=PRODV.SWRB180.CTRHOUSE,DISP=SHR                       
+000057 //ICA137C  DD SUBSYS=(BLSR,'DDNAME=VSAMSLR2')                           
+000058 //ICA137E  DD DSN=PROD$IAM.CPI.CPIHIST,DISP=SHR,                        
+000059 //            AMP=('BUFNI=5,BUFND=5')                                   
+000060 //ICA137F  DD DSN=PRODV.CPI.CPIDOC,DISP=SHR,                            
+000061 //            AMP=('BUFNI=5,BUFND=5')                                   
+000062 //OCA137A  DD DSN=ECNS.NCAPROD.ACCT.INFO,DISP=(,CATLG,DELETE),          
+000063 //*           DCB=(LRECL=534,DSORG=PS,RECFM=FB),                        
+000064 //            DCB=(LRECL=597,DSORG=PS,RECFM=FB),                        
+000065 //            VOL=(,,,255)                                              
+000066 //OCA137B  DD DSN=ECNS.NCAPROD.CUST.INFO,DISP=(,CATLG,DELETE),          
+000067 //            DCB=(LRECL=665,DSORG=PS,RECFM=FB),                        
+000068 //            VOL=(,,,255)                                              
+000069 //OCA137C  DD DSN=ECNS.NCAPROD.ALT.ADDR.INFO,DISP=(,CATLG,DELETE),      
+000070 //            DCB=(LRECL=508,DSORG=PS,RECFM=FB),                        
+000071 //            VOL=(,,,255)                                              
+000072 //OCA137D  DD DSN=ECNS.NCAPROD.ACCT.TRLE,DISP=(,CATLG,DELETE),          
+000073 //            DCB=(LRECL=80,DSORG=PS,RECFM=FB)                          
+000074 //OCA137E  DD DSN=ECNS.NCAPROD.CUST.TRLE,DISP=(,CATLG,DELETE),          
+000075 //            DCB=(LRECL=80,DSORG=PS,RECFM=FB)                          
+000076 //OCA137F  DD DSN=ECNS.NCAPROD.ALT.ADDR.TRLE,DISP=(,CATLG,DELETE),      
+000077 //            DCB=(LRECL=80,DSORG=PS,RECFM=FB)                          
+000078 //SYSOUT   DD SYSOUT=*                                                  
+000079 //SYSABOUT DD SYSOUT=*                                                  
+000080 //SYSDBOUT DD SYSOUT=*                                                  
+000081 //SYSUDUMP DD SYSOUT=*                                                  
+000082 //*--------------------------------------------------------------------*
+****** **************************** Bottom of Data ****************************
+
+
+ VIEW       X471.USER.ADHOC.IMPJOBS(SARCOPY) - 01.03 Columns 00001 00072 
+ Command ===>                                                  Scroll ===> CSR  
+ ****** ***************************** Top of Data ******************************
+ 000001 //X115SARJ  JOB (X115),'JOB SAR RPT',CLASS=H,MSGCLASS=X,                
+ 000003 //           MSGLEVEL=(1,1),NOTIFY=X115                                 
+ 000004 //**==============================================================**    
+ 000005 //*       TEST JOB WHICH SAR OUTPUT                                     
+ 000006 //**==============================================================**    
+ 000008 //PRINT    PROC                                                         
+ 000010 //PSY0010  EXEC PGM=SARBCH,REGION=2M                                    
+ 000011 //SYSPRINT DD SYSOUT=*                                                  
+ 000012 //SYSIN    DD DDNAME=SYSIN                                              
+ 000013 //        PEND                                                          
+ 000016 //**********************                                                
+ 000017 //JSY0010 EXEC PRINT                                                    
+ 000019 //PSY0010.SARLOAD DD DSN=WRKT.SAR.ZCCD495N,DISP=(,CATLG),               
+ 000020 //      LRECL=133,RECFM=FBA,UNIT=(SYSDA,59),SPACE=(TRK,(100,60),RLSE)   
+ 000030 //PSY0010.SYSIN DD *                                                    
+ 000040 /DBASE NAME=ITSX00P.PB.VIEWA                                            
+ 000050 /LOAD ID=ZCAD495N                                                       
+ 000060 //*                                                                     
+ ****** **************************** Bottom of Data ****************************
+
+
+ VIEW       X471.USER.ADHOC.IMPJOBS(UNLOAD1) - 01.00 Columns 00001 00072 
+ Command ===>                                                  Scroll ===> CSR  
+ ****** ***************************** Top of Data ******************************
+ 000001 //SSY122Z  JOB (SSY161),'UNLOAD',CLASS=H,MSGCLASS=X,                    
+ 000002 //     MSGLEVEL=(1,1),                                                  
+ 000003 //     SCHENV=DB2PRD99,                                                 
+ 000004 //    NOTIFY=SSY122                                                     
+ 000005 //**********************************************************************
+ 000006 //* THIS JOB UNLOAD REQUESTED ACCOUNTS INTO FLAT FILE                   
+ 000007 //**********************************************************************
+ 000008 //STEP01  EXEC PGM=IKJEFT01,DYNAMNBR=20                                 
+ 000009 //STEPLIB  DD  DSN=DB2PRD99.SUBSYS.LOADLIB,DISP=SHR                     
+ 000010 //SYSPRINT DD  SYSOUT=*                                                 
+ 000011 //SYSUDUMP DD  SYSOUT=*                                                 
+ 000012 //SYSREC00 DD  DSN=ECNS.TESTVWD.DATA,                                   
+ 000013 //             UNIT=(SYSDA,59),                                         
+ 000014 //             SPACE=(CYL,(70,200),RLSE),                               
+ 000015 //             DISP=(,CATLG,DELETE)                                     
+ 000016 //SYSTSIN  DD  *                                                        
+ 000017     DSN SYSTEM(ZP99)                                                    
+000018     RUN PROGRAM(DSNTIAUL) PLAN(DSNTIB71) PARM('SQL') -                 
+000019         LIB('IRDBTST.DSN710.RUNLIB.LOAD')                              
+000020 //SYSTSPRT DD SYSOUT=*                                                 
+000021 //SYSPUNCH DD DSN=SSY122.USER.CAES(UNLD1P),DISP=SHR                    
+000022 //SYSIN DD *                                                           
+000023    SELECT * FROM DB2PRD99.VWDDB2P.ACCT_INFO_DAILY                      
+000024    WHERE ACCT_NBR IN (                                                 
+000025    '52868217',                                                         
+000026    '52868342',                                                         
+000027    '52868371',                                                         
+000028    '52868374',                                                         
+000029    '52868470',                                                         
+000030    '52868512',                                                         
+000031    '52868591',                                                         
+000032    '5288A012',                                                         
+000033    '52880359',                                                         
+000034    '52880463'                                                          
+000035    )                                                                    
+000036   ;                                                                     
+****** **************************** Bottom of Data ****************************
+
+VIEW       X471.USER.ADHOC.IMPJOBS(X115JOIN) - 01.0 Columns 00001 00072 
+Command ===>                                                  Scroll ===> CSR  
+****** ***************************** Top of Data ******************************
+000001 //X115JOIN JOB (SRTJOIN),'KAMESH',CLASS=H,MSGCLASS=X,MSGLEVEL=(1,1),    
+000002 //        NOTIFY=X115                                                   
+000003 //STEP01 EXEC PGM=SORT                                                  
+000004 //SORTJNF1 DD DISP=SHR,DSN=WRKT.NCA.CMW01.PCAM490N.NAMEADDR.MT201403    
+000005 //SORTJNF2 DD DISP=SHR,DSN=WRKT.USER.MSSBACCT                           
+000006 //OUTFIL1  DD DSN=WRKT.USER.MATCH,                                      
+000007 //            DISP=(NEW,CATLG,DELETE),                                  
+000008 //            DCB=(RECFM=FB,LRECL=700)                                  
+000009 //SYSOUT DD SYSOUT=*                                                    
+000010 //SYSIN DD *                                                            
+000011    OPTION COPY                                                          
+000012    JOINKEYS FILES=F1,FIELDS=(314,9,A)                                   
+000013    JOINKEYS FILES=F2,FIELDS=(1,9,A)                                     
+000014    REFORMAT FIELDS=(F1:1,700)                                           
+000015    OUTFIL FNAMES=OUTFIL1,BUILD=(1,700)                                  
+****** **************************** Bottom of Data ****************************
+
+ VIEW       X471.USER.ADHOC.IMPJOBS(X115OLAY) - 01.0 Columns 00001 00072
+ Command ===>                                                  Scroll ===> CSR 
+ ****** ***************************** Top of Data *****************************
+ 000001 //X115OLAY JOB (COPY),'FAST COPY',CLASS=H,MSGCLASS=X,NOTIFY=X115       
+ 000002 //*                                                                    
+ 000003 //*--------------------------------------------------------------------
+ 000004 //JOBLIB   DD DISP=SHR,DSN=SYS3.MVSV5.RUNTIME   INSERTED FOR LE RUNTIME
+ 000005 //          DD DISP=SHR,DSN=SYS3.MVSV5.RUNTIME    INSERTED BY JES2EXT54
+ 000006 //STEP001  EXEC PGM=SORT                                               
+ 000007 //SORTLIB DD DISP=SHR,DSN=SYS1.SORTLIB                                 
+ 000008 //SORTIN   DD DISP=SHR,DSN=SHS.NCC.WRM.ZCCD941N.SAL.LOPRDATA.DT150511  
+ 000009 //SORTOUT DD DSN=WRKT.ZCCD941N.SAL.LOPRDATA.DT150511,                  
+ 000010 //            DISP=(,CATLG,DELETE),                                    
+ 000011 //            DCB=*.SORTIN                                             
+ 000012 //SYSOUT  DD  SYSOUT=*                                                 
+ 000013 //SYSIN DD *                                                           
+ 000014   INREC IFTHEN=(WHEN=(160,10,CH,NE,C' '),OVERLAY=(160:10C'X'))         
+ 000015   SORT FIELDS=COPY                                                     
+ 000016 //*                                                                    
+ ****** **************************** Bottom of Data ***************************
+
+ VIEW       X471.USER.ADHOC.IMPJOBS.KAMESH(ZCCRCPY$) - 01.0 Columns 00001 00072
+ Command ===>                                                  Scroll ===> CSR 
+ ****** ***************************** Top of Data *****************************
+ 000001 //ZCCRCPY$  JOB (PROD),'COPY',CLASS=C,                                 
+ 000002 //           MSGCLASS=A,MSGLEVEL=(1,1),NOTIFY=X115                     
+ 000003 //*******************************************************************  
+ 000004 //**  DATA BACK UP AS PER APP TEAM REQUEST                             
+ 000005 //*******************************************************************  
+ 000006 //JOBLIB    DD DISP=SHR,DSN=SYS3.MVSV5.RUNTIME    INSERTED BY JES2EXT  
+ 000007 //STEP01   EXEC PGM=FASTCOPY,REGION=4096K,COND=(0,NE)                  
+ 000008 //*                                                                    
+ 000009 //SYSUT13  DD DSN=PROD.NRG.PRGD166.WEBEFT.G3384V00,                    
+ 000010 //      DISP=SHR                                                       
+ 000011 //SYSUT13A DD DSN=PROD.NRG.PRGD166.WEBEFT.G3384,                       
+ 000012 //      DISP=(,CATLG,DELETE),                                          
+ 000013 //      DCB=*.SYSUT13                                                  
+ 000014 //*                                                                    
+ 000081 //SYSPRINT DD SYSOUT=*   
+ 000082 //SYSPRI13 DD SYSOUT=*   
+ ****** **************************** Bottom of Data ****************************
+
+ VIEW       X471.USER.ADHOC.IMPJOBS.KAMESH(ZCCR001N) - 01.0 Columns 00001 00072 
+ Command ===>                                                  Scroll ===> CSR  
+ ****** ***************************** Top of Data ******************************
+ 000001 //ZCCR001N JOB (TEST),'KAMES',CLASS=C,MSGCLASS=A,NOTIFY=X115            
+ 000002 //*------------------------------------------------------------------   
+ 000003 //* JOB TO CREATE MISSING TAPES FOR ARCHIVAL JOBS                       
+ 000004 //*------------------------------------------------------------------   
+ 000005 //STEP010  EXEC PGM=FASTCOPY                                            
+ 000006 //*                                                                     
+ 000007 //SYSUT11  DD DUMMY,DCB=(LRECL=4975,RECFM=FB)                           
+ 000008 //*                                                                     
+ 000009 //SYSUT11A DD DSN=SHS.NCA.CMW00.ZCAD681N.EXEC.DATA(+1),                 
+ 000010 //            DISP=(NEW,CATLG,DELETE),                                  
+ 000011 //            DCB=(LRECL=4975,RECFM=FB),                                
+ 000012 //            UNIT=SILO                                                 
+ 000013 //*                                                                     
+ 000014 //SYSPRI11 DD SYSOUT=*                                                  
+ 000015 //SYSPRINT DD SYSOUT=*                                                  
+ 000016 //*                                                                     
+ 000017 //STEP020  EXEC PGM=FASTCOPY                                            
+ 000018 //*                                                                     
+ 000019 //SYSUT12  DD DUMMY,DCB=(LRECL=4765,RECFM=FB)                           
+ 000020 //*                                                                     
+ 000021 //SYSUT12A DD DSN=SHS.NCA.CMW00.ZCAD710N.ORDER.DATA(+1),                
+ 000022 //            DISP=(NEW,CATLG,DELETE),                                  
+ 000023 //            DCB=(LRECL=4765,RECFM=FB),                                
+ 000024 //            UNIT=SILO                                                 
+ 000025 //*                                                                     
+ 000026 //SYSPRI12 DD SYSOUT=*                                                 
+ 000027 //SYSPRINT DD SYSOUT=*                        
+ ****** **************************** Bottom of Data ****************************                                                                              
+
+-------------------------------------------------------------------------------
+VIEW       BPS.CARDLIB(NCA493C1) - 02.01                   Columns 00001 00072 
+Command ===>                                                  Scroll ===> CSR  
+****** ***************************** Top of Data ******************************
+000001  ALTSEQ CODE=(4F40)              * 4F = PIPE, TRANSFORM TO SPACE        
+000002  SORT FIELDS=COPY                                                       
+000003  OMIT COND=(1,6,SS,EQ,C'HEADER,TRAILR')                                 
+000004  INREC IFTHEN=(WHEN=(74,4,ZD,NE,NUM,OR,79,2,ZD,NE,NUM,OR,               
+000005                82,2,ZD,NE,NUM,OR,                                       
+000006                74,1,CH,LT,C'1',OR,74,1,CH,GT,C'2',OR,                   
+000007                79,2,CH,GT,C'12',OR,79,2,CH,LT,C'01',OR,                 
+000008                82,2,CH,GT,C'31',OR,82,2,CH,LT,C'01'),                   
+000009                OVERLAY=(74:C'1900-01-01'),HIT=NEXT),                    
+000010        IFTHEN=(WHEN=(84,4,ZD,NE,NUM,OR,89,2,ZD,NE,NUM,OR,               
+000011                92,2,ZD,NE,NUM,OR,                                       
+000012                84,1,CH,LT,C'1',OR,84,1,CH,GT,C'2',OR,                   
+000013                89,2,CH,GT,C'12',OR,89,2,CH,LT,C'01',OR,                 
+000014                92,2,CH,GT,C'31',OR,92,2,CH,LT,C'01'),                   
+000015                OVERLAY=(84:C'1900-01-01'),HIT=NEXT),                    
+ 000016        IFTHEN=(WHEN=(94,4,ZD,NE,NUM,OR,99,2,ZD,NE,NUM,OR,               
+ 000017                102,2,ZD,NE,NUM,OR,                                      
+ 000018                94,1,CH,LT,C'1',OR,94,1,CH,GT,C'2',OR,                   
+ 000019                99,2,CH,GT,C'12',OR,99,2,CH,LT,C'01',OR,                 
+ 000020                102,2,CH,GT,C'31',OR,102,2,CH,LT,C'01'),                 
+ 000021                OVERLAY=(94:C'1900-01-01'),HIT=NEXT),                    
+ 000022        IFTHEN=(WHEN=(330,4,ZD,NE,NUM,OR,335,2,ZD,NE,NUM,OR,             
+ 000023                338,2,ZD,NE,NUM,OR,                                      
+ 000024                330,1,CH,LT,C'1',OR,330,1,CH,GT,C'2',OR,                 
+ 000025                335,2,CH,GT,C'12',OR,335,2,CH,LT,C'01',OR,               
+ 000026                338,2,CH,GT,C'31',OR,338,2,CH,LT,C'01'),                 
+ 000027                OVERLAY=(330:C'1900-01-01'),HIT=NEXT),                   
+ 000028        IFTHEN=(WHEN=(340,4,ZD,NE,NUM,OR,345,2,ZD,NE,NUM,OR,             
+ 000029                348,2,ZD,NE,NUM,OR,                                      
+ 000030                340,1,CH,LT,C'1',OR,340,1,CH,GT,C'2',OR,                 
+ 000031                345,2,CH,GT,C'12',OR,345,2,CH,LT,C'01',OR,               
+ 000032                348,2,CH,GT,C'31',OR,348,2,CH,LT,C'01'),                 
+ 000033                OVERLAY=(340:C'1900-01-01'),HIT=NEXT),                   
+ 000034        IFTHEN=(WHEN=(525,4,ZD,NE,NUM,OR,521,2,ZD,NE,NUM,OR,             
+ 000035                523,2,ZD,NE,NUM,OR,                                      
+ 000036                525,1,CH,LT,C'1',OR,525,1,CH,GT,C'2',OR,                 
+ 000037                521,2,CH,GT,C'12',OR,521,2,CH,LT,C'01',OR,               
+ 000038                523,2,CH,GT,C'31',OR,523,2,CH,LT,C'01'),                 
+ 000039                OVERLAY=(521:C'01011900'),HIT=NEXT),                     
+ 000040        IFTHEN=(WHEN=(16,9,CH,LE,C'         '),                          
+ 000041                OVERLAY=(16:407,9),HIT=NEXT)                             
+ 000042  OUTREC FIELDS=(1,6,C'|',        ROUTING-CODE                           
+ 000043    7,09,C'|',                    ACCOUNT                                
+ 000044   16,12,C'|',                    CUSIP                                  
+ 000045   28,36,TRAN=ALTSEQ,C'|',        SEC-DESC <--ALTSEQ                     
+ 000046   64,10,C'|',                    TRAN-CODE                              
+ 000047   74,4,79,2,82,2,C'|',           TRAN-DATE                              
+000048   84,4,89,2,92,2,C'|',           TRADE-DATE                             
+000049   94,4,99,2,102,2,C'|',          SETTLE-DATE                            
+000050  104,18,C'|',                    QUANTITY                               
+000051  122,17,C'|',                    PRICE                                  
+000052  139,13,C'|',                    ACCRUE-INTEREST                        
+000053  152,14,C'|',                    OTHER-FEE-BASE                         
+000054  166,14,C'|',                    OTHER-FEE-LOCAL                        
+000055  180,14,C'|',                    COMM-BASE                              
+000056  194,14,C'|',                    COMM-LOCAL                             
+000057  208,20,C'|',                    TOTAL-AMT                              
+000058  228,10,C'|',                    BROKER                                 
+000059  238,17,C'|',                    FX-RATE                                
+000060  255,14,C'|',                    SEC-FEE-BASE                           
+000061  269,14,C'|',                    SEC-FEE-LOCAL                          
+000062  283,20,C'|',                    ORIGINAL-FACE                          
+000063  303,13,C'|',                    FACTOR                                 
+ 000064  316,14,C'|',                    COUPON                                
+ 000065  330,4,335,2,338,2,C'|',         ISSUE-DATE                            
+ 000066  340,4,345,2,348,2,C'|',         MATURITY-DATE                         
+ 000067  350,15,C'|',                    CURR-ORDER                            
+ 000068  365,15,C'|',                    PREV-ORDER                            
+ 000069  380,01,C'|',                    CANCEL-IND                            
+ 000070  381,01,C'|',                    BUY-SELL-IND                          
+ 000071  382,21,C'|',                    SYMBOL                                
+ 000072  403,02,C'|',                    EXCHANGE                              
+ 000073  405,02,C'|',                    CDE-SECURITY                          
+ 000074  407,09,C'|',                    SECURITY-NUM                          
+ 000075  416,07,C'|',                    POSTAGE-AMT                           
+ 000076  423,08,C'|',                    FOREIGN-TAX                           
+ 000077  431,06,C'|',                    FC-NBR                                
+ 000078  437,04,C'|',                    BRKR-CDE-1-4                          
+ 000079  441,02,C'|',                    BRKR-CDE-5-6                          
+ 000080  443,01,C'|',                    BRKR-CDE-7                             
+ 000081  444,07,C'|',                    SEDOL                                  
+ 000082  451,12,C'|',                    ISIN                                   
+ 000083  463,17,C'|',                    PRINCIPAL                              
+ 000084  480,36,C'|',                    CONFIRM-TRAILER                        
+ 000085  516,05,C'|',                    ALT-TRANS-CODE                         
+ 000086  525,04,521,2,523,2,C'|',        TRD-DATE                               
+ 000087  529,02,C'|',                    SBALPHA-TRAN-CDE                       
+ 000088  531,07,C'|',                    SB-SRCE-DEST                           
+ 000089  538,01)                         SOLICIT-IND                            
+ ****** **************************** Bottom of Data ****************************                  
